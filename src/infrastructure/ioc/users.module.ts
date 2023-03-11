@@ -1,8 +1,10 @@
 import { Module } from '@nestjs/common';
 import { UsersController } from '../../presentation/controllers/users.contoller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from '../../domain/entities/user.entity';
+import { User, UserSchema } from '../../domain/users/entities/user.entity';
 import { MongoCollections } from '../database/mongo.collections';
+import { GetAllUsersAction } from '../../application/actions/users/get-all-users.action';
+import { QueryRepository } from '../database/repositories/users/query.repository';
 
 @Module({
   imports: [
@@ -15,7 +17,7 @@ import { MongoCollections } from '../database/mongo.collections';
     ]),
   ],
   controllers: [UsersController],
-  providers: [],
+  providers: [GetAllUsersAction, QueryRepository],
   exports: [],
 })
 export class UsersModule {}
