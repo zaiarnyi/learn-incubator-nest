@@ -4,13 +4,9 @@ import {
   Delete,
   Get,
   HttpCode,
-  Inject,
   Param,
-  ParseIntPipe,
   Post,
   Query,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { GetUsersRequest } from '../requests/users/get-users.request';
 import { GetUsersResponse } from '../responses/users/get-users.response';
@@ -28,7 +24,6 @@ export class UsersController {
     private readonly createUserService: CreateUserAction,
     private readonly deleteUserService: DeleteUserAction,
   ) {}
-  @UsePipes(new ValidationPipe({ transform: true }))
   @Get()
   async getUsers(@Query() query: GetUsersRequest): Promise<GetUsersResponse> {
     return this.getUsersService.execute(query);
