@@ -31,6 +31,6 @@ import { GetAllBlogsAction } from '../../application/actions/blogs/get-all-blogs
     DeleteBlogByIdAction,
     GetAllBlogsAction,
   ],
-  exports: [],
+  exports: [QueryBlogsRepository],
 })
 export class BlogsModule {}

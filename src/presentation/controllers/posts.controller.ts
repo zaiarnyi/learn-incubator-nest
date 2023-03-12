@@ -13,7 +13,7 @@ export class PostsController {
     return [];
   }
 
-  @Get('id')
+  @Get(':id')
   async getPostById(@Param('id') id: string): Promise<GetPost | any> {}
 
   @Get(':id/comments')
@@ -27,9 +27,9 @@ export class PostsController {
     return this.createService.execute(body);
   }
 
-  @Put('id')
+  @Put(':id')
   async updatePost(@Param('id') id: string, @Body() body: CreatePostRequest): Promise<void> {}
 
-  @Delete('id')
+  @Delete(':id')
   async deletePostById(@Param('id') id: string): Promise<void> {}
 }

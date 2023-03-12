@@ -1,8 +1,9 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Transform } from 'class-transformer';
 
 @Exclude()
 export class CreateBlogResponse {
-  @Expose()
+  @Expose({ name: '_id' })
+  @Transform(({ value }) => value?.toString())
   id: string;
 
   @Expose()
