@@ -20,13 +20,7 @@ import { DeleteUserAction } from '../../application/actions/users/delete-user.ac
     ]),
   ],
   controllers: [UsersController],
-  providers: [
-    UserQueryRepository,
-    UserMainRepository,
-    GetAllUsersAction,
-    CreateUserAction,
-    DeleteUserAction,
-  ],
+  providers: [UserQueryRepository, UserMainRepository, GetAllUsersAction, CreateUserAction, DeleteUserAction],
   exports: [],
 })
 export class UsersModule {}

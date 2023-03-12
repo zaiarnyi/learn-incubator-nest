@@ -15,14 +15,8 @@ export class CreateUserAction {
     await user.validate();
 
     return this.mainRepository.createUser(user).catch((e) => {
-      this.logger.error(
-        `Login: ${user.login}, Email: ${
-          user.email
-        }. Error create user: ${JSON.stringify(e)}`,
-      );
-      throw new ConflictException(
-        'A user with this data has already been created',
-      );
+      this.logger.error(`Login: ${user.login}, Email: ${user.email}. Error create user: ${JSON.stringify(e)}`);
+      throw new ConflictException('A user with this data has already been created');
     });
   }
 }

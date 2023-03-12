@@ -1,8 +1,5 @@
 import { IsEnum, IsInt, IsOptional, IsString, Max } from 'class-validator';
-import {
-  SortByEnum,
-  SortDirection,
-} from '../../../domain/users/enums/sort.enum';
+import { SortByEnum, SortDirection } from '../../../domain/users/enums/sort.enum';
 import { Type } from 'class-transformer';
 
 export class GetUsersRequest {

@@ -1,9 +1,6 @@
 import { IsEnum, IsInt, IsOptional, IsString, Max } from 'class-validator';
 import { Type } from 'class-transformer';
-import {
-  PostSortByEnum,
-  PostSortDirection,
-} from '../../../domain/posts/enums/sort.enum';
+import { PostSortByEnum, PostSortDirection } from '../../../domain/posts/enums/sort.enum';
 
 export class GetPostsRequest {
   @Type(() => Number)
