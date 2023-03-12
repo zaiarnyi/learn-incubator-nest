@@ -7,7 +7,7 @@ import {
 } from '../../../../domain/users/entities/user.entity';
 
 @Injectable()
-export class QueryRepository {
+export class UserQueryRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
   getAllUsers(
     searchLogin: string,
