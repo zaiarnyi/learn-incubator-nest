@@ -3,7 +3,17 @@ import { HydratedDocument } from 'mongoose';
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema()
+@Schema({
+  timestamps: true,
+  validateBeforeSave: true,
+  versionKey: false,
+  toJSON: {
+    transform: (doc, ret) => {
+      ret.id = ret._id;
+      delete ret._id;
+    },
+  },
+})
 export class User {
   @Prop({ type: String, isRequired: true, unique: true })
   login: string;

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PostsController } from '../../presentation/controllers/posts.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Post, PostSchema } from '../../domain/entities/post.entity';
+import { Post, PostSchema } from '../../domain/posts/entities/post.entity';
 import { MongoCollections } from '../database/mongo.collections';
 
 @Module({
