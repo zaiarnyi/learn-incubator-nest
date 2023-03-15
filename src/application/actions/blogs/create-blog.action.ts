@@ -10,6 +10,7 @@ export class CreateBlogAction {
     @Inject(MainBlogsRepository)
     private readonly mainRepository: MainBlogsRepository,
   ) {}
+
   async execute(payload: CreateBlogDto): Promise<CreateBlogResponse> {
     const blog = new Blog();
     blog.name = payload.name;
