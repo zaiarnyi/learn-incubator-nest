@@ -31,8 +31,14 @@ async function bootstrap() {
         message: '⚠️ Too many request created from this IP, please try again after an hour',
       }),
     );
-    // app.useGlobalFilters(new HttpExceptionFilter());
-    app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    app.useGlobalFilters(new HttpExceptionFilter());
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+        // errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        // transformOptions: { enableImplicitConversion: true },
+      }),
+    );
 
     await app.listen(PORT);
     Logger.log(`Server is listening on port ${PORT}`, 'Bootstrap');

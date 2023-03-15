@@ -1,30 +1,20 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, HttpStatus } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
+import { Request, Response } from 'express';
 
 @Catch(HttpException)
-export class HttpExceptionFilter implements ExceptionFilter<HttpException> {
+export class HttpExceptionFilter implements ExceptionFilter {
   catch(exception: HttpException, host: ArgumentsHost) {
-    const statusCode = exception.getStatus();
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+    const request = ctx.getRequest<Request>();
+    const status = exception.getStatus();
 
-    if (statusCode !== HttpStatus.UNPROCESSABLE_ENTITY) {
-      throw new HttpException(
-        {
-          // service: ,
-          message: exception.message,
-          timestamp: new Date().toISOString(),
-        },
-        statusCode,
-      );
-    }
-    const exceptionResponse: any = exception.getResponse();
-
-    throw new HttpException(
-      {
-        // service: ProductDataServiceName,
-        message: exception.message,
-        details: exceptionResponse.message,
-        timestamp: new Date().toISOString(),
-      },
-      statusCode,
-    );
+    // response.status(status).json({
+    //   statusCode: status,
+    //   timestamp: new Date().toISOString(),
+    //   path: request.url,
+    //   message: exception.message,
+    // });
+    response.sendStatus(status);
   }
 }

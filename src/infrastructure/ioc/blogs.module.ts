@@ -10,6 +10,9 @@ import { QueryBlogsRepository } from '../database/repositories/blogs/query-blogs
 import { UpdateBlogAction } from '../../application/actions/blogs/update-blog.action';
 import { DeleteBlogByIdAction } from '../../application/actions/blogs/delete-blogById.action';
 import { GetAllBlogsAction } from '../../application/actions/blogs/get-all-blogs.action';
+import { PostsModule } from './posts.module';
+import { Post, PostSchema } from '../../domain/posts/entities/post.entity';
+import { GetPostByBlogIdAction } from '../../application/actions/blogs/getPostByBlogId.action';
 
 @Module({
   imports: [
@@ -19,7 +22,13 @@ import { GetAllBlogsAction } from '../../application/actions/blogs/get-all-blogs
         schema: BlogSchema,
         collection: MongoCollections.BLOGS,
       },
+      {
+        name: Post.name,
+        schema: PostSchema,
+        collection: MongoCollections.POSTS,
+      },
     ]),
+    PostsModule,
   ],
   controllers: [BlogsController],
   providers: [
@@ -30,6 +39,7 @@ import { GetAllBlogsAction } from '../../application/actions/blogs/get-all-blogs
     UpdateBlogAction,
     DeleteBlogByIdAction,
     GetAllBlogsAction,
+    GetPostByBlogIdAction,
   ],
   exports: [QueryBlogsRepository],
 })

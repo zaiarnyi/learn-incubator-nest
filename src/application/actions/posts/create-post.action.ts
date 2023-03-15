@@ -1,24 +1,25 @@
 import { CreatePostDto } from '../../../domain/posts/dto/create-post.dto';
 import { Inject, Logger, NotFoundException } from '@nestjs/common';
-import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 import { Post } from '../../../domain/posts/entities/post.entity';
 import { MainPostRepository } from '../../../infrastructure/database/repositories/posts/main-post.repository';
 import { plainToClass } from 'class-transformer';
 import { GetPost } from '../../../presentation/responses/posts/get-all-posts.response';
+import { QueryPostRepository } from '../../../infrastructure/database/repositories/posts/query-post.repository';
 
 export class CreatePostAction {
   logger = new Logger(CreatePostAction.name);
 
   constructor(
-    @Inject(QueryBlogsRepository)
-    private readonly queryBlogRepository: QueryBlogsRepository,
+    @Inject(QueryPostRepository)
+    private readonly queryPostRepository: QueryPostRepository,
+
     @Inject(MainPostRepository)
     private readonly mainRepository: MainPostRepository,
   ) {}
 
   private async getBlogById(id: string) {
-    return this.queryBlogRepository
-      .getBlogById(id)
+    return this.queryPostRepository
+      .getPostByBlogId(id)
       .then((res) => {
         if (!res) {
           this.logger.warn(`Not found blog with ID: ${id}`);

@@ -8,6 +8,8 @@ import { BlogsModule } from './infrastructure/ioc/blogs.module';
 import { CommentsModule } from './infrastructure/ioc/comments.module';
 import { TestController } from './presentation/controllers/test.controller';
 import { CacheService } from './infrastructure/cache';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './infrastructure/rest/http-exception.filter';
 
 @Module({
   imports: [
@@ -26,6 +28,11 @@ import { CacheService } from './infrastructure/cache';
     CommentsModule,
   ],
   controllers: [TestController],
-  providers: [],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+  ],
 })
 export class AppModule {}
