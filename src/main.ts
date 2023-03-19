@@ -12,7 +12,6 @@ async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule);
     const configService = app.get(ConfigService);
-    Logger.warn(JSON.stringify(configService, null, 2));
     const PORT = configService.get('PORT', '3005');
 
     app.enableCors();
