@@ -14,6 +14,7 @@ async function bootstrap() {
     const configService = app.get(ConfigService);
     const PORT = configService.get('PORT', '3005');
 
+    app.enableCors();
     app.use(helmet());
     app.use(compression());
     app.use(bodyParser.json({ limit: '50mb' }));
