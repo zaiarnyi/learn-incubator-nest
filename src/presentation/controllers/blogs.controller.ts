@@ -29,7 +29,7 @@ export class BlogsController {
     return this.getBlogsService.execute(query);
   }
 
-  @Get(':id/posts')
+  @Get('/:id/posts')
   async getPostByBlogId(@Param('id') id: string, @Query() query: GetBlogsRequest): Promise<GetPostByBlogIdResponse> {
     return this.getPostByBlogIdService.execute(id, query);
   }
