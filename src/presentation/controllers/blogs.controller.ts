@@ -25,15 +25,12 @@ export class BlogsController {
     private readonly getPostByBlogIdService: GetPostByBlogIdAction,
   ) {}
   @Get()
-  async getAllBlogs(@Query() query: GetBlogsRequestWithSearch): Promise<GetAllBlogsResponse | any> {
+  async getAllBlogs(@Query() query: GetBlogsRequestWithSearch): Promise<GetAllBlogsResponse> {
     return this.getBlogsService.execute(query);
   }
 
   @Get(':id/posts')
-  async getPostByBlogId(
-    @Param('id') id: string,
-    @Query() query: GetBlogsRequest,
-  ): Promise<GetPostByBlogIdResponse | any> {
+  async getPostByBlogId(@Param('id') id: string, @Query() query: GetBlogsRequest): Promise<GetPostByBlogIdResponse> {
     return this.getPostByBlogIdService.execute(id, query);
   }
 

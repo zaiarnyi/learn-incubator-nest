@@ -30,10 +30,14 @@ export class QueryBlogsRepository {
     return this.blogModel.findById(id);
   }
 
-  async getCountBlogs(filter: string) {
-    return this.blogModel.countDocuments({
-      name: { $regex: new RegExp(filter, 'gi') },
-    });
+  async getCountBlogs(filter?: string) {
+    let filterParam = {};
+    if (filter) {
+      filterParam = {
+        name: { $regex: new RegExp(filter, 'gi') },
+      };
+    }
+    return this.blogModel.countDocuments(filterParam);
   }
 
   async getPostByBlogId(
