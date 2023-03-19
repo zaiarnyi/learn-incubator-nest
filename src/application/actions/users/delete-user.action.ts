@@ -11,7 +11,7 @@ export class DeleteUserAction {
       .deleteUserById(id)
       .then((res) => {
         if (!res) {
-          this.logger.error(`Error deleting user with ID - ${id}`);
+          this.logger.warn(`Not found user with ID - ${id}`);
           throw new NotFoundException('If specified user is not exists');
         }
       })
