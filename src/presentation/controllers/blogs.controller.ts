@@ -21,7 +21,7 @@ export class BlogsController {
     private readonly getByIdService: GetBlogByIdAction,
     private readonly updateService: UpdateBlogAction,
     private readonly deleteService: DeleteBlogByIdAction,
-    private readonly createService: CreatePostAction,
+    private readonly createPostService: CreatePostAction,
     private readonly getPostByBlogIdService: GetPostByBlogIdAction,
   ) {}
   @Get()
@@ -46,7 +46,7 @@ export class BlogsController {
 
   @Post('/:id/posts')
   async createPostByBlogId(@Param('id') id: string, @Body() body: CreatePostByBlogIdRequest) {
-    return this.createService.execute({ ...body, blogId: id });
+    return this.createPostService.execute({ ...body, blogId: id });
   }
 
   @Put('/:id')

@@ -30,6 +30,10 @@ export class QueryBlogsRepository {
     return this.blogModel.findById(id);
   }
 
+  async getPostsCount(): Promise<number> {
+    return this.blogModel.count();
+  }
+
   async getCountBlogs(filter?: string) {
     let filterParam = {};
     if (filter) {
