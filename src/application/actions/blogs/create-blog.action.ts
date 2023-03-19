@@ -18,7 +18,6 @@ export class CreateBlogAction {
     blog.websiteUrl = payload.websiteUrl;
 
     const createdBlog = await this.mainRepository.createBlog(blog);
-
     return plainToClass(CreateBlogResponse, createdBlog);
   }
 }

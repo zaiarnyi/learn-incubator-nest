@@ -15,7 +15,9 @@ export class GetBlogByIdAction {
       this.logger.error(`I can't find the blog. ID: ${id}`);
       throw new NotFoundException('Not Found');
     });
-
+    if (!findBlog) {
+      throw new NotFoundException();
+    }
     return plainToClass(CreateBlogResponse, findBlog);
   }
 }

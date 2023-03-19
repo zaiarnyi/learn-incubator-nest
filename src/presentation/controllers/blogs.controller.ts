@@ -37,28 +37,28 @@ export class BlogsController {
     return this.getPostByBlogIdService.execute(id, query);
   }
 
-  @Get(':id')
+  @Get('/:id')
   async getBlogById(@Param('id') id: string): Promise<CreateBlogResponse> {
     return this.getByIdService.execute(id);
   }
 
   @Post()
-  async createPost(@Body() body: CreatePostRequest): Promise<CreateBlogResponse> {
+  async createBlog(@Body() body: CreatePostRequest): Promise<CreateBlogResponse> {
     return this.createBlogService.execute(body);
   }
 
-  @Post(':id/posts')
+  @Post('/:id/posts')
   async createPostByBlogId(@Param('id') id: string, @Body() body: CreatePostByBlogIdRequest) {
     return this.createService.execute({ ...body, blogId: id });
   }
 
-  @Put(':id')
+  @Put('/:id')
   @HttpCode(204)
   async updateBlogById(@Param('id') id: string, @Body() body: CreatePostRequest) {
     return this.updateService.execute(id, body);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   @HttpCode(204)
   async deleteBlogById(@Param('id') id: string) {
     return this.deleteService.execute(id);
