@@ -38,7 +38,7 @@ export class GetPostsAction {
       pagesCount,
       page: pageNumber,
       pageSize,
-      totalCount: posts.length,
+      totalCount,
       items: posts,
     });
   }

@@ -53,7 +53,7 @@ export class GetPostByBlogIdAction {
       pagesCount,
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount: postsRaw.length,
+      totalCount,
       items: post,
     };
   }

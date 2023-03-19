@@ -44,7 +44,7 @@ export class GetCommentsByPostIdAction {
       pagesCount,
       page: pageNumber,
       pageSize,
-      totalCount: commentsRaw.length,
+      totalCount,
       items: comments,
     };
   }
