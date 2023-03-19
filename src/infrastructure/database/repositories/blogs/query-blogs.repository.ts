@@ -31,7 +31,7 @@ export class QueryBlogsRepository {
   }
 
   async getPostsCount(): Promise<number> {
-    return this.blogModel.count();
+    return this.postModel.count();
   }
 
   async getCountBlogs(filter?: string) {
