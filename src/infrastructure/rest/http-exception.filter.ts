@@ -10,10 +10,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
 
-    if (status === 422) {
-      this.logger.error(`${exception.message}. ${JSON.stringify(request.body, null, 2)}`);
-    }
-
     // response.status(status).json({
     //   statusCode: status,
     //   timestamp: new Date().toISOString(),
