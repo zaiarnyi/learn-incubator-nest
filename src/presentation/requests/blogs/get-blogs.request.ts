@@ -16,7 +16,7 @@ export class GetBlogsRequest {
 
   @IsString()
   @IsOptional()
-  @IsEnum(BlogSortByEnum)
+  // @IsEnum(BlogSortByEnum)
   sortBy = BlogSortByEnum.CREATED_AT;
 
   @IsString()
