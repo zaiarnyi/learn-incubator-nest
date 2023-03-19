@@ -24,6 +24,7 @@ export class GetPostsAction {
     const posts = postsRaw.map((post) => {
       return plainToClass(GetPost, {
         ...post,
+        id: post._id.toString(),
         extendedLikesInfo: {
           likesCount: 0,
           dislikesCount: 0,

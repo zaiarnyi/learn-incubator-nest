@@ -19,9 +19,9 @@ export class QueryPostRepository {
   async getPost(limit: number, offset: number, sortBy: string, direction: string): Promise<PostDocument[]> {
     return this.postModel
       .find()
+      .sort({ [sortBy]: direction as PostSortDirection })
       .skip(offset)
       .limit(limit)
-      .sort({ [sortBy]: direction as PostSortDirection })
       .lean();
   }
   async getPostByBlogId(id: string): Promise<BlogDocument> {

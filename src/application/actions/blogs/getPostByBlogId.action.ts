@@ -35,6 +35,7 @@ export class GetPostByBlogIdAction {
     const post = postsRaw.map((item) => {
       return plainToClass(PostByBlogItem, {
         ...item,
+        id: item._id.toString(),
         extendedLikesInfo: {
           likesCount: 0,
           dislikesCount: 0,
@@ -43,7 +44,6 @@ export class GetPostByBlogIdAction {
         },
       });
     });
-    console.log(post, 'post');
 
     return {
       pagesCount,

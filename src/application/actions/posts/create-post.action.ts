@@ -44,6 +44,9 @@ export class CreatePostAction {
   }
   public async execute(payload: CreatePostDto): Promise<GetPost> {
     const blog = await this.getBlogById(payload.blogId);
+    if (!blog) {
+      throw new NotFoundException();
+    }
     const newPost = new Post();
     newPost.blogName = blog.name;
     newPost.blogId = payload.blogId;
@@ -52,10 +55,11 @@ export class CreatePostAction {
     newPost.shortDescription = payload.shortDescription;
 
     const createdPost = await this.mainRepository.createPost(newPost);
+    console.log(createdPost, 'createdPost');
     return {
       ...plainToClass(GetPost, {
         ...createdPost.toObject(),
-        _id: createdPost._id.toString(),
+        id: createdPost._id.toString(),
       }),
       extendedLikesInfo: this.getLikesInfo(),
     };

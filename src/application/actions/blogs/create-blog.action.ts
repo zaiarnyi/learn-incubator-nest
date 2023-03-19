@@ -21,7 +21,7 @@ export class CreateBlogAction {
 
     return plainToClass(CreateBlogResponse, {
       ...createdBlog.toObject(),
-      _id: createdBlog._id.toString(),
+      id: createdBlog._id.toString(),
     });
   }
 }

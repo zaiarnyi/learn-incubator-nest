@@ -27,7 +27,7 @@ export class GetAllUsersAction {
       page: dto.pageNumber,
       pageSize: 0,
       totalCount,
-      items: users.map((item) => plainToClass(GetUser, { ...item })),
+      items: users.map((item) => plainToClass(GetUser, { ...item.toObject(), id: item._id.toString() })),
     };
   }
 }

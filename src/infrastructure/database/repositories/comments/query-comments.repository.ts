@@ -19,9 +19,9 @@ export class QueryCommentsRepository {
   ): Promise<CommentDocument[]> {
     return this.commentModel
       .find({ postId })
+      .sort({ [sortBy]: direction as 'asc' | 'desc' })
       .skip(offset)
       .limit(limit)
-      .sort({ [sortBy]: direction as 'asc' | 'desc' })
       .lean();
   }
 

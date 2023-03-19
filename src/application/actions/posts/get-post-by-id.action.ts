@@ -26,6 +26,7 @@ export class GetPostByIdAction {
 
     return plainToClass(GetPost, {
       ...postById.toObject(),
+      id,
       extendedLikesInfo: {
         likesCount: 0,
         dislikesCount: 0,

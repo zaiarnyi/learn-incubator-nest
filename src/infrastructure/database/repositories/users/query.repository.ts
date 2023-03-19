@@ -7,14 +7,14 @@ import { SortDirection } from '../../../../domain/users/enums/sort.enum';
 @Injectable()
 export class UserQueryRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
-  getAllUsers(
+  async getAllUsers(
     searchLogin: string,
     searchEmail: string,
     skip: number,
     limit: number,
     sortBy: string,
     direction: string,
-  ) {
+  ): Promise<UserDocument[]> {
     return this.userModel
       .find()
       .or([{ login: { $regex: new RegExp(searchLogin, 'gi') } }, { email: { $regex: new RegExp(searchEmail, 'gi') } }])

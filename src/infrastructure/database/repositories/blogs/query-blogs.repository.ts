@@ -12,12 +12,18 @@ export class QueryBlogsRepository {
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
   ) {}
 
-  async getBlogs(filter: string, skip: number, limit: number, sortBy: string, direction: string) {
+  async getBlogs(
+    filter: string,
+    skip: number,
+    limit: number,
+    sortBy: string,
+    direction: string,
+  ): Promise<BlogDocument[]> {
     return this.blogModel
       .find({ name: { $regex: new RegExp(filter, 'gi') } })
+      .sort({ [sortBy]: direction as BlogSortDirection })
       .skip(skip)
       .limit(limit)
-      .sort({ [sortBy]: direction as BlogSortDirection })
       .lean();
   }
   async getBlogById(id: string): Promise<BlogDocument> {
@@ -30,12 +36,18 @@ export class QueryBlogsRepository {
     });
   }
 
-  async getPostByBlogId(id: string, skip: number, limit: number, sortBy: string, direction: string) {
+  async getPostByBlogId(
+    id: string,
+    skip: number,
+    limit: number,
+    sortBy: string,
+    direction: string,
+  ): Promise<PostDocument[]> {
     return this.postModel
       .find({ blogId: id })
+      .sort({ [sortBy]: direction as BlogSortDirection })
       .skip(skip)
       .limit(limit)
-      .sort({ [sortBy]: direction as BlogSortDirection })
       .lean();
   }
 }

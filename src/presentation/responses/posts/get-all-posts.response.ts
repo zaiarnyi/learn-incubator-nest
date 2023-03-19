@@ -22,8 +22,6 @@ class LikesInfo extends ExtendedLikesInfo {
 
 @Exclude()
 export class GetPost {
-  @Expose({ name: '_id' })
-  @Transform((value) => (value?.value || value?.obj?.id)?.toString())
   id: string;
 
   @Expose()

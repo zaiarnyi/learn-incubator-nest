@@ -20,7 +20,7 @@ export class GetBlogByIdAction {
     }
     return plainToClass(CreateBlogResponse, {
       ...findBlog.toObject(),
-      _id: id,
+      id,
     });
   }
 }

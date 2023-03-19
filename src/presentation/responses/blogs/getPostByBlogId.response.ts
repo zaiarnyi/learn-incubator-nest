@@ -1,5 +1,5 @@
 import { MetaResponse } from '../meta.response';
-import { Exclude, Expose, Transform } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { ExtendedLikesInfo } from '../extendedLikesInfo.response';
 
 @Exclude()
@@ -22,8 +22,7 @@ class ExtendedLikesInfoPost extends ExtendedLikesInfo {
 
 @Exclude()
 export class PostByBlogItem {
-  @Expose({ name: '_id' })
-  @Transform(({ value }) => value?.toString())
+  @Expose()
   id: string;
 
   @Expose()
