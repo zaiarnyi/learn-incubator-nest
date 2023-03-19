@@ -1,10 +1,4 @@
-import {
-  IsString,
-  Matches,
-  MaxLength,
-  MinLength,
-  validateOrReject,
-} from 'class-validator';
+import { IsString, Matches, MaxLength, MinLength, validateOrReject } from 'class-validator';
 import { ConflictException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { Exclude, Expose } from 'class-transformer';

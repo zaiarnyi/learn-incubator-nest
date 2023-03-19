@@ -1,10 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import {
-  User,
-  UserDocument,
-} from '../../../../domain/users/entities/user.entity';
+import { User, UserDocument } from '../../../../domain/users/entities/user.entity';
+import { SortDirection } from '../../../../domain/users/enums/sort.enum';
 
 @Injectable()
 export class UserQueryRepository {
@@ -14,13 +12,13 @@ export class UserQueryRepository {
     searchEmail: string,
     skip: number,
     limit: number,
+    sortBy: string,
+    direction: string,
   ) {
     return this.userModel
       .find()
-      .or([
-        { login: { $regex: new RegExp(searchLogin, 'gi') } },
-        { email: { $regex: new RegExp(searchEmail, 'gi') } },
-      ])
+      .or([{ login: { $regex: new RegExp(searchLogin, 'gi') } }, { email: { $regex: new RegExp(searchEmail, 'gi') } }])
+      .sort({ [sortBy]: direction as SortDirection })
       .skip(skip)
       .limit(limit)
       .lean();

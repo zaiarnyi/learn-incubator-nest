@@ -1,0 +1,52 @@
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
+import { GetPostByBlogIdDto } from '../../../domain/blogs/dto/getPostByBlogId.dto';
+import {
+  GetPostByBlogIdResponse,
+  PostByBlogItem,
+} from '../../../presentation/responses/blogs/getPostByBlogId.response';
+import { validateOrReject } from 'class-validator';
+import { plainToClass } from 'class-transformer';
+import { CreateBlogResponse } from '../../../presentation/responses/blogs/create-blog.response';
+
+@Injectable()
+export class GetPostByBlogIdAction {
+  logger = new Logger(GetPostByBlogIdAction.name);
+  constructor(@Inject(QueryBlogsRepository) private readonly queryRepository: QueryBlogsRepository) {}
+
+  public async execute(id: string, query: GetPostByBlogIdDto): Promise<GetPostByBlogIdResponse | any> {
+    await validateOrReject(query);
+
+    const blog = await this.queryRepository.getBlogById(id).catch(() => {
+      this.logger.warn(`Not Found Blog: ${id}`);
+      throw new NotFoundException();
+    });
+    const { pageSize, pageNumber, sortBy, sortDirection } = query;
+    const totalCount = await this.queryRepository.getCountBlogs('');
+    const skip = (pageNumber - 1) * pageSize;
+    const pagesCount = Math.ceil(totalCount / pageSize);
+
+    const postsRaw = await this.queryRepository.getPostByBlogId(id, skip, pageSize, sortBy, sortDirection);
+    console.log(postsRaw, 'postsRaw');
+    const post = postsRaw.map((item) => {
+      return plainToClass(PostByBlogItem, {
+        ...item,
+        extendedLikesInfo: {
+          likesCount: 0,
+          dislikesCount: 0,
+          myStatus: 'None',
+          newestLikes: [],
+        },
+      });
+    });
+    console.log(post, 'post');
+
+    return {
+      pagesCount,
+      page: query.pageNumber,
+      pageSize: query.pageSize,
+      totalCount: postsRaw.length,
+      items: post,
+    };
+  }
+}

@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  CacheOptionsFactory,
-  CacheModuleOptions,
-} from '@nestjs/common';
+import { Injectable, CacheOptionsFactory, CacheModuleOptions } from '@nestjs/common';
 
 @Injectable()
 export class CacheService implements CacheOptionsFactory {

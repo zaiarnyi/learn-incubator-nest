@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { Logger } from '@nestjs/common';
+import { HttpStatus, Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
 import * as bodyParser from 'body-parser';
@@ -28,11 +28,17 @@ async function bootstrap() {
       rateLimit({
         windowMs: 1000 * 60 * 60,
         max: 1000, // 1000 requests per windowMs
-        message:
-          '⚠️ Too many request created from this IP, please try again after an hour',
+        message: '⚠️ Too many request created from this IP, please try again after an hour',
       }),
     );
-    // app.useGlobalFilters(new HttpExceptionFilter());
+    app.useGlobalFilters(new HttpExceptionFilter());
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        transformOptions: { enableImplicitConversion: true },
+      }),
+    );
 
     await app.listen(PORT);
     Logger.log(`Server is listening on port ${PORT}`, 'Bootstrap');

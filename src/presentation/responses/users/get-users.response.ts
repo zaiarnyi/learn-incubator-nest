@@ -1,4 +1,5 @@
 import { Exclude, Expose, Transform } from 'class-transformer';
+import { MetaResponse } from '../meta.response';
 
 @Exclude()
 export class GetUser {
@@ -17,19 +18,7 @@ export class GetUser {
 }
 
 @Exclude()
-export class GetUsersResponse {
-  @Expose()
-  pagesCount: number;
-
-  @Expose()
-  page: number;
-
-  @Expose()
-  pageSize: number;
-
-  @Expose()
-  totalCount: number;
-
+export class GetUsersResponse extends MetaResponse {
   @Expose()
   items: GetUser[];
 }

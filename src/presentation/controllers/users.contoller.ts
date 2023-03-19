@@ -1,17 +1,4 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  Inject,
-  Param,
-  ParseIntPipe,
-  Post,
-  Query,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Query } from '@nestjs/common';
 import { GetUsersRequest } from '../requests/users/get-users.request';
 import { GetUsersResponse } from '../responses/users/get-users.response';
 import { GetAllUsersAction } from '../../application/actions/users/get-all-users.action';
@@ -28,16 +15,13 @@ export class UsersController {
     private readonly createUserService: CreateUserAction,
     private readonly deleteUserService: DeleteUserAction,
   ) {}
-  @UsePipes(new ValidationPipe({ transform: true }))
   @Get()
   async getUsers(@Query() query: GetUsersRequest): Promise<GetUsersResponse> {
     return this.getUsersService.execute(query);
   }
 
   @Post()
-  async createUser(
-    @Body() body: CreateUserRequest,
-  ): Promise<CreateUserResponse> {
+  async createUser(@Body() body: CreateUserRequest): Promise<CreateUserResponse> {
     const createdUser = await this.createUserService.execute(body);
     return plainToClass(CreateUserResponse, createdUser);
   }

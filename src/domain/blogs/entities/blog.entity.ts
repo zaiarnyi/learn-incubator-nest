@@ -3,7 +3,17 @@ import { HydratedDocument } from 'mongoose';
 
 export type BlogDocument = HydratedDocument<Blog>;
 
-@Schema()
+@Schema({
+  timestamps: true,
+  validateBeforeSave: true,
+  versionKey: false,
+  toJSON: {
+    transform: (doc, ret) => {
+      ret.id = ret._id;
+      delete ret._id;
+    },
+  },
+})
 export class Blog {
   @Prop({ type: String, isRequired: true })
   name: string;
