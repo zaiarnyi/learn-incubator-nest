@@ -22,6 +22,7 @@ class LikesInfo extends ExtendedLikesInfo {
 
 @Exclude()
 export class GetPost {
+  @Expose()
   id: string;
 
   @Expose()

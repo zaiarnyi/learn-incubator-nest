@@ -3,6 +3,7 @@ import { MetaResponse } from '../meta.response';
 
 @Exclude()
 export class GetUser {
+  @Expose()
   id: string;
 
   @Expose()
