@@ -3,6 +3,9 @@ import { CommentsController } from '../../presentation/controllers/comments.cont
 import { MongooseModule } from '@nestjs/mongoose';
 import { Comment, CommentSchema } from '../../domain/comments/entities/comment.entity';
 import { MongoCollections } from '../database/mongo.collections';
+import { QueryCommentsRepository } from '../database/repositories/comments/query-comments.repository';
+import { GetCommentByIdAction } from '../../application/actions/comments/getCommentById.action';
+import { MainCommentsRepository } from '../database/repositories/comments/main-comments.repository';
 
 @Module({
   imports: [
@@ -15,7 +18,7 @@ import { MongoCollections } from '../database/mongo.collections';
     ]),
   ],
   controllers: [CommentsController],
-  providers: [],
-  exports: [],
+  providers: [QueryCommentsRepository, GetCommentByIdAction, MainCommentsRepository],
+  exports: [MainCommentsRepository],
 })
 export class CommentsModule {}

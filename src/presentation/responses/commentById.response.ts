@@ -1,6 +1,5 @@
-import { MetaResponse } from '../meta.response';
 import { Exclude, Expose } from 'class-transformer';
-import { ExtendedLikesInfo } from '../extendedLikesInfo.response';
+import { ExtendedLikesInfo } from './extendedLikesInfo.response';
 
 @Exclude()
 class CommentatorInfo {
@@ -12,7 +11,7 @@ class CommentatorInfo {
 }
 
 @Exclude()
-export class PostCommentInfo {
+export class CommentResponse {
   @Expose()
   id: string;
 
@@ -27,10 +26,4 @@ export class PostCommentInfo {
 
   @Expose()
   likesInfo: ExtendedLikesInfo;
-}
-
-@Exclude()
-export class GetCommentsByPostIdResponse extends MetaResponse {
-  @Expose()
-  items: PostCommentInfo[];
 }

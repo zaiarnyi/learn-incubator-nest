@@ -41,6 +41,6 @@ import { GetPostByBlogIdAction } from '../../application/actions/blogs/getPostBy
     GetAllBlogsAction,
     GetPostByBlogIdAction,
   ],
-  exports: [QueryBlogsRepository],
+  exports: [QueryBlogsRepository, MainBlogsRepository],
 })
 export class BlogsModule {}

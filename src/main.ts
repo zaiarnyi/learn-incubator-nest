@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import { HttpStatus, Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
 import * as bodyParser from 'body-parser';
@@ -35,8 +35,8 @@ async function bootstrap() {
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
-        // errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-        // transformOptions: { enableImplicitConversion: true },
+        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        transformOptions: { enableImplicitConversion: true },
       }),
     );
 

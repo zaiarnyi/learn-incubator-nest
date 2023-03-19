@@ -2,12 +2,33 @@ import { Injectable } from '@nestjs/common';
 import { Blog, BlogDocument } from '../../../../domain/blogs/entities/blog.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { Post, PostDocument } from '../../../../domain/posts/entities/post.entity';
+import { PostSortDirection } from '../../../../domain/posts/enums/sort.enum';
+import { CommentDocument, Comment } from '../../../../domain/comments/entities/comment.entity';
 
 @Injectable()
 export class QueryPostRepository {
-  constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
-
+  constructor(
+    @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
+    @InjectModel(Post.name) private postModel: Model<PostDocument>,
+    @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
+  ) {}
+  async getCountPosts(): Promise<number> {
+    return this.postModel.find().count();
+  }
+  async getPost(limit: number, offset: number, sortBy: string, direction: string): Promise<PostDocument[]> {
+    return this.postModel
+      .find()
+      .skip(offset)
+      .limit(limit)
+      .sort({ [sortBy]: direction as PostSortDirection })
+      .lean();
+  }
   async getPostByBlogId(id: string): Promise<BlogDocument> {
     return this.blogModel.findById(id);
+  }
+
+  async getPostById(id: string): Promise<PostDocument> {
+    return this.postModel.findById(id);
   }
 }

@@ -12,4 +12,8 @@ export class UserMainRepository {
   async deleteUserById(id: string): Promise<UserDocument> {
     return this.userModel.findByIdAndDelete(id);
   }
+
+  async deleteAllUsers() {
+    return this.userModel.deleteMany();
+  }
 }

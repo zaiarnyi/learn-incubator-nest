@@ -13,6 +13,9 @@ export class Comment {
 
   @Prop({ type: String, isRequired: true })
   userLogin: string;
+
+  @Prop({ type: String, isRequired: true })
+  postId: string;
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);

@@ -5,6 +5,7 @@ import { MainPostRepository } from '../../../infrastructure/database/repositorie
 import { plainToClass } from 'class-transformer';
 import { GetPost } from '../../../presentation/responses/posts/get-all-posts.response';
 import { QueryPostRepository } from '../../../infrastructure/database/repositories/posts/query-post.repository';
+import { StatusCommentEnum } from '../../../domain/posts/enums/status-comment.enum';
 
 export class CreatePostAction {
   logger = new Logger(CreatePostAction.name);
@@ -37,11 +38,11 @@ export class CreatePostAction {
     return {
       likesCount: 0,
       dislikesCount: 0,
-      myStatus: 'None',
+      myStatus: StatusCommentEnum.None,
       newestLikes: [],
     };
   }
-  public async execute(payload: CreatePostDto) {
+  public async execute(payload: CreatePostDto): Promise<GetPost> {
     const blog = await this.getBlogById(payload.blogId);
     const newPost = new Post();
     newPost.blogName = blog.name;
