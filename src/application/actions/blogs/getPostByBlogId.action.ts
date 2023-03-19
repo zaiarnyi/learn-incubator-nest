@@ -13,8 +13,7 @@ import { CreateBlogResponse } from '../../../presentation/responses/blogs/create
 export class GetPostByBlogIdAction {
   logger = new Logger(GetPostByBlogIdAction.name);
   constructor(@Inject(QueryBlogsRepository) private readonly queryRepository: QueryBlogsRepository) {}
-
-  public async execute(id: string, query: GetPostByBlogIdDto): Promise<GetPostByBlogIdResponse | any> {
+  private async validate(id: string, query: GetPostByBlogIdDto): Promise<void> {
     await validateOrReject(query);
 
     const blog = await this.queryRepository.getBlogById(id).catch((e) => {
@@ -25,6 +24,11 @@ export class GetPostByBlogIdAction {
       this.logger.warn(`Not Found Blog: ${id}`);
       throw new NotFoundException();
     }
+  }
+
+  public async execute(id: string, query: GetPostByBlogIdDto): Promise<GetPostByBlogIdResponse> {
+    await this.validate(id, query);
+
     const { pageSize, pageNumber, sortBy, sortDirection } = query;
     const totalCount = await this.queryRepository.getCountBlogs('');
     const skip = (pageNumber - 1) * pageSize;
