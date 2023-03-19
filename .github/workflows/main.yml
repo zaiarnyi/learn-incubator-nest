@@ -48,7 +48,7 @@ jobs:
         run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
       - name: Deploy Project Artifacts to Vercel (Feature)
         if: startsWith(github.ref, 'refs/heads/feature/')
-        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} -e BASIC_LOGIN=${{secrets.BASIC_LOGIN}} -e BASIC_PASSWORD=${{secrets.BASIC_PASSWORD}} -e PORT=5000 -e MONGO_DB_NAME=${{secrets.MONGO_DB_NAME}} -e MONGO_DB_URL=${{secrets.MONGO_DB_URL}}
+        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} -e PORT=5000 -e MONGO_DB_NAME=${{secrets.MONGO_DB_NAME}} -e MONGO_DB_URL=${{secrets.MONGO_DB_URL}}
       - name: Deploy Project Artifacts to Vercel (Main)
         if: startsWith(github.ref, 'refs/heads/main')
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} -e BASIC_LOGIN=${{secrets.BASIC_LOGIN}} -e BASIC_PASSWORD=${{secrets.BASIC_PASSWORD}} -e PORT=5000 -e MONGO_DB_NAME=${{secrets.MONGO_DB_NAME}} -e MONGO_DB_URL=${{secrets.MONGO_DB_URL}}
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} -e PORT=5000 -e MONGO_DB_NAME=${{secrets.MONGO_DB_NAME}} -e MONGO_DB_URL=${{secrets.MONGO_DB_URL}}
