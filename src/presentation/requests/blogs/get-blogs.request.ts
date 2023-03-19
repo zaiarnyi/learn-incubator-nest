@@ -10,7 +10,7 @@ export class GetBlogsRequest {
 
   @Type(() => Number)
   @IsInt()
-  // @Max(100)
+  @Max(100)
   @IsOptional()
   pageSize = 10;
 
