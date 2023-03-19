@@ -30,7 +30,7 @@ export class GetAllBlogsAction {
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount: blogs.length,
-      items: blogs.map((item) => plainToClass(CreateBlogResponse, { ...item.toObject(), id: item._id.toString() })),
+      items: blogs.map((item) => plainToClass(CreateBlogResponse, { ...item, id: item._id.toString() })),
     };
   }
 }
