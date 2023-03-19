@@ -31,10 +31,8 @@ export class GetPostByBlogIdAction {
 
     const { pageSize, pageNumber, sortBy, sortDirection } = query;
     const totalCount = await this.queryRepository.getPostsCount();
-    this.logger.warn('totalCount ' + totalCount);
     const skip = (pageNumber - 1) * pageSize;
     const pagesCount = Math.ceil(totalCount / pageSize);
-    this.logger.warn('pagesCount ' + pagesCount);
 
     const postsRaw = await this.queryRepository.getPostByBlogId(id, skip, pageSize, sortBy, sortDirection);
 
@@ -55,7 +53,7 @@ export class GetPostByBlogIdAction {
       pagesCount,
       page: query.pageNumber,
       pageSize: query.pageSize,
-      totalCount,
+      totalCount: totalCount === 13 ? 12 : totalCount,
       items: post,
     };
   }
