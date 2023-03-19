@@ -17,17 +17,21 @@ export class GetPostByBlogIdAction {
   public async execute(id: string, query: GetPostByBlogIdDto): Promise<GetPostByBlogIdResponse | any> {
     await validateOrReject(query);
 
-    const blog = await this.queryRepository.getBlogById(id).catch(() => {
-      this.logger.warn(`Not Found Blog: ${id}`);
+    const blog = await this.queryRepository.getBlogById(id).catch((e) => {
+      this.logger.warn(`Error when receiving a blog with id - ${id}. ${JSON.stringify(e, null, 2)}`);
       throw new NotFoundException();
     });
+    if (!blog) {
+      this.logger.warn(`Not Found Blog: ${id}`);
+      throw new NotFoundException();
+    }
     const { pageSize, pageNumber, sortBy, sortDirection } = query;
     const totalCount = await this.queryRepository.getCountBlogs('');
     const skip = (pageNumber - 1) * pageSize;
     const pagesCount = Math.ceil(totalCount / pageSize);
 
     const postsRaw = await this.queryRepository.getPostByBlogId(id, skip, pageSize, sortBy, sortDirection);
-    console.log(postsRaw, 'postsRaw');
+
     const post = postsRaw.map((item) => {
       return plainToClass(PostByBlogItem, {
         ...item,
