@@ -3,7 +3,7 @@ import { HttpStatus, Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
 import * as bodyParser from 'body-parser';
-import * as compression from 'compression';
+// import * as compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import { ConfigService } from '@nestjs/config';
 import { HttpExceptionFilter } from './infrastructure/rest/http-exception.filter';
@@ -17,7 +17,7 @@ async function bootstrap() {
 
     app.enableCors();
     app.use(helmet());
-    app.use(compression());
+    // app.use(compression());
     app.use(bodyParser.json({ limit: '50mb' }));
     app.use(
       bodyParser.urlencoded({
