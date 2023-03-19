@@ -1,0 +1,53 @@
+name: Vercel Deployment
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+on:
+  push:
+    branches:
+      - 'feature/**'
+      - main
+
+jobs:
+  Testing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.x'
+      - name: Install dependencies
+        run: npm install
+      - name: Run test
+        run: npm test
+        env:
+          BASIC_LOGIN: ${{secrets.BASIC_LOGIN}}
+          BASIC_PASSWORD: ${{secrets.BASIC_PASSWORD}}
+          MONGO_DB_URL: ${{secrets.MONGO_DB_URL}}
+          MONGO_DB_NAME: ${{secrets.MONGO_DB_NAME}}
+  Deploy:
+    needs: Testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull Vercel Environment Information (Feature)
+        if: startsWith(github.ref, 'refs/heads/feature/')
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Pull Vercel Environment Information (Main)
+        if: startsWith(github.ref, 'refs/heads/main')
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Project Artifacts (Feature)
+        if: startsWith(github.ref, 'refs/heads/feature/')
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Project Artifacts (Main)
+        if: startsWith(github.ref, 'refs/heads/main')
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Project Artifacts to Vercel (Feature)
+        if: startsWith(github.ref, 'refs/heads/feature/')
+        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} -e BASIC_LOGIN=${{secrets.BASIC_LOGIN}} -e BASIC_PASSWORD=${{secrets.BASIC_PASSWORD}} -e PORT=5000 -e MONGO_DB_NAME=${{secrets.MONGO_DB_NAME}} -e MONGO_DB_URL=${{secrets.MONGO_DB_URL}}
+      - name: Deploy Project Artifacts to Vercel (Main)
+        if: startsWith(github.ref, 'refs/heads/main')
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} -e BASIC_LOGIN=${{secrets.BASIC_LOGIN}} -e BASIC_PASSWORD=${{secrets.BASIC_PASSWORD}} -e PORT=5000 -e MONGO_DB_NAME=${{secrets.MONGO_DB_NAME}} -e MONGO_DB_URL=${{secrets.MONGO_DB_URL}}
