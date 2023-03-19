@@ -31,7 +31,7 @@ export class QueryBlogsRepository {
   }
 
   async getPostsCount(): Promise<number> {
-    return this.postModel.count();
+    return this.postModel.countDocuments();
   }
 
   async getCountBlogs(filter?: string) {
