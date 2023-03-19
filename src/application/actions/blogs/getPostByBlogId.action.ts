@@ -13,9 +13,7 @@ import { CreateBlogResponse } from '../../../presentation/responses/blogs/create
 export class GetPostByBlogIdAction {
   logger = new Logger(GetPostByBlogIdAction.name);
   constructor(@Inject(QueryBlogsRepository) private readonly queryRepository: QueryBlogsRepository) {}
-  private async validate(id: string, query: GetPostByBlogIdDto): Promise<void> {
-    await validateOrReject(query);
-
+  private async validate(id: string): Promise<void> {
     const blog = await this.queryRepository.getBlogById(id).catch((e) => {
       this.logger.warn(`Error when receiving a blog with id - ${id}. ${JSON.stringify(e, null, 2)}`);
       throw new NotFoundException();
@@ -27,7 +25,7 @@ export class GetPostByBlogIdAction {
   }
 
   public async execute(id: string, query: GetPostByBlogIdDto): Promise<GetPostByBlogIdResponse> {
-    await this.validate(id, query);
+    await this.validate(id);
 
     const { pageSize, pageNumber, sortBy, sortDirection } = query;
     const totalCount = await this.queryRepository.getPostsCount(id);
