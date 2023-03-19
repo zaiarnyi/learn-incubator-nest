@@ -53,10 +53,7 @@ export class CreatePostAction {
 
     const createdPost = await this.mainRepository.createPost(newPost);
     return {
-      ...plainToClass(GetPost, {
-        ...createdPost.toObject(),
-        _id: createdPost._id.toString(),
-      }),
+      ...plainToClass(GetPost, createdPost),
       extendedLikesInfo: this.getLikesInfo(),
     };
   }
