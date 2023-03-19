@@ -30,10 +30,7 @@ export class GetPostByBlogIdAction {
     await this.validate(id, query);
 
     const { pageSize, pageNumber, sortBy, sortDirection } = query;
-    let totalCount = await this.queryRepository.getPostsCount();
-    if (totalCount === 13) {
-      totalCount = 12;
-    }
+    const totalCount = await this.queryRepository.getPostsCount(id);
     const skip = (pageNumber - 1) * pageSize;
     const pagesCount = Math.ceil(totalCount / pageSize);
 

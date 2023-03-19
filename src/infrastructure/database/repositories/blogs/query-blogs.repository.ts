@@ -30,8 +30,8 @@ export class QueryBlogsRepository {
     return this.blogModel.findById(id);
   }
 
-  async getPostsCount(): Promise<number> {
-    return this.postModel.countDocuments();
+  async getPostsCount(blogId: string): Promise<number> {
+    return this.postModel.count({ blogId });
   }
 
   async getCountBlogs(filter?: string) {
