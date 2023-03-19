@@ -18,6 +18,9 @@ export class GetBlogByIdAction {
     if (!findBlog) {
       throw new NotFoundException();
     }
-    return plainToClass(CreateBlogResponse, findBlog);
+    return plainToClass(CreateBlogResponse, {
+      ...findBlog.toObject(),
+      _id: id,
+    });
   }
 }
