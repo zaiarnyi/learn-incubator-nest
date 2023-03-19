@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "name": "incubator",
+  "builds": [
+    {  "src": "dist/main.js", "use": "@vercel/node" }
+  ],
+  "routes": [
+    { "src": "/(.*)",
+      "dest": "dist/main.js",
+      "methods": [ "GET", "POST", "PUT", "PATCH", "DELETE" ]
+    }
+  ]
+}
