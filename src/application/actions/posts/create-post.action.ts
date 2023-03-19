@@ -58,18 +58,14 @@ export class CreatePostAction {
     newPost.content = payload.content;
     newPost.title = payload.title;
     newPost.shortDescription = payload.shortDescription;
-    try {
-      const createdPost = await this.mainRepository.createPost(newPost);
+    const createdPost = await this.mainRepository.createPost(newPost);
 
-      return {
-        ...plainToClass(GetPost, {
-          ...createdPost.toObject(),
-          id: createdPost._id.toString(),
-        }),
-        extendedLikesInfo: this.getLikesInfo(),
-      };
-    } catch (e) {
-      this.logger.error(`ERROR create Post. ${JSON.stringify(e, null, 2)}. Body: ${JSON.stringify(newPost, null, 2)}`);
-    }
+    return {
+      ...plainToClass(GetPost, {
+        ...createdPost.toObject(),
+        id: createdPost._id.toString(),
+      }),
+      extendedLikesInfo: this.getLikesInfo(),
+    };
   }
 }

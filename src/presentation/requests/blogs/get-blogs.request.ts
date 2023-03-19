@@ -10,14 +10,14 @@ export class GetBlogsRequest {
 
   @Type(() => Number)
   @IsInt()
-  @Max(100)
+  // @Max(100)
   @IsOptional()
   pageSize = 10;
 
   @IsString()
   @IsOptional()
   @IsEnum(BlogSortByEnum)
-  sortBy: BlogSortByEnum = BlogSortByEnum.CREATED_AT;
+  sortBy = BlogSortByEnum.CREATED_AT;
 
   @IsString()
   @IsOptional()
