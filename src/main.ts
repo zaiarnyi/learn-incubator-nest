@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { HttpStatus, Logger, ValidationPipe } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
 import * as bodyParser from 'body-parser';
@@ -36,8 +36,16 @@ async function bootstrap() {
     app.useGlobalPipes(
       new ValidationPipe({
         transform: true,
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        stopAtFirstError: true,
+        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
         transformOptions: { enableImplicitConversion: true },
+        exceptionFactory: (errors) => {
+          const err = errors.map((item) => ({
+            field: item.property,
+            message: Object.values(item.constraints)[0],
+          }));
+          throw new BadRequestException(JSON.stringify(err));
+        },
       }),
     );
 

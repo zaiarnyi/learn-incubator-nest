@@ -16,4 +16,16 @@ export class UserMainRepository {
   async deleteAllUsers() {
     return this.userModel.deleteMany();
   }
+
+  async changeStatusSendEmail(userId: string, flag: boolean) {
+    return this.userModel.findByIdAndUpdate(userId, { isSendEmail: flag });
+  }
+
+  async changeStatusConfirm(userId: string, status: boolean): Promise<UserDocument> {
+    return this.userModel.findOneAndUpdate({ _id: userId }, { isConfirm: status });
+  }
+
+  async updatePasswordUser(userId: string, hash: string): Promise<UserDocument> {
+    return this.userModel.findOneAndUpdate({ _id: userId }, { passwordHash: hash });
+  }
 }

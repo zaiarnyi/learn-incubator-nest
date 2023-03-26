@@ -32,4 +32,16 @@ export class UserQueryRepository {
         { email: { $regex: new RegExp(searchEmailTerm, 'gi') } },
       ]);
   }
+
+  async getUserByEmailOrLogin(login: string, email: string): Promise<UserDocument> {
+    return this.userModel
+      .findOne({
+        $or: [{ email }, { login }],
+      })
+      .lean();
+  }
+
+  async getUserByEmail(email: string): Promise<UserDocument> {
+    return this.userModel.findOne({ email });
+  }
 }

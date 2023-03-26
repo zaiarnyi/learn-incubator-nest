@@ -22,7 +22,7 @@ export class UsersController {
 
   @Post()
   async createUser(@Body() body: CreateUserRequest): Promise<CreateUserResponse> {
-    const createdUser = await this.createUserService.execute(body);
+    const createdUser = await this.createUserService.execute(body, true);
     return plainToClass(CreateUserResponse, createdUser);
   }
 

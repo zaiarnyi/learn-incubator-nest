@@ -23,6 +23,12 @@ export class User {
 
   @Prop({ type: String, isRequired: true })
   passwordHash: string;
+
+  @Prop({ type: Boolean, default: false })
+  isConfirm: boolean;
+
+  @Prop({ type: Boolean, default: false })
+  isSendEmail: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
