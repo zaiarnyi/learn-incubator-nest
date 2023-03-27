@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { EmailRegistrationAction } from '../email/email-registration.action';
+import { EmailRegistrationService } from '../../services/email/email-registration.service';
 import { MainActivateCodeRepository } from '../../../infrastructure/database/repositories/activate-code/main-activate-code.repository';
 import { generateCode } from '../../../utils/generateCode';
 import { UserMainRepository } from '../../../infrastructure/database/repositories/users/main.repository';
@@ -8,7 +8,7 @@ import { ActivateCodeEnum } from '../../../infrastructure/database/entity/activa
 @Injectable()
 export class ResendingEmailAction {
   constructor(
-    @Inject(EmailRegistrationAction) private readonly emailService: EmailRegistrationAction,
+    @Inject(EmailRegistrationService) private readonly emailService: EmailRegistrationService,
     @Inject(MainActivateCodeRepository)
     private readonly activationRepository: MainActivateCodeRepository,
     @Inject(UserMainRepository)

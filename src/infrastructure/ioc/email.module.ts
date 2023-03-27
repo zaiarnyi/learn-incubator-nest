@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { EmailRegistrationAction } from '../../application/actions/email/email-registration.action';
+import { EmailRegistrationService } from '../../application/services/email/email-registration.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { NodemailerConfig } from '../email/config/nodemailer.config';
 
@@ -9,7 +9,7 @@ import { NodemailerConfig } from '../email/config/nodemailer.config';
       useClass: NodemailerConfig,
     }),
   ],
-  providers: [EmailRegistrationAction],
-  exports: [EmailRegistrationAction],
+  providers: [EmailRegistrationService],
+  exports: [EmailRegistrationService],
 })
 export class EmailModule {}

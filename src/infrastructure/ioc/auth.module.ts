@@ -9,6 +9,8 @@ import { ResendingEmailAction } from '../../application/actions/auth/resending-e
 import { RegistrationConfirmationAction } from '../../application/actions/auth/registration-confirmation.action';
 import { PasswordRecoveryAction } from '../../application/actions/auth/password-recovery.action';
 import { NewPasswordAction } from '../../application/actions/auth/new-password.action';
+import { LoginAction } from '../../application/actions/auth/login.action';
+import { RefreshTokenAction } from '../../application/actions/auth/refresh-token.action';
 
 @Module({
   imports: [UsersModule, EmailModule, ActivateCodeModule],
@@ -20,6 +22,8 @@ import { NewPasswordAction } from '../../application/actions/auth/new-password.a
     RegistrationConfirmationAction,
     PasswordRecoveryAction,
     NewPasswordAction,
+    LoginAction,
+    RefreshTokenAction,
   ],
 })
 export class AuthModule {}

@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserAction } from '../users/create-user.action';
 import { CreateUserDto } from '../../../domain/users/dto/create-user.dto';
-import { EmailRegistrationAction } from '../email/email-registration.action';
+import { EmailRegistrationService } from '../../services/email/email-registration.service';
 import { generateCode } from '../../../utils/generateCode';
 import { MainActivateCodeRepository } from '../../../infrastructure/database/repositories/activate-code/main-activate-code.repository';
 import { UserMainRepository } from '../../../infrastructure/database/repositories/users/main.repository';
@@ -11,7 +11,7 @@ import { ActivateCodeEnum } from '../../../infrastructure/database/entity/activa
 export class RegistrationActions {
   constructor(
     @Inject(CreateUserAction) private readonly createUserService: CreateUserAction,
-    @Inject(EmailRegistrationAction) private readonly emailService: EmailRegistrationAction,
+    @Inject(EmailRegistrationService) private readonly emailService: EmailRegistrationService,
     @Inject(MainActivateCodeRepository) private readonly activateRepository: MainActivateCodeRepository,
     @Inject(UserMainRepository)
     private readonly mainUserRepository: UserMainRepository,

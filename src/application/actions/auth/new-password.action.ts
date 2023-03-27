@@ -29,7 +29,7 @@ export class NewPasswordAction {
     const passwordHash = await bcrypt.hash(payload.newPassword, 10);
     await Promise.all([
       this.userRepository.updatePasswordUser(user.userId, passwordHash),
-      // this.activateRepository.deleteByCode(payload.recoveryCode, ActivateCodeEnum.RECOVERY),
+      this.activateRepository.deleteByCode(payload.recoveryCode, ActivateCodeEnum.RECOVERY),
     ]);
   }
 }

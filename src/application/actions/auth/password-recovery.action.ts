@@ -1,6 +1,6 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { UserQueryRepository } from '../../../infrastructure/database/repositories/users/query.repository';
-import { EmailRegistrationAction } from '../email/email-registration.action';
+import { EmailRegistrationService } from '../../services/email/email-registration.service';
 import { generateCode } from '../../../utils/generateCode';
 import { MainActivateCodeRepository } from '../../../infrastructure/database/repositories/activate-code/main-activate-code.repository';
 import { ActivateCodeEnum } from '../../../infrastructure/database/entity/activate-code.entity';
@@ -10,7 +10,7 @@ export class PasswordRecoveryAction {
   private logger = new Logger(PasswordRecoveryAction.name);
   constructor(
     @Inject(UserQueryRepository) private readonly userRepository: UserQueryRepository,
-    @Inject(EmailRegistrationAction) private readonly emailService: EmailRegistrationAction,
+    @Inject(EmailRegistrationService) private readonly emailService: EmailRegistrationService,
     @Inject(MainActivateCodeRepository) private readonly activateRepository: MainActivateCodeRepository,
   ) {}
 

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
-export class EmailRegistrationAction {
+export class EmailRegistrationService {
   constructor(private readonly mailerService: MailerService) {}
 
   public async registration(to: string, code: string) {
