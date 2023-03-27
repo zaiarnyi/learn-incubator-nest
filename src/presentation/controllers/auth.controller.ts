@@ -1,10 +1,20 @@
-import { BadRequestException, Body, Controller, Get, HttpCode, Inject, Post, Res } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Inject,
+  Post,
+  Req,
+  Res,
+  UnauthorizedException,
+  UseGuards,
+} from '@nestjs/common';
 import { CheckEmail } from '../requests/auth/password-recovery.request';
 import { NewPasswordRequest } from '../requests/auth/new-password.request';
-import { LoginRequest } from '../requests/auth/login.request';
 import { RegistrationConfirmationRequest } from '../requests/auth/registration-confirmation.request';
 import { RegistrationRequest } from '../requests/auth/registration.request';
-import { LoginResponse } from '../responses/auth/login.response';
 import { MeResponse } from '../responses/auth/me.response';
 import { UserQueryRepository } from '../../infrastructure/database/repositories/users/query.repository';
 import { RegistrationActions } from '../../application/actions/auth/registration.actions';
@@ -17,9 +27,14 @@ import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import { RefreshTokenAction } from '../../application/actions/auth/refresh-token.action';
 import { Cookies } from '../../infrastructure/decorators/cookies.decorator';
+import { LocalAuthGuard } from '../../domain/auth/guards/local-auth.guard';
+import { JwtAuthGuard } from '../../domain/auth/guards/jwt-auth.guard';
+import { plainToClass } from 'class-transformer';
 
 @Controller('auth')
 export class AuthController {
+  httpOnly = true;
+  secure = true;
   constructor(
     @Inject(UserQueryRepository) private readonly queryUserRepository: UserQueryRepository,
     @Inject(RegistrationActions) private readonly registrationService: RegistrationActions,
@@ -30,7 +45,10 @@ export class AuthController {
     @Inject(LoginAction) private readonly loginService: LoginAction,
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(RefreshTokenAction) private readonly refreshTokenService: RefreshTokenAction,
-  ) {}
+  ) {
+    this.httpOnly = this.configService.get<string>('HTTPS_ONLY_COOKIES') === 'true';
+    this.secure = this.configService.get<string>('SECURITY_COOKIE') === 'true';
+  }
   @Post('password-recovery')
   @HttpCode(204)
   async passwordRecovery(@Body() body: CheckEmail): Promise<void> {
@@ -43,28 +61,32 @@ export class AuthController {
     return this.newPasswordService.execute(body);
   }
 
+  @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Body() body: LoginRequest, @Res({ passthrough: true }) response: Response) {
-    const httpOnly = this.configService.get<string>('HTTPS_ONLY_COOKIES') === 'true';
-    const secure = this.configService.get<string>('SECURITY_COOKIE') === 'true';
-    const { accessToken, refreshToken } = await this.loginService.execute(body);
+  async login(@Req() req: any, @Res({ passthrough: true }) response: Response) {
+    const { accessToken, refreshToken } = req.user;
 
-    response.cookie('refreshToken', refreshToken, { httpOnly, secure });
-    response.status(201).json({ accessToken });
+    response.cookie('refreshToken', refreshToken, { httpOnly: this.httpOnly, secure: this.secure });
+    response.status(200).json({ accessToken });
   }
 
   @Post('refresh-token')
-  async createRefreshToken(@Cookies('refreshToken') token: string) {}
+  async createRefreshToken(@Cookies('refreshToken') token: string, @Res({ passthrough: true }) response: Response) {
+    const { accessToken, refreshToken } = await this.refreshTokenService.execute(token);
+
+    response.cookie('refreshToken', refreshToken, { httpOnly: this.httpOnly, secure: this.secure });
+    response.status(200).json({ accessToken });
+  }
 
   @Post('registration-confirmation')
   @HttpCode(204)
-  async registrationConfirmation(@Body() body: RegistrationConfirmationRequest): Promise<void> {
+  async registrationConfirmation(@Body() body: RegistrationConfirmationRequest) {
     return this.confirmationService.execute(body.code);
   }
 
   @Post('registration')
   @HttpCode(204)
-  async registration(@Body() body: RegistrationRequest): Promise<void> {
+  async registration(@Body() body: RegistrationRequest) {
     const detectUser = await this.queryUserRepository.getUserByEmailOrLogin(body.login, body.email);
     if (detectUser) {
       throw new BadRequestException(
@@ -87,9 +109,21 @@ export class AuthController {
   }
 
   @Post('logout')
-  @HttpCode(204)
-  async logout(): Promise<any> {}
+  async logout(@Res({ passthrough: true }) response: Response) {
+    response.clearCookie('refreshToken').sendStatus(204);
+    return;
+  }
 
+  @UseGuards(JwtAuthGuard)
   @Get('me')
-  async me(): Promise<any | MeResponse> {}
+  async me(@Req() req): Promise<MeResponse> {
+    const user = await this.queryUserRepository.getUserById(req.user.userId);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return plainToClass(MeResponse, {
+      ...user.toJSON(),
+      userId: user._id.toString(),
+    });
+  }
 }

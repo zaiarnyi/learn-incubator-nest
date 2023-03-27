@@ -1,16 +1,13 @@
-import { IsEmail, IsMongoId, IsString, Length, Matches } from 'class-validator';
+import { Exclude, Expose } from 'class-transformer';
 
+@Exclude()
 export class MeResponse {
-  @IsEmail()
-  @Matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)
+  @Expose()
   email: string;
 
-  @IsString()
-  @Length(3, 10)
-  @Matches(/^[a-zA-Z0-9_-]*$/)
+  @Expose()
   login: string;
 
-  @IsString()
-  @IsMongoId()
+  @Expose()
   userId: string;
 }

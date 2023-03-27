@@ -4,8 +4,9 @@ import { validateOrReject } from 'class-validator';
 import { UserQueryRepository } from '../../../infrastructure/database/repositories/users/query.repository';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
-import * as jwt from 'jsonwebtoken';
+// import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class LoginAction {
@@ -13,6 +14,7 @@ export class LoginAction {
   constructor(
     @Inject(UserQueryRepository) private readonly queryUserRepository: UserQueryRepository,
     @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(JwtService) private readonly jwtService: JwtService,
   ) {}
   private async validate(payload: LoginDto) {
     try {
@@ -25,15 +27,13 @@ export class LoginAction {
   }
 
   private generateTokens(id: string, device = '') {
-    const secret = this.configService.get<string>('JWT_SECRET');
-    const expires_access = this.configService.get<string>('ACCESS_TOKEN_EXPIRE_TIME');
-    const expires_refresh = this.configService.get<string>('REFRESH_TOKEN_EXPIRE_TIME');
     let deviceId = device;
     if (!deviceId) {
       deviceId = uuidv4();
     }
-    const accessToken = jwt.sign({ id, deviceId }, secret, { expiresIn: expires_access });
-    const refreshToken = jwt.sign({ id, deviceId }, secret, { expiresIn: expires_refresh });
+    const expires_refresh = this.configService.get<string>('REFRESH_TOKEN_EXPIRE_TIME');
+    const accessToken = this.jwtService.sign({ id, deviceId });
+    const refreshToken = this.jwtService.sign({ id, deviceId }, {expiresIn: expires_refresh});
     return { accessToken, refreshToken };
   }
 

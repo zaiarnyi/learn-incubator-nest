@@ -44,4 +44,8 @@ export class UserQueryRepository {
   async getUserByEmail(email: string): Promise<UserDocument> {
     return this.userModel.findOne({ email });
   }
+
+  async getUserById(id: string): Promise<UserDocument> {
+    return this.userModel.findById(id);
+  }
 }

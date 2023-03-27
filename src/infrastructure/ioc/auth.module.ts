@@ -11,9 +11,22 @@ import { PasswordRecoveryAction } from '../../application/actions/auth/password-
 import { NewPasswordAction } from '../../application/actions/auth/new-password.action';
 import { LoginAction } from '../../application/actions/auth/login.action';
 import { RefreshTokenAction } from '../../application/actions/auth/refresh-token.action';
+import { PassportModule } from '@nestjs/passport';
+import { LocalStrategy } from '../../domain/auth/strategies/local.strategy';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtConfigService } from '../configs/jwt/jwt.config';
+import { JwtStrategy } from '../../domain/auth/strategies/jwt.stategy';
 
 @Module({
-  imports: [UsersModule, EmailModule, ActivateCodeModule],
+  imports: [
+    UsersModule,
+    EmailModule,
+    ActivateCodeModule,
+    PassportModule,
+    JwtModule.registerAsync({
+      useClass: JwtConfigService,
+    }),
+  ],
   controllers: [AuthController],
   providers: [
     CreateUserAction,
@@ -24,6 +37,8 @@ import { RefreshTokenAction } from '../../application/actions/auth/refresh-token
     NewPasswordAction,
     LoginAction,
     RefreshTokenAction,
+    LocalStrategy,
+    JwtStrategy,
   ],
 })
 export class AuthModule {}
