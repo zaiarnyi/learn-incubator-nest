@@ -1,13 +1,13 @@
 import { NestFactory } from '@nestjs/core';
 import { BadRequestException, HttpStatus, Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
-import helmet from 'helmet';
-import bodyParser from 'body-parser';
-import cookieParser from 'cookie-parser';
-// import * as compression from 'compression';
-import rateLimit from 'express-rate-limit';
+// import helmet from 'helmet';
+// import bodyParser from 'body-parser';
+// import cookieParser from 'cookie-parser';
+// // import * as compression from 'compression';
+// import rateLimit from 'express-rate-limit';
 import { ConfigService } from '@nestjs/config';
-import { HttpExceptionFilter } from './infrastructure/rest/http-exception.filter';
+// import { HttpExceptionFilter } from './infrastructure/rest/http-exception.filter';
 
 async function bootstrap() {
   try {
