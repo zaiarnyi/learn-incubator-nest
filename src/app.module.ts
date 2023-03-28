@@ -6,7 +6,7 @@ import { UsersModule } from './infrastructure/ioc/users.module';
 // import { PostsModule } from './infrastructure/ioc/posts.module';
 // import { BlogsModule } from './infrastructure/ioc/blogs.module';
 // import { CommentsModule } from './infrastructure/ioc/comments.module';
-import { TestController } from './presentation/controllers/test.controller';
+// import { TestController } from './presentation/controllers/test.controller';
 import { CacheService } from './infrastructure/cache';
 // import { APP_FILTER } from '@nestjs/core';
 // import { HttpExceptionFilter } from './infrastructure/rest/http-exception.filter';
@@ -27,7 +27,7 @@ import { CacheService } from './infrastructure/cache';
     // CommentsModule,
     // AuthModule,
   ],
-  controllers: [TestController],
+  controllers: [],
   // providers: [
   //   {
   //     provide: APP_FILTER,
