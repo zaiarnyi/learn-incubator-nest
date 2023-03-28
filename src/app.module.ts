@@ -27,7 +27,7 @@ import { AuthModule } from './infrastructure/ioc/auth.module';
     // CommentsModule,
     // AuthModule,
   ],
-  controllers: [TestController],
+  controllers: [],
   providers: [
     {
       provide: APP_FILTER,
