@@ -40,26 +40,26 @@ export class BlogsController {
     return this.getByIdService.execute(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post()
   async createBlog(@Body() body: CreatePostRequest): Promise<CreateBlogResponse> {
     return this.createBlogService.execute(body);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post('/:id/posts')
   async createPostByBlogId(@Param('id') id: string, @Body() body: CreatePostByBlogIdRequest) {
     return this.createPostService.execute({ ...body, blogId: id });
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Put('/:id')
   @HttpCode(204)
   async updateBlogById(@Param('id') id: string, @Body() body: CreatePostRequest) {
     return this.updateService.execute(id, body);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Delete('/:id')
   @HttpCode(204)
   async deleteBlogById(@Param('id') id: string) {

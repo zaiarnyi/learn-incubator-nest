@@ -8,10 +8,9 @@ import { BlogsModule } from './infrastructure/ioc/blogs.module';
 import { CommentsModule } from './infrastructure/ioc/comments.module';
 import { TestController } from './presentation/controllers/test.controller';
 import { CacheService } from './infrastructure/cache';
-import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './infrastructure/rest/http-exception.filter';
 import { AuthModule } from './infrastructure/ioc/auth.module';
-import { JwtAuthGuard } from './domain/auth/guards/jwt-auth.guard';
 
 @Module({
   imports: [
