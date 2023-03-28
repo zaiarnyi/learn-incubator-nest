@@ -13,8 +13,8 @@ async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule);
     const configService = app.get(ConfigService);
-    const PORT = +configService.get('PORT', '3005');
-    Logger.warn(`PORT - ${PORT}`, 'Bootstrap');
+    // const PORT = +configService.get('PORT', '3005');
+    // Logger.warn(`PORT - ${PORT}`, 'Bootstrap');
 
     // app.enableCors();
     // app.use(helmet());
@@ -51,8 +51,8 @@ async function bootstrap() {
     //     },
     //   }),
     // );
-    await app.listen(PORT);
-    Logger.log(`Server is listening on port ${PORT}`, 'Bootstrap');
+    await app.listen(3005);
+    Logger.log(`Server is listening on port ${3005}`, 'Bootstrap');
   } catch (e) {
     Logger.error(`❌ Error starting server, ${e}`, '', 'Bootstrap', false);
   }
