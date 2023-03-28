@@ -4,7 +4,7 @@ import { MainPostRepository } from '../../infrastructure/database/repositories/p
 import { MainBlogsRepository } from '../../infrastructure/database/repositories/blogs/main-blogs.repository';
 import { MainCommentsRepository } from '../../infrastructure/database/repositories/comments/main-comments.repository';
 
-@Controller('/testing/all-data')
+@Controller('/testing')
 export class TestController {
   logger = new Logger(TestController.name);
   constructor(
@@ -13,7 +13,7 @@ export class TestController {
     @Inject(MainBlogsRepository) private readonly blogRepository: MainBlogsRepository,
     @Inject(MainCommentsRepository) private readonly commentRepository: MainCommentsRepository,
   ) {}
-  @Delete()
+  @Delete('/all-data')
   @HttpCode(204)
   async deleteAllData() {
     await Promise.all([
