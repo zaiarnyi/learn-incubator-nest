@@ -43,8 +43,8 @@ async function bootstrap() {
         transformOptions: { enableImplicitConversion: true },
         exceptionFactory: (errors) => {
           const err = errors.map((item) => ({
-            field: item.property,
             message: Object.values(item.constraints)[0],
+            field: item.property,
           }));
           throw new BadRequestException(JSON.stringify(err));
         },

@@ -81,7 +81,7 @@ export class AuthController {
   @Post('registration-confirmation')
   @HttpCode(204)
   async registrationConfirmation(@Body() body: RegistrationConfirmationRequest) {
-    return this.confirmationService.execute(body.code);
+    await this.confirmationService.execute(body.code);
   }
 
   @Post('registration')
@@ -89,10 +89,7 @@ export class AuthController {
   async registration(@Body() body: RegistrationRequest) {
     const detectUser = await this.queryUserRepository.getUserByEmailOrLogin(body.login, body.email);
     if (detectUser) {
-      throw new BadRequestException(
-        JSON.stringify([{ message: 'A user already exists', field: 'email or login' }]),
-        'test',
-      );
+      throw new BadRequestException(JSON.stringify([{ message: 'A user already exists', field: 'email' }]), 'test');
     }
     return this.registrationService.execute(body);
   }
@@ -104,8 +101,7 @@ export class AuthController {
     if (!detectUser) {
       throw new BadRequestException(JSON.stringify([{ message: 'User not found', field: 'email' }]));
     }
-
-    return this.resendingService.execute(body.email, detectUser._id.toString());
+    // await this.resendingService.execute(body.email, detectUser._id.toString());
   }
 
   @Post('logout')
