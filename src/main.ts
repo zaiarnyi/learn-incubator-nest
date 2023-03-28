@@ -13,8 +13,8 @@ async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule);
     const configService = app.get(ConfigService);
-    const PORT = configService.get('PORT', '3005');
-    Logger.error(`PORT - ${PORT}`, 'Bootstrap');
+    const PORT = +configService.get('PORT', '3005');
+    Logger.warn(`PORT - ${PORT}`, 'Bootstrap');
 
     app.enableCors();
     app.use(helmet());
