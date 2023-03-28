@@ -2,8 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { BadRequestException, HttpStatus, Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
-import * as bodyParser from 'body-parser';
-import * as cookieParser from 'cookie-parser';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
 // import * as compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import { ConfigService } from '@nestjs/config';
@@ -14,6 +14,7 @@ async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     const configService = app.get(ConfigService);
     const PORT = configService.get('PORT', '3005');
+    Logger.error(`PORT - ${PORT}`, 'Bootstrap');
 
     app.enableCors();
     app.use(helmet());
@@ -50,7 +51,6 @@ async function bootstrap() {
         },
       }),
     );
-    Logger.error(`PORT - ${PORT}`, 'Bootstrap');
     await app.listen(PORT);
     Logger.log(`Server is listening on port ${PORT}`, 'Bootstrap');
   } catch (e) {
