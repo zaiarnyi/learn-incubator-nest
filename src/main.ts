@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { BadRequestException, HttpStatus, Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
-import * as bodyParser from 'body-parser';
+import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 // import * as compression from 'compression';
 import rateLimit from 'express-rate-limit';
