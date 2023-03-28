@@ -14,7 +14,7 @@ async function bootstrap() {
     // const PORT = +configService.get('PORT', '3005');
     // Logger.warn(`PORT - ${PORT}`, 'Bootstrap');
 
-    // app.enableCors();
+    app.enableCors();
     // app.use(helmet());
     // // app.use(compression());
     // app.use(cookieParser());
@@ -49,7 +49,9 @@ async function bootstrap() {
     //     },
     //   }),
     // );
-    await app.listen(3005);
+    await app.listen(3005).then((res) => {
+      Logger.log(res, 'Bootstrap');
+    });
     Logger.log(`Server is listening on port ${3005}`, 'Bootstrap');
   } catch (e) {
     Logger.error(`❌ Error starting server, ${e}`, '', 'Bootstrap', false);
