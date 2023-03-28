@@ -65,9 +65,9 @@ jobs:
           if [[ ${GITHUB_REF} == "refs/heads/main" ]]; then
             prodRun="--prod"
           fi
-          npx vercel deploy --prebuilt $prodRun --token=${VERCEL_TOKEN} -e NODEMAILER_PASSWORD=${NODEMAILER_PASSWORD}  -e NODEMAILER_EMAIL=${NODEMAILER_EMAIL} -e PORT=5000  -e MONGO_DB_NAME=${MONGO_DB_NAME} -e MONGO_DB_URL=${MONGO_DB_URL} -e JWT_SECRET=${JWT_SECRET}
+          npx vercel deploy --prebuilt $prodRun --token=${VERCEL_TOKEN} -e NODEMAILER_PASSWORD=${NODEMAILER_PASSWORD}  -e NODEMAILER_EMAIL=${NODEMAILER_EMAIL} -e MONGO_DB_NAME=${MONGO_DB_NAME} -e MONGO_DB_URL=${MONGO_DB_URL} -e JWT_SECRET=${JWT_SECRET}
         env:
-          PORT: ${{ secrets.PORT }}
+#          PORT: ${{ secrets.PORT }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           MONGO_DB_NAME: ${{secrets.MONGO_DB_NAME}}
           MONGO_DB_URL: ${{secrets.MONGO_DB_URL}}
