@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { GetPostsRequest } from '../requests/posts/get-posts.request';
 import { CreatePostRequest } from '../requests/posts/create-post.request';
 import { GetPost, GetPostsResponse } from '../responses/posts/get-all-posts.response';
@@ -9,6 +9,7 @@ import { UpdatePostAction } from '../../application/actions/posts/update-post.ac
 import { DeletePostAction } from '../../application/actions/posts/delete-post.action';
 import { GetPostsAction } from '../../application/actions/posts/get-posts.action';
 import { GetCommentsByPostIdAction } from '../../application/actions/posts/get-comments-by-postId.action';
+import { JwtAuthGuard } from '../../domain/auth/guards/jwt-auth.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -38,17 +39,20 @@ export class PostsController {
     return this.commentsByPostIdService.execute(id, query);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async createPost(@Body() body: CreatePostRequest): Promise<GetPost> {
     return this.createService.execute(body);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   @HttpCode(204)
   async updatePost(@Param('id') id: string, @Body() body: CreatePostRequest): Promise<void> {
     return this.updatePostService.execute(id, body);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @HttpCode(204)
   async deletePostById(@Param('id') id: string): Promise<void> {
