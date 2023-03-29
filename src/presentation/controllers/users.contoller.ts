@@ -22,7 +22,7 @@ export class UsersController {
     return this.getUsersService.execute(query);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post()
   async createUser(@Body() body: CreateUserRequest): Promise<CreateUserResponse> {
     const createdUser = await this.createUserService.execute(body, true);
