@@ -89,7 +89,8 @@ export class AuthController {
   async registration(@Body() body: RegistrationRequest) {
     const detectUser = await this.queryUserRepository.getUserByEmailOrLogin(body.login, body.email);
     if (detectUser) {
-      throw new BadRequestException([{ message: 'A user already exists', field: 'login' }]);
+      const filed = body.login === detectUser.login ? 'login' : 'email';
+      throw new BadRequestException([{ message: 'A user already exists', field: filed }]);
     }
     return this.registrationService.execute(body);
   }
