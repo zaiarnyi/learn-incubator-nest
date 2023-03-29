@@ -3,7 +3,7 @@ import { BadRequestException, HttpStatus, Logger, ValidationPipe } from '@nestjs
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import helmet from 'helmet';
-import bodyParser from 'body-parser';
+import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 // import * as compression from 'compression';
 import rateLimit from 'express-rate-limit';
