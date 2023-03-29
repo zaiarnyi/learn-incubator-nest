@@ -1,7 +1,7 @@
 import { CreateUserDto } from '../../../domain/users/dto/create-user.dto';
 import { CreateUserVo } from '../../../domain/users/vo/create-user.vo';
 import { UserMainRepository } from '../../../infrastructure/database/repositories/users/main.repository';
-import { BadRequestException, Inject, Logger } from '@nestjs/common';
+import { BadRequestException, Inject, Logger, UnauthorizedException } from '@nestjs/common';
 import { validateOrReject } from 'class-validator';
 
 export class CreateUserAction {
@@ -15,8 +15,7 @@ export class CreateUserAction {
     try {
       await validateOrReject(dto);
     } catch (e) {
-      const err = e.map((item) => ({ field: item.property, message: Object.values(item.constraints)[0] }));
-      throw new BadRequestException(err);
+      throw new UnauthorizedException();
     }
   }
   async execute(dto: CreateUserDto, isConfirm = false) {

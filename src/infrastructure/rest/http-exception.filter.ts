@@ -12,7 +12,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     let message;
     if (status === HttpStatus.BAD_REQUEST) {
       const res: any = exception.getResponse();
-      message = { errorMessages: res.message };
+      message = { errorsMessages: res.message };
     } else {
       message = exception.message;
     }
