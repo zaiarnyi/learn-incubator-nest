@@ -47,7 +47,7 @@ async function bootstrap() {
             message: Object.values(item.constraints)[0],
             field: item.property,
           }));
-          throw new BadRequestException(JSON.stringify(err));
+          throw new BadRequestException(err);
         },
       }),
     );

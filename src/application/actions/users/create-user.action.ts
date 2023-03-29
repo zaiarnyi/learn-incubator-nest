@@ -16,7 +16,7 @@ export class CreateUserAction {
       await validateOrReject(dto);
     } catch (e) {
       const err = e.map((item) => ({ field: item.property, message: Object.values(item.constraints)[0] }));
-      throw new BadRequestException(JSON.stringify(err));
+      throw new BadRequestException(err);
     }
   }
   async execute(dto: CreateUserDto, isConfirm = false) {

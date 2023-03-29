@@ -55,7 +55,7 @@ export class CreateUserVo {
         field: item.property,
         message: Object.values(item.constraints)[0],
       }));
-      throw new BadRequestException(JSON.stringify(err));
+      throw new BadRequestException(err);
     }
   }
   public getUser() {

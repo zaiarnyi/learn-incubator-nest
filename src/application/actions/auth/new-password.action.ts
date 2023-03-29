@@ -16,14 +16,12 @@ export class NewPasswordAction {
   public async execute(payload: NewPasswordDto) {
     const user = await this.activateRepository.getItemByCode(payload.recoveryCode, ActivateCodeEnum.RECOVERY);
     if (!user || Date.now() > user.expireAt) {
-      throw new BadRequestException(
-        JSON.stringify([
-          {
-            field: 'recoveryCode',
-            message: 'if the inputModel has incorrect value (for incorrect password length)',
-          },
-        ]),
-      );
+      throw new BadRequestException([
+        {
+          field: 'recoveryCode',
+          message: 'if the inputModel has incorrect value (for incorrect password length)',
+        },
+      ]);
     }
 
     const passwordHash = await bcrypt.hash(payload.newPassword, 10);

@@ -16,37 +16,31 @@ export class RegistrationConfirmationAction {
   public async execute(code: string) {
     const userId = await this.activationRepository.getUserIdByCode(code, ActivateCodeEnum.REGISTRATION).catch((e) => {
       this.logger.error(`Error receiving user by activation code - ${code}. Error: ${JSON.stringify(e)}`);
-      throw new BadRequestException(
-        JSON.stringify([
-          {
-            message: 'User not found',
-            field: 'code',
-          },
-        ]),
-      );
+      throw new BadRequestException([
+        {
+          message: 'User not found',
+          field: 'code',
+        },
+      ]);
     });
     if (!userId) {
-      throw new BadRequestException(
-        JSON.stringify([
-          {
-            message: 'User not found',
-            field: 'code',
-          },
-        ]),
-      );
+      throw new BadRequestException([
+        {
+          message: 'User not found',
+          field: 'code',
+        },
+      ]);
     }
     await this.mainUserRepository.changeStatusConfirm(userId, true).catch((e) => {
       this.logger.error(
         `Confirmation status change error for the user - ${userId}. Code -  ${code}. Error: ${JSON.stringify(e)}`,
       );
-      throw new BadRequestException(
-        JSON.stringify([
-          {
-            message: 'User not found',
-            field: 'code',
-          },
-        ]),
-      );
+      throw new BadRequestException([
+        {
+          message: 'User not found',
+          field: 'code',
+        },
+      ]);
     });
     await this.activationRepository.deleteByCode(code, ActivateCodeEnum.REGISTRATION).catch((e) => {
       this.logger.error(`Error deleting activation code - ${code}. Error: ${JSON.stringify(e)}`);

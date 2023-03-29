@@ -20,9 +20,7 @@ export class LoginAction {
     try {
       await validateOrReject(payload);
     } catch (e) {
-      throw new BadRequestException(
-        JSON.stringify([{ field: 'email or login or password', message: 'Incorrect value' }]),
-      );
+      throw new BadRequestException([{ field: 'email or login or password', message: 'Incorrect value' }]);
     }
   }
 
