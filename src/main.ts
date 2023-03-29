@@ -40,7 +40,7 @@ async function bootstrap() {
       new ValidationPipe({
         transform: true,
         stopAtFirstError: true,
-        errorHttpStatusCode: HttpStatus.BAD_REQUEST,
+        // errorHttpStatusCode: HttpStatus.BAD_REQUEST,
         transformOptions: { enableImplicitConversion: true },
         exceptionFactory: (errors) => {
           const err = errors.map((item) => ({
