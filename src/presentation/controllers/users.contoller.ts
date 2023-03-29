@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { GetUsersRequest } from '../requests/users/get-users.request';
 import { GetUsersResponse } from '../responses/users/get-users.response';
 import { GetAllUsersAction } from '../../application/actions/users/get-all-users.action';
@@ -23,6 +35,7 @@ export class UsersController {
   }
 
   // @UseGuards(JwtAuthGuard)
+  @UsePipes(new ValidationPipe({ transform: false }))
   @Post()
   async createUser(@Body() body: CreateUserRequest): Promise<CreateUserResponse> {
     const createdUser = await this.createUserService.execute(body, true);
