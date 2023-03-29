@@ -33,7 +33,7 @@ export class LoginAction {
     }
     const expires_refresh = this.configService.get<string>('REFRESH_TOKEN_EXPIRE_TIME');
     const accessToken = this.jwtService.sign({ id, deviceId });
-    const refreshToken = this.jwtService.sign({ id, deviceId }, {expiresIn: expires_refresh});
+    const refreshToken = this.jwtService.sign({ id, deviceId }, { expiresIn: expires_refresh });
     return { accessToken, refreshToken };
   }
 
@@ -45,17 +45,13 @@ export class LoginAction {
         this.logger.error(`Error when getting a user - ${payload.loginOrEmail}`);
       });
     if (!user) {
-      throw new UnauthorizedException(
-        JSON.stringify([{ message: 'If the password or login is wrong', field: 'password or login' }]),
-      );
+      throw new UnauthorizedException();
     }
 
     const checkHashPassword = await bcrypt.compare(payload.password, user.passwordHash);
 
     if (!checkHashPassword) {
-      throw new UnauthorizedException(
-        JSON.stringify([{ message: 'If the password or login is wrong', field: 'password or login' }]),
-      );
+      throw new UnauthorizedException();
     }
 
     return this.generateTokens(user._id.toString());

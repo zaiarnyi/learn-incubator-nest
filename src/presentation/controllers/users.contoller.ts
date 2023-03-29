@@ -16,20 +16,20 @@ export class UsersController {
     private readonly createUserService: CreateUserAction,
     private readonly deleteUserService: DeleteUserAction,
   ) {}
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get()
   async getUsers(@Query() query: GetUsersRequest): Promise<GetUsersResponse> {
     return this.getUsersService.execute(query);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post()
   async createUser(@Body() body: CreateUserRequest): Promise<CreateUserResponse> {
     const createdUser = await this.createUserService.execute(body, true);
     return plainToClass(CreateUserResponse, createdUser);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Delete(':id')
   @HttpCode(204)
   async deleteUserById(@Param('id') id: string): Promise<void> {

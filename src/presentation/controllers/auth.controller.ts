@@ -98,7 +98,7 @@ export class AuthController {
   @HttpCode(204)
   async registrationEmailResending(@Body() body: CheckEmail): Promise<void> {
     const detectUser = await this.queryUserRepository.getUserByEmail(body.email);
-    if (!detectUser) {
+    if (!detectUser || detectUser.isConfirm) {
       throw new BadRequestException(JSON.stringify([{ message: 'User not found', field: 'email' }]));
     }
     await this.resendingService.execute(body.email, detectUser._id.toString());
