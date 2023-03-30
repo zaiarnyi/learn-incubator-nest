@@ -16,6 +16,8 @@ import { LocalStrategy } from '../../domain/auth/strategies/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtConfigService } from '../configs/jwt/jwt.config';
 import { JwtStrategy } from '../../domain/auth/strategies/jwt.stategy';
+import { BasicStrategy } from '../../domain/auth/strategies/basic.strategy';
+import { SecurityModule } from './security.module';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { JwtStrategy } from '../../domain/auth/strategies/jwt.stategy';
     JwtModule.registerAsync({
       useClass: JwtConfigService,
     }),
+    SecurityModule,
   ],
   controllers: [AuthController],
   providers: [
@@ -39,6 +42,7 @@ import { JwtStrategy } from '../../domain/auth/strategies/jwt.stategy';
     RefreshTokenAction,
     LocalStrategy,
     JwtStrategy,
+    BasicStrategy,
   ],
 })
 export class AuthModule {}

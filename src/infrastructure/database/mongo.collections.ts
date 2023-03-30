@@ -4,4 +4,5 @@ export const enum MongoCollections {
   POSTS = 'posts',
   COMMENTS = 'comments',
   ACTIVATE_CODE = 'activate_code',
+  SECURITY = 'security',
 }

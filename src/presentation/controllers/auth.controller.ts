@@ -5,11 +5,13 @@ import {
   Get,
   HttpCode,
   Inject,
+  Logger,
   Post,
   Req,
   Res,
   UnauthorizedException,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CheckEmail } from '../requests/auth/password-recovery.request';
 import { NewPasswordRequest } from '../requests/auth/new-password.request';
@@ -30,9 +32,16 @@ import { Cookies } from '../../infrastructure/decorators/cookies.decorator';
 import { LocalAuthGuard } from '../../domain/auth/guards/local-auth.guard';
 import { JwtAuthGuard } from '../../domain/auth/guards/jwt-auth.guard';
 import { plainToClass } from 'class-transformer';
+import { MainSecurityRepository } from '../../infrastructure/database/repositories/security/main-security.repository';
+import { DeviceDto } from '../../domain/security/dto/device.dto';
+import { v4 as uuidv4 } from 'uuid';
+import { LoginRequest } from '../requests/auth/login.request';
+import { SecurityDocument } from '../../domain/security/entity/security.entity';
+import { UpdateResult } from 'mongodb';
 
 @Controller('auth')
 export class AuthController {
+  private logger = new Logger(AuthController.name);
   httpOnly = true;
   secure = true;
   constructor(
@@ -45,6 +54,7 @@ export class AuthController {
     @Inject(LoginAction) private readonly loginService: LoginAction,
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(RefreshTokenAction) private readonly refreshTokenService: RefreshTokenAction,
+    @Inject(MainSecurityRepository) private readonly securityRepository: MainSecurityRepository,
   ) {
     this.httpOnly = this.configService.get<string>('HTTPS_ONLY_COOKIES') === 'true';
     this.secure = this.configService.get<string>('SECURITY_COOKIE') === 'true';
@@ -60,11 +70,20 @@ export class AuthController {
   async createNewPassword(@Body() body: NewPasswordRequest): Promise<void> {
     return this.newPasswordService.execute(body);
   }
-
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  async login(@Req() req: any, @Res({ passthrough: true }) response: Response) {
-    const { accessToken, refreshToken } = req.user;
+  async login(@Req() req: any, @Res({ passthrough: true }) response: Response, @Body() body: LoginRequest) {
+    const { userId } = req.user;
+    const devicePrepare = new DeviceDto();
+    devicePrepare.ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.socket.remoteAddress || null;
+    devicePrepare.userId = userId;
+    devicePrepare.title = 'security Name';
+
+    const device = await this.securityRepository.insertDevice(devicePrepare).catch((e) => {
+      this.logger.error(`Error when saving device information. Error: ${JSON.stringify(e)}`);
+      return null;
+    });
+    const { accessToken, refreshToken } = await this.loginService.execute(body, device._id.toString());
 
     response.cookie('refreshToken', refreshToken, { httpOnly: this.httpOnly, secure: this.secure });
     response.status(200).json({ accessToken });

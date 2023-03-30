@@ -1,23 +1,31 @@
 import { Strategy } from 'passport-local';
 import { PassportStrategy } from '@nestjs/passport';
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { LoginAction } from '../../../application/actions/auth/login.action';
-import { plainToClass } from 'class-transformer';
+import { Inject, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { UserQueryRepository } from '../../../infrastructure/database/repositories/users/query.repository';
 import { LoginRequest } from '../../../presentation/requests/auth/login.request';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-  constructor(@Inject(LoginAction) private readonly loginService: LoginAction) {
+  private logger = new Logger(LocalStrategy.name);
+  constructor(@Inject(UserQueryRepository) private readonly queryUserRepository: UserQueryRepository) {
     super({
       usernameField: 'loginOrEmail',
     });
   }
 
   async validate(loginOrEmail: string, password: string): Promise<any> {
-    const tokens = await this.loginService.execute(plainToClass(LoginRequest, { password, loginOrEmail }));
-    if (!tokens) {
+    const userLogin = new LoginRequest();
+    userLogin.loginOrEmail = loginOrEmail;
+    userLogin.password = password;
+    await userLogin.validate();
+
+    const user = await this.queryUserRepository.getUserByEmailOrLogin(loginOrEmail, loginOrEmail).catch(() => {
+      this.logger.error(`Error when getting a user - ${loginOrEmail}`);
+    });
+    if (!user) {
       throw new UnauthorizedException();
     }
-    return tokens;
+
+    return { userId: user._id.toString() };
   }
 }

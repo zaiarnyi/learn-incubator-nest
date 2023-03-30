@@ -8,7 +8,7 @@ import { CommentsModule } from './infrastructure/ioc/comments.module';
 import { TestController } from './presentation/controllers/test.controller';
 import { ConfigModule } from '@nestjs/config';
 import { CacheService } from './infrastructure/cache';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
 import { HttpExceptionFilter } from './infrastructure/rest/http-exception.filter';
 import { AuthModule } from './infrastructure/ioc/auth.module';
 
