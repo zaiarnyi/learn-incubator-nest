@@ -1,4 +1,4 @@
-import { IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsMongoId, IsString, MaxLength } from 'class-validator';
 
 export class CreatePostRequest {
   @IsString()
@@ -14,6 +14,6 @@ export class CreatePostRequest {
   content: string;
 
   @IsString()
-  @IsOptional()
+  @IsMongoId()
   blogId: string;
 }

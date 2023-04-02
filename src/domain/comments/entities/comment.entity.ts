@@ -3,7 +3,17 @@ import { HydratedDocument } from 'mongoose';
 
 export type CommentDocument = HydratedDocument<Comment>;
 
-@Schema()
+@Schema({
+  timestamps: true,
+  validateBeforeSave: true,
+  versionKey: false,
+  toJSON: {
+    transform: (doc, ret) => {
+      ret.id = ret._id;
+      delete ret._id;
+    },
+  },
+})
 export class Comment {
   @Prop({ type: String, isRequired: true })
   content: string;

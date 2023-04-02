@@ -37,9 +37,9 @@ export class GetCommentByIdAction {
     if (!comment) {
       throw new NotFoundException();
     }
-
     return plainToClass(CommentResponse, {
       ...comment.toObject(),
+      id: comment._id.toString(),
       commentatorInfo: {
         userId: comment.userId,
         userLogin: comment.userLogin,
