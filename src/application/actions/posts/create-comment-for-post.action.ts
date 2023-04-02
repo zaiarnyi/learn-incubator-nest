@@ -68,9 +68,9 @@ export class CreateCommentForPostAction {
     await this.createLikeStatusForComment(commentId, userId).catch((e) => {
       this.logger.error(`Error creating likes statuses for comments. ${commentId} / ${userId}. ${JSON.stringify(e)}`);
     });
-
+    console.log(createdComment, 'createdComment');
     return plainToClass(PostCommentInfo, {
-      ...createdComment,
+      ...createdComment.toObject(),
       id: commentId,
       commentatorInfo: {
         userId: createdComment.userId,

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { PostsController } from '../../presentation/controllers/posts.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Post, PostSchema } from '../../domain/posts/entities/post.entity';
@@ -47,9 +47,14 @@ import { CommentsModule } from './comments.module';
         schema: LikeStatusPostsSchema,
         collection: MongoCollections.POST_LIKE_STATUSES,
       },
+      {
+        name: Comment.name,
+        schema: CommentSchema,
+        collection: MongoCollections.COMMENTS,
+      },
     ]),
     UsersModule,
-    CommentsModule,
+    forwardRef(() => CommentsModule),
   ],
   controllers: [PostsController],
   providers: [
@@ -68,6 +73,6 @@ import { CommentsModule } from './comments.module';
     GetLikesInfoForPostService,
     CreateCommentForPostAction,
   ],
-  exports: [CreatePostAction, MainPostRepository, MainLikeStatusPostRepository],
+  exports: [CreatePostAction, MainPostRepository, MainLikeStatusPostRepository, QueryPostRepository],
 })
 export class PostsModule {}

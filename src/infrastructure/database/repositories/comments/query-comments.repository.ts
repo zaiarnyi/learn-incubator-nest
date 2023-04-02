@@ -7,8 +7,8 @@ import { Comment, CommentDocument } from '../../../../domain/comments/entities/c
 export class QueryCommentsRepository {
   constructor(@InjectModel(Comment.name) private commentModel: Model<CommentDocument>) {}
 
-  async getCountComments(): Promise<number> {
-    return this.commentModel.find().count();
+  async getCountComments(postId: string): Promise<number> {
+    return this.commentModel.find({ postId }).count();
   }
   async getCommentByPostId(
     postId: string,
@@ -21,8 +21,7 @@ export class QueryCommentsRepository {
       .find({ postId })
       .sort({ [sortBy]: direction as 'asc' | 'desc' })
       .skip(offset)
-      .limit(limit)
-      .lean();
+      .limit(limit);
   }
 
   async getCommentById(id: string): Promise<CommentDocument> {

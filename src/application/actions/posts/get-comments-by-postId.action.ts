@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { GetCommentsByPostIdDto } from '../../../domain/posts/dto/get-comments-by-postId.dto';
 import { QueryCommentsRepository } from '../../../infrastructure/database/repositories/comments/query-comments.repository';
 import {
@@ -9,14 +9,26 @@ import { plainToClass } from 'class-transformer';
 import { QueryLikeStatusRepository } from '../../../infrastructure/database/repositories/comments/like-status/query-like-status.repository';
 import { ExtendedLikesInfo } from '../../../presentation/responses/extendedLikesInfo.response';
 import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
+import { QueryPostRepository } from '../../../infrastructure/database/repositories/posts/query-post.repository';
 
 @Injectable()
 export class GetCommentsByPostIdAction {
   private logger = new Logger(GetCommentsByPostIdAction.name);
   constructor(
     @Inject(QueryCommentsRepository) private readonly queryRepository: QueryCommentsRepository,
+    @Inject(QueryPostRepository) private readonly queryPostsRepository: QueryPostRepository,
     @Inject(QueryLikeStatusRepository) private readonly likeStatusCommentRepository: QueryLikeStatusRepository,
   ) {}
+
+  private async validate(postId: string) {
+    const post = await this.queryPostsRepository.getPostById(postId).catch((e) => {
+      this.logger.error(e);
+    });
+
+    if (!post) {
+      throw new NotFoundException();
+    }
+  }
 
   private async getLikesInfo(commentId: string, userId?: string): Promise<ExtendedLikesInfo> {
     const [likesCount, dislikesCount, info] = await Promise.all([
@@ -36,8 +48,10 @@ export class GetCommentsByPostIdAction {
     query: GetCommentsByPostIdDto,
     userId?: string,
   ): Promise<GetCommentsByPostIdResponse> {
+    await this.validate(postId);
+
     const { pageSize, pageNumber, sortDirection, sortBy } = query;
-    const totalCount = await this.queryRepository.getCountComments();
+    const totalCount = await this.queryRepository.getCountComments(postId);
     const skip = (pageNumber - 1) * pageSize;
     const pagesCount = Math.ceil(totalCount / pageSize);
 
@@ -46,7 +60,8 @@ export class GetCommentsByPostIdAction {
 
     for (const comment of commentsRaw) {
       const c = plainToClass(PostCommentInfo, {
-        ...comment,
+        ...comment.toObject(),
+        id: comment._id.toString(),
         commentatorInfo: {
           userId: comment.userId,
           userLogin: comment.userLogin,
@@ -54,6 +69,7 @@ export class GetCommentsByPostIdAction {
         likesInfo: await this.getLikesInfo(comment._id.toString(), userId),
       });
       comments.push(c);
+      console.log(c);
     }
 
     return {
