@@ -1,4 +1,4 @@
-export enum StatusCommentEnum {
+export enum LikeStatusEnum {
   None = 'None',
   Like = 'Like',
   Dislike = 'Dislike',

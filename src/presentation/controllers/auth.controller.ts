@@ -11,7 +11,6 @@ import {
   Res,
   UnauthorizedException,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { CheckEmail } from '../requests/auth/password-recovery.request';
 import { NewPasswordRequest } from '../requests/auth/new-password.request';
@@ -34,10 +33,7 @@ import { JwtAuthGuard } from '../../domain/auth/guards/jwt-auth.guard';
 import { plainToClass } from 'class-transformer';
 import { MainSecurityRepository } from '../../infrastructure/database/repositories/security/main-security.repository';
 import { DeviceDto } from '../../domain/security/dto/device.dto';
-import { v4 as uuidv4 } from 'uuid';
 import { LoginRequest } from '../requests/auth/login.request';
-import { SecurityDocument } from '../../domain/security/entity/security.entity';
-import { UpdateResult } from 'mongodb';
 
 @Controller('auth')
 export class AuthController {

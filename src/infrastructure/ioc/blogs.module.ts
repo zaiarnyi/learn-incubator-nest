@@ -13,6 +13,7 @@ import { GetAllBlogsAction } from '../../application/actions/blogs/get-all-blogs
 import { PostsModule } from './posts.module';
 import { Post, PostSchema } from '../../domain/posts/entities/post.entity';
 import { GetPostByBlogIdAction } from '../../application/actions/blogs/getPostByBlogId.action';
+import { UsersModule } from './users.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { GetPostByBlogIdAction } from '../../application/actions/blogs/getPostBy
       },
     ]),
     PostsModule,
+    UsersModule,
   ],
   controllers: [BlogsController],
   providers: [

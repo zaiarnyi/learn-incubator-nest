@@ -14,6 +14,15 @@ import { GetPostsAction } from '../../application/actions/posts/get-posts.action
 import { CommentSchema, Comment } from '../../domain/comments/entities/comment.entity';
 import { GetCommentsByPostIdAction } from '../../application/actions/posts/get-comments-by-postId.action';
 import { QueryCommentsRepository } from '../database/repositories/comments/query-comments.repository';
+import { LikeStatusPosts, LikeStatusPostsSchema } from '../../domain/posts/like-status/entity/like-status-posts.entity';
+import { ChangeLikeStatusPostAction } from '../../application/actions/posts/change-like-status.action';
+import { UserQueryRepository } from '../database/repositories/users/query.repository';
+import { QueryLikeStatusPostRepository } from '../database/repositories/posts/like-status/query-like-status-post.repository';
+import { MainLikeStatusPostRepository } from '../database/repositories/posts/like-status/main-like-status-post.repository';
+import { UsersModule } from './users.module';
+import { GetLikesInfoForPostService } from '../../application/services/posts/get-likes-info-for-post.service';
+import { CreateCommentForPostAction } from '../../application/actions/posts/create-comment-for-post.action';
+import { CommentsModule } from './comments.module';
 
 @Module({
   imports: [
@@ -33,7 +42,14 @@ import { QueryCommentsRepository } from '../database/repositories/comments/query
         schema: CommentSchema,
         collection: MongoCollections.BLOGS,
       },
+      {
+        name: LikeStatusPosts.name,
+        schema: LikeStatusPostsSchema,
+        collection: MongoCollections.POST_LIKE_STATUSES,
+      },
     ]),
+    UsersModule,
+    CommentsModule,
   ],
   controllers: [PostsController],
   providers: [
@@ -46,6 +62,11 @@ import { QueryCommentsRepository } from '../database/repositories/comments/query
     GetPostsAction,
     GetCommentsByPostIdAction,
     QueryCommentsRepository,
+    ChangeLikeStatusPostAction,
+    QueryLikeStatusPostRepository,
+    MainLikeStatusPostRepository,
+    GetLikesInfoForPostService,
+    CreateCommentForPostAction,
   ],
   exports: [CreatePostAction, MainPostRepository],
 })

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Comment, CommentDocument } from '../../../../domain/comments/entities/comment.entity';
 import { Model } from 'mongoose';
+import { DeleteResult } from 'mongodb';
 
 @Injectable()
 export class MainCommentsRepository {
@@ -9,5 +10,21 @@ export class MainCommentsRepository {
 
   async deleteAllComments() {
     return this.commentModel.deleteMany();
+  }
+
+  async changeCommentById(id: string, body: any): Promise<CommentDocument> {
+    return this.commentModel.findByIdAndUpdate(id, body);
+  }
+
+  async removeCommentById(id): Promise<DeleteResult> {
+    return this.commentModel.deleteOne({ id });
+  }
+
+  async removeAllComments(): Promise<DeleteResult> {
+    return this.commentModel.deleteMany();
+  }
+
+  async createComment(body: Comment): Promise<CommentDocument> {
+    return this.commentModel.create(body);
   }
 }

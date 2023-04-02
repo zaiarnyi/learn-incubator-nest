@@ -28,4 +28,8 @@ export class QueryCommentsRepository {
   async getCommentById(id: string): Promise<CommentDocument> {
     return this.commentModel.findById(id);
   }
+
+  async getCommentByIdForUser(userId: string, id: string): Promise<CommentDocument> {
+    return this.commentModel.findOne({ userId, id });
+  }
 }

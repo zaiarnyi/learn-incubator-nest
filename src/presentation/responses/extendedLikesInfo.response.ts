@@ -1,6 +1,6 @@
 import { Exclude, Expose } from 'class-transformer';
 import { IsEnum, IsInt } from 'class-validator';
-import { StatusCommentEnum } from '../../domain/posts/enums/status-comment.enum';
+import { LikeStatusEnum } from '../../infrastructure/enums/like-status.enum';
 
 @Exclude()
 export class ExtendedLikesInfo {
@@ -13,6 +13,6 @@ export class ExtendedLikesInfo {
   dislikesCount = 0;
 
   @Expose()
-  @IsEnum(StatusCommentEnum)
-  myStatus: StatusCommentEnum = StatusCommentEnum.None;
+  @IsEnum(LikeStatusEnum)
+  myStatus: LikeStatusEnum = LikeStatusEnum.None;
 }

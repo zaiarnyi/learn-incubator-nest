@@ -3,14 +3,17 @@ import { QueryPostRepository } from '../../../infrastructure/database/repositori
 import { QueryParamsGetPostsDto } from '../../../domain/posts/dto/query-params-get-posts.dto';
 import { plainToClass } from 'class-transformer';
 import { GetPost, GetPostsResponse } from '../../../presentation/responses/posts/get-all-posts.response';
-import { StatusCommentEnum } from '../../../domain/posts/enums/status-comment.enum';
+import { GetLikesInfoForPostService } from '../../services/posts/get-likes-info-for-post.service';
 
 @Injectable()
 export class GetPostsAction {
   private logger = new Logger(GetPostsAction.name);
-  constructor(@Inject(QueryPostRepository) private readonly queryRepository: QueryPostRepository) {}
+  constructor(
+    @Inject(QueryPostRepository) private readonly queryRepository: QueryPostRepository,
+    @Inject(GetLikesInfoForPostService) private readonly likesInfoService: GetLikesInfoForPostService,
+  ) {}
 
-  public async execute(query: QueryParamsGetPostsDto) {
+  public async execute(query: QueryParamsGetPostsDto, userId?: string) {
     const { pageSize, pageNumber, sortDirection, sortBy } = query;
     const totalCount = await this.queryRepository.getCountPosts();
     const skip = (pageNumber - 1) * pageSize;
@@ -21,18 +24,15 @@ export class GetPostsAction {
       throw new BadRequestException('');
     });
 
-    const posts = postsRaw.map((post) => {
-      return plainToClass(GetPost, {
-        ...post,
-        id: post._id.toString(),
-        extendedLikesInfo: {
-          likesCount: 0,
-          dislikesCount: 0,
-          myStatus: StatusCommentEnum.None,
-          newestLikes: [],
-        },
+    const posts = [];
+    for (const p of postsRaw) {
+      const formattedPost = plainToClass(GetPost, {
+        ...p,
+        id: p._id.toString(),
+        extendedLikesInfo: await this.likesInfoService.likesInfo(p._id.toString(), userId),
       });
-    });
+      posts.push(formattedPost);
+    }
 
     return plainToClass(GetPostsResponse, {
       pagesCount,

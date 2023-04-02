@@ -3,7 +3,7 @@ import { MetaResponse } from '../meta.response';
 import { ExtendedLikesInfo } from '../extendedLikesInfo.response';
 
 @Exclude()
-class NewestLikes {
+export class NewestLikes {
   @Expose()
   addedAt: Date;
 
@@ -15,7 +15,7 @@ class NewestLikes {
 }
 
 @Exclude()
-class LikesInfo extends ExtendedLikesInfo {
+export class LikesInfo extends ExtendedLikesInfo {
   @Expose()
   newestLikes: NewestLikes[];
 }

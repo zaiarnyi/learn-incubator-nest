@@ -2,14 +2,17 @@ import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { QueryPostRepository } from '../../../infrastructure/database/repositories/posts/query-post.repository';
 import { GetPost } from '../../../presentation/responses/posts/get-all-posts.response';
 import { plainToClass } from 'class-transformer';
-import { StatusCommentEnum } from '../../../domain/posts/enums/status-comment.enum';
+import { GetLikesInfoForPostService } from '../../services/posts/get-likes-info-for-post.service';
 
 @Injectable()
 export class GetPostByIdAction {
   logger = new Logger(GetPostByIdAction.name);
-  constructor(@Inject(QueryPostRepository) private readonly queryRepository: QueryPostRepository) {}
+  constructor(
+    @Inject(QueryPostRepository) private readonly queryRepository: QueryPostRepository,
+    @Inject(GetLikesInfoForPostService) private readonly likesInfoService: GetLikesInfoForPostService,
+  ) {}
 
-  public async execute(id: string): Promise<GetPost> {
+  public async execute(id: string, userId?: string): Promise<GetPost> {
     const postById = await this.queryRepository
       .getPostById(id)
       .then((result) => {
@@ -27,12 +30,7 @@ export class GetPostByIdAction {
     return plainToClass(GetPost, {
       ...postById.toObject(),
       id,
-      extendedLikesInfo: {
-        likesCount: 0,
-        dislikesCount: 0,
-        myStatus: StatusCommentEnum.None,
-        newestLikes: [],
-      },
+      extendedLikesInfo: await this.likesInfoService.likesInfo(id, userId),
     });
   }
 }

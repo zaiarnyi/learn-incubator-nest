@@ -5,7 +5,10 @@ import { MainPostRepository } from '../../../infrastructure/database/repositorie
 import { plainToClass } from 'class-transformer';
 import { GetPost } from '../../../presentation/responses/posts/get-all-posts.response';
 import { QueryPostRepository } from '../../../infrastructure/database/repositories/posts/query-post.repository';
-import { StatusCommentEnum } from '../../../domain/posts/enums/status-comment.enum';
+import { MainLikeStatusPostRepository } from '../../../infrastructure/database/repositories/posts/like-status/main-like-status-post.repository';
+import { LikeStatusPosts } from '../../../domain/posts/like-status/entity/like-status-posts.entity';
+import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
+import { UserQueryRepository } from '../../../infrastructure/database/repositories/users/query.repository';
 
 export class CreatePostAction {
   logger = new Logger(CreatePostAction.name);
@@ -16,6 +19,8 @@ export class CreatePostAction {
 
     @Inject(MainPostRepository)
     private readonly mainRepository: MainPostRepository,
+    @Inject(MainLikeStatusPostRepository) private readonly statusMainRepository: MainLikeStatusPostRepository,
+    @Inject(UserQueryRepository) private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
   private async getBlogById(id: string) {
@@ -38,9 +43,26 @@ export class CreatePostAction {
     return {
       likesCount: 0,
       dislikesCount: 0,
-      myStatus: StatusCommentEnum.None,
+      myStatus: LikeStatusEnum.None,
       newestLikes: [],
     };
+  }
+
+  private async createDefaultStatus(postId: string, userId: string) {
+    const user = await this.userQueryRepository.getUserById(userId).catch((e) => {
+      this.logger.error(
+        `Error when getting a user to create a status for a post with id ${postId}. ${JSON.stringify(e)}`,
+      );
+    });
+    if (!user) return null;
+    const statusPost = new LikeStatusPosts();
+    statusPost.postId = postId;
+    statusPost.like = false;
+    statusPost.dislike = false;
+    statusPost.myStatus = LikeStatusEnum.None;
+    statusPost.userId = userId;
+    statusPost.login = user.login;
+    return this.statusMainRepository.createDefaultStatusForPost(statusPost);
   }
 
   private async validate(blogId: string) {
@@ -50,7 +72,7 @@ export class CreatePostAction {
     }
     return blog;
   }
-  public async execute(payload: CreatePostDto): Promise<GetPost> {
+  public async execute(payload: CreatePostDto, userId: string): Promise<GetPost> {
     const blog = await this.validate(payload.blogId);
     const newPost = new Post();
     newPost.blogName = blog.name;
@@ -59,6 +81,9 @@ export class CreatePostAction {
     newPost.title = payload.title;
     newPost.shortDescription = payload.shortDescription;
     const createdPost = await this.mainRepository.createPost(newPost);
+    await this.createDefaultStatus(createdPost._id.toString(), userId).catch((e) => {
+      this.logger.error(`Error in post status creation. ${JSON.stringify(e)}`);
+    });
 
     return {
       ...plainToClass(GetPost, {
