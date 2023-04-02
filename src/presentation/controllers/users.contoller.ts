@@ -8,7 +8,6 @@ import { plainToClass } from 'class-transformer';
 import { CreateUserAction } from '../../application/actions/users/create-user.action';
 import { DeleteUserAction } from '../../application/actions/users/delete-user.action';
 import { BasicAuthGuard } from '../../domain/auth/guards/basic-auth.guard';
-import { Request } from 'express';
 
 @Controller('users')
 export class UsersController {
