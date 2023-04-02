@@ -15,6 +15,7 @@ import { JwtAuthOptionalGuard } from '../../domain/auth/guards/optional-jwt-auth
 import { ChangeLikeStatusPostAction } from '../../application/actions/posts/change-like-status.action';
 import { CreateCommentForPostRequest } from '../requests/posts/create-comment-for-post.request';
 import { CreateCommentForPostAction } from '../../application/actions/posts/create-comment-for-post.action';
+import { BasicAuthGuard } from '../../domain/auth/guards/basic-auth.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -50,7 +51,7 @@ export class PostsController {
     return this.commentsByPostIdService.execute(id, query, req?.user?.userId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(BasicAuthGuard)
   @Post()
   async createPost(@Body() body: CreatePostRequest, @Req() req: any): Promise<GetPost> {
     return this.createService.execute(body, req?.user?.userId);
@@ -66,7 +67,7 @@ export class PostsController {
     return this.createCommentForPostAction.execute(id, body, req.user.userId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(BasicAuthGuard)
   @Put(':id')
   @HttpCode(204)
   async updatePost(@Param('id') id: string, @Body() body: CreatePostRequest): Promise<void> {
@@ -80,7 +81,7 @@ export class PostsController {
     return this.changeLikeStatusByPostIdService.execute(id, body);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(BasicAuthGuard)
   @Delete(':id')
   @HttpCode(204)
   async deletePostById(@Param('id') id: string): Promise<void> {
