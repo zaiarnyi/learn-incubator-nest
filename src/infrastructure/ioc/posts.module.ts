@@ -68,6 +68,6 @@ import { CommentsModule } from './comments.module';
     GetLikesInfoForPostService,
     CreateCommentForPostAction,
   ],
-  exports: [CreatePostAction, MainPostRepository],
+  exports: [CreatePostAction, MainPostRepository, MainLikeStatusPostRepository],
 })
 export class PostsModule {}

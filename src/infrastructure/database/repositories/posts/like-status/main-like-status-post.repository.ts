@@ -17,4 +17,8 @@ export class MainLikeStatusPostRepository {
   async createDefaultStatusForPost(body: LikeStatusPosts): Promise<LikeStatusPostsDocument> {
     return this.repository.create(body);
   }
+
+  async deleteAll() {
+    return this.repository.deleteMany();
+  }
 }

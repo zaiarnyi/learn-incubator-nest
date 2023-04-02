@@ -12,7 +12,7 @@ import { GetAllBlogsResponse } from '../responses/blogs/get-all-blogs.response';
 import { CreatePostAction } from '../../application/actions/posts/create-post.action';
 import { GetPostByBlogIdAction } from '../../application/actions/blogs/getPostByBlogId.action';
 import { GetPostByBlogIdResponse } from '../responses/blogs/getPostByBlogId.response';
-import { JwtAuthGuard } from '../../domain/auth/guards/jwt-auth.guard';
+import { BasicAuthGuard } from '../../domain/auth/guards/basic-auth.guard';
 
 @Controller('blogs')
 export class BlogsController {
@@ -25,6 +25,7 @@ export class BlogsController {
     private readonly createPostService: CreatePostAction,
     private readonly getPostByBlogIdService: GetPostByBlogIdAction,
   ) {}
+
   @Get()
   async getAllBlogs(@Query() query: GetBlogsRequestWithSearch): Promise<GetAllBlogsResponse> {
     return this.getBlogsService.execute(query);
@@ -40,26 +41,26 @@ export class BlogsController {
     return this.getByIdService.execute(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(BasicAuthGuard)
   @Post()
   async createBlog(@Body() body: CreatePostRequest): Promise<CreateBlogResponse> {
     return this.createBlogService.execute(body);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(BasicAuthGuard)
   @Post('/:id/posts')
   async createPostByBlogId(@Param('id') id: string, @Body() body: CreatePostByBlogIdRequest, @Req() req: any) {
     return this.createPostService.execute({ ...body, blogId: id }, req?.user?.userId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(BasicAuthGuard)
   @Put('/:id')
   @HttpCode(204)
   async updateBlogById(@Param('id') id: string, @Body() body: CreatePostRequest) {
     return this.updateService.execute(id, body);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(BasicAuthGuard)
   @Delete('/:id')
   @HttpCode(204)
   async deleteBlogById(@Param('id') id: string) {

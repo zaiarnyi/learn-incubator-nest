@@ -20,4 +20,8 @@ export class MainLikeStatusRepository {
   async createLikeStatusForComment(body: LikeStatusComment): Promise<LikeStatusCommentDocument> {
     return this.model.create(body);
   }
+
+  async deleteAll() {
+    return this.model.deleteMany();
+  }
 }
