@@ -50,7 +50,6 @@ export class PostsController {
   ): Promise<GetCommentsByPostIdResponse> {
     return this.commentsByPostIdService.execute(id, query, req?.user?.userId);
   }
-
   @UseGuards(BasicAuthGuard)
   @Post()
   async createPost(@Body() body: CreatePostRequest, @Req() req: any): Promise<GetPost> {
