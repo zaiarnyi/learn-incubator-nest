@@ -5,6 +5,7 @@ import { MainBlogsRepository } from '../../infrastructure/database/repositories/
 import { MainCommentsRepository } from '../../infrastructure/database/repositories/comments/main-comments.repository';
 import { MainLikeStatusRepository } from '../../infrastructure/database/repositories/comments/like-status/main-like-status.repository';
 import { MainLikeStatusPostRepository } from '../../infrastructure/database/repositories/posts/like-status/main-like-status-post.repository';
+import { MainSecurityRepository } from '../../infrastructure/database/repositories/security/main-security.repository';
 
 @Controller('/testing')
 export class TestController {
@@ -16,6 +17,7 @@ export class TestController {
     @Inject(MainCommentsRepository) private readonly commentRepository: MainCommentsRepository,
     @Inject(MainLikeStatusRepository) private readonly likeStatusCommentRepository: MainLikeStatusRepository,
     @Inject(MainLikeStatusPostRepository) private readonly likeStatusPostRepository: MainLikeStatusPostRepository,
+    @Inject(MainSecurityRepository) private readonly securityRepository: MainSecurityRepository,
   ) {}
   @Delete('/all-data')
   @HttpCode(204)
@@ -27,6 +29,7 @@ export class TestController {
       this.userRepository.deleteAllUsers(),
       this.likeStatusCommentRepository.deleteAll(),
       this.likeStatusPostRepository.deleteAll(),
+      this.securityRepository.deleteAll(),
     ]).catch((e) => {
       this.logger.error(`Error when deleting all test data. ${JSON.stringify(e, null, 2)}`);
       throw new BadRequestException();

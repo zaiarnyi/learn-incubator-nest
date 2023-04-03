@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { BlogsController } from '../../presentation/controllers/blogs.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Blog, BlogSchema } from '../../domain/blogs/entities/blog.entity';
@@ -29,7 +29,7 @@ import { UsersModule } from './users.module';
         collection: MongoCollections.POSTS,
       },
     ]),
-    PostsModule,
+    forwardRef(() => PostsModule),
     UsersModule,
   ],
   controllers: [BlogsController],

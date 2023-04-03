@@ -23,4 +23,8 @@ export class MainSecurityRepository {
   public async deleteCurrent(deviceId: string) {
     return this.securityRepository.findByIdAndDelete(deviceId);
   }
+
+  public async deleteAll() {
+    return this.securityRepository.deleteMany();
+  }
 }

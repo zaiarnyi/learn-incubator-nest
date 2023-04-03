@@ -11,6 +11,7 @@ import { CacheService } from './infrastructure/cache';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from './infrastructure/rest/http-exception.filter';
 import { AuthModule } from './infrastructure/ioc/auth.module';
+import { SecurityModule } from './infrastructure/ioc/security.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AuthModule } from './infrastructure/ioc/auth.module';
     BlogsModule,
     CommentsModule,
     AuthModule,
+    SecurityModule,
   ],
   controllers: [TestController],
   providers: [

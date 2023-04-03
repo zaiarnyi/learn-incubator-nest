@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { PostsController } from '../../presentation/controllers/posts.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Post, PostSchema } from '../../domain/posts/entities/post.entity';
@@ -11,18 +11,19 @@ import { GetPostByIdAction } from '../../application/actions/posts/get-post-by-i
 import { UpdatePostAction } from '../../application/actions/posts/update-post.action';
 import { DeletePostAction } from '../../application/actions/posts/delete-post.action';
 import { GetPostsAction } from '../../application/actions/posts/get-posts.action';
-import { CommentSchema, Comment } from '../../domain/comments/entities/comment.entity';
+import { Comment, CommentSchema } from '../../domain/comments/entities/comment.entity';
 import { GetCommentsByPostIdAction } from '../../application/actions/posts/get-comments-by-postId.action';
 import { QueryCommentsRepository } from '../database/repositories/comments/query-comments.repository';
 import { LikeStatusPosts, LikeStatusPostsSchema } from '../../domain/posts/like-status/entity/like-status-posts.entity';
 import { ChangeLikeStatusPostAction } from '../../application/actions/posts/change-like-status.action';
-import { UserQueryRepository } from '../database/repositories/users/query.repository';
 import { QueryLikeStatusPostRepository } from '../database/repositories/posts/like-status/query-like-status-post.repository';
 import { MainLikeStatusPostRepository } from '../database/repositories/posts/like-status/main-like-status-post.repository';
 import { UsersModule } from './users.module';
 import { GetLikesInfoForPostService } from '../../application/services/posts/get-likes-info-for-post.service';
 import { CreateCommentForPostAction } from '../../application/actions/posts/create-comment-for-post.action';
 import { CommentsModule } from './comments.module';
+import { ValidateBlogByIdValidator } from '../validators/validateBlogById.validator';
+import { BlogsModule } from './blogs.module';
 
 @Module({
   imports: [
@@ -54,7 +55,8 @@ import { CommentsModule } from './comments.module';
       },
     ]),
     UsersModule,
-    forwardRef(() => CommentsModule),
+    CommentsModule,
+    BlogsModule,
   ],
   controllers: [PostsController],
   providers: [
@@ -72,6 +74,7 @@ import { CommentsModule } from './comments.module';
     MainLikeStatusPostRepository,
     GetLikesInfoForPostService,
     CreateCommentForPostAction,
+    ValidateBlogByIdValidator,
   ],
   exports: [CreatePostAction, MainPostRepository, MainLikeStatusPostRepository, QueryPostRepository],
 })

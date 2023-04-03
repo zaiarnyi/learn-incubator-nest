@@ -8,6 +8,7 @@ import * as cookieParser from 'cookie-parser';
 // import * as compression from 'compression';
 import rateLimit from 'express-rate-limit';
 import { HttpExceptionFilter } from './infrastructure/rest/http-exception.filter';
+import { useContainer } from 'class-validator';
 
 async function bootstrap() {
   try {
@@ -51,6 +52,7 @@ async function bootstrap() {
         },
       }),
     );
+    useContainer(app.select(AppModule), { fallbackOnErrors: true });
     await app.listen(PORT);
     Logger.log(`Server is listening on port ${PORT}`, 'Bootstrap');
   } catch (e) {
