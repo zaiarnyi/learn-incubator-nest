@@ -1,6 +1,8 @@
 # compiled output
 /dist
 /node_modules
+ngrock-config.js
+ngrock-config.js
 
 # Logs
 logs
