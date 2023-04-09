@@ -34,7 +34,6 @@ export class PostsController {
   async getAllPosts(@Query() query: GetPostsRequest, @Req() req: any): Promise<GetPostsResponse> {
     return this.getPostsService.execute(query, req?.user?.userId);
   }
-
   @UseGuards(JwtAuthOptionalGuard)
   @Get(':id')
   async getPostById(@Param('id') id: string, @Req() req: any): Promise<GetPost> {
