@@ -66,11 +66,7 @@ export class CreatePostAction {
   }
 
   private async validate(blogId: string) {
-    const blog = await this.getBlogById(blogId);
-    if (!blog) {
-      throw new NotFoundException();
-    }
-    return blog;
+    return this.getBlogById(blogId);
   }
   public async execute(payload: CreatePostDto, userId: string): Promise<GetPost> {
     const blog = await this.validate(payload.blogId);
