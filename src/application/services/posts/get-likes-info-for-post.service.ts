@@ -12,8 +12,8 @@ export class GetLikesInfoForPostService {
 
   public async likesInfo(postId: string, userId?: string): Promise<LikesInfo | any> {
     const [likesCount, dislikesCount, lastLikes, info] = await Promise.all([
-      this.statusPostRepository.getCountStatuses(postId, 'like'),
-      this.statusPostRepository.getCountStatuses(postId, 'dislike'),
+      this.statusPostRepository.getCountStatuses(postId, LikeStatusEnum.Like),
+      this.statusPostRepository.getCountStatuses(postId, LikeStatusEnum.Dislike),
       this.statusPostRepository.getLastLikesStatus(postId),
       userId && this.statusPostRepository.checkUserStatus(postId, userId),
     ]);

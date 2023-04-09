@@ -5,6 +5,7 @@ import {
   LikeStatusPostsDocument,
 } from '../../../../../domain/posts/like-status/entity/like-status-posts.entity';
 import { Model } from 'mongoose';
+import { LikeStatusEnum } from '../../../../enums/like-status.enum';
 
 @Injectable()
 export class QueryLikeStatusPostRepository {
@@ -19,6 +20,9 @@ export class QueryLikeStatusPostRepository {
   }
 
   async getLastLikesStatus(postId: string): Promise<LikeStatusPostsDocument[]> {
-    return this.repository.find({ postId }).sort({ createdAt: 'desc' }).limit(3);
+    return this.repository
+      .find({ postId, [LikeStatusEnum.Like]: true })
+      .sort({ createdAt: 'desc' })
+      .limit(3);
   }
 }
