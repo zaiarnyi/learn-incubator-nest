@@ -21,7 +21,7 @@ export class QueryLikeStatusPostRepository {
 
   async getLastLikesStatus(postId: string): Promise<LikeStatusPostsDocument[]> {
     return this.repository
-      .find({ postId, [LikeStatusEnum.Like.toUpperCase()]: true })
+      .find({ postId, [LikeStatusEnum.Like.toLowerCase()]: true })
       .sort({ createdAt: 'desc' })
       .limit(3);
   }
