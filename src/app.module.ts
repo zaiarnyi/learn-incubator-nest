@@ -8,10 +8,11 @@ import { CommentsModule } from './infrastructure/ioc/comments.module';
 import { TestController } from './presentation/controllers/test.controller';
 import { ConfigModule } from '@nestjs/config';
 import { CacheService } from './infrastructure/cache';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { HttpExceptionFilter } from './infrastructure/rest/http-exception.filter';
 import { AuthModule } from './infrastructure/ioc/auth.module';
 import { SecurityModule } from './infrastructure/ioc/security.module';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -22,6 +23,10 @@ import { SecurityModule } from './infrastructure/ioc/security.module';
     CacheModule.registerAsync({
       useClass: CacheService,
     }),
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 5,
+    }),
     UsersModule,
     PostsModule,
     BlogsModule,
@@ -31,6 +36,10 @@ import { SecurityModule } from './infrastructure/ioc/security.module';
   ],
   controllers: [TestController],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,

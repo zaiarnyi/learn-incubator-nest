@@ -7,4 +7,5 @@ export const enum MongoCollections {
   SECURITY = 'security',
   COMMENT_LIKE_STATUSES = 'comment_like_statuses',
   POST_LIKE_STATUSES = 'post_like_statuses',
+  INVALID_USER_TOKENS = 'invalid_user_tokens',
 }

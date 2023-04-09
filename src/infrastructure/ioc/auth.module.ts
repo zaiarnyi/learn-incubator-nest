@@ -18,6 +18,7 @@ import { JwtConfigService } from '../configs/jwt/jwt.config';
 import { JwtStrategy } from '../../domain/auth/strategies/jwt.stategy';
 import { BasicStrategy } from '../../domain/auth/strategies/basic.strategy';
 import { SecurityModule } from './security.module';
+import { InvalidTokensModule } from './invalidTokens.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { SecurityModule } from './security.module';
       useClass: JwtConfigService,
     }),
     SecurityModule,
+    // InvalidTokensModule,
   ],
   controllers: [AuthController],
   providers: [

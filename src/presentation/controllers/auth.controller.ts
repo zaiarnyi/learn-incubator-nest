@@ -34,6 +34,9 @@ import { plainToClass } from 'class-transformer';
 import { MainSecurityRepository } from '../../infrastructure/database/repositories/security/main-security.repository';
 import { DeviceDto } from '../../domain/security/dto/device.dto';
 import { LoginRequest } from '../requests/auth/login.request';
+import { Throttle } from '@nestjs/throttler';
+import { JwtService } from '@nestjs/jwt';
+import { InvalidUserTokensService } from '../../application/services/invalid-tokens/invalid-user-tokens.service';
 
 @Controller('auth')
 export class AuthController {
@@ -53,6 +56,8 @@ export class AuthController {
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(RefreshTokenAction) private readonly refreshTokenService: RefreshTokenAction,
     @Inject(MainSecurityRepository) private readonly securityRepository: MainSecurityRepository,
+    // @Inject(InvalidUserTokensService) private readonly tokensRepository: InvalidUserTokensService,
+    @Inject(JwtService) private readonly jwtService: JwtService,
   ) {
     this.httpOnly = this.configService.get<string>('HTTPS_ONLY_COOKIES') === 'true';
     this.secure = this.configService.get<string>('SECURITY_COOKIE') === 'true';
@@ -71,6 +76,7 @@ export class AuthController {
     return this.newPasswordService.execute(body);
   }
 
+  @Throttle(5, 60)
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() req: any, @Res({ passthrough: true }) response: Response, @Body() body: LoginRequest) {
@@ -93,17 +99,19 @@ export class AuthController {
   @Post('refresh-token')
   async createRefreshToken(@Cookies('refreshToken') token: string, @Res({ passthrough: true }) response: Response) {
     const { accessToken, refreshToken } = await this.refreshTokenService.execute(token);
-
+    // await this.tokensRepository.saveToken(token);
     response.cookie('refreshToken', refreshToken, { httpOnly: this.httpOnly, secure: this.secure });
     response.status(200).json({ accessToken });
   }
 
+  @Throttle(5, 60)
   @Post('registration-confirmation')
   @HttpCode(204)
   async registrationConfirmation(@Body() body: RegistrationConfirmationRequest) {
     await this.confirmationService.execute(body.code);
   }
 
+  @Throttle(5, 60)
   @Post('registration')
   async registration(@Body() body: RegistrationRequest, @Res() res: Response) {
     const detectUser = await this.queryUserRepository.getUserByEmailOrLogin(body.login, body.email);
@@ -118,6 +126,7 @@ export class AuthController {
     res.status(200).json(registration);
   }
 
+  @Throttle(5, 60)
   @Post('registration-email-resending')
   @HttpCode(204)
   async registrationEmailResending(@Body() body: CheckEmail): Promise<void> {
@@ -129,7 +138,19 @@ export class AuthController {
   }
 
   @Post('logout')
-  async logout(@Res() response: Response) {
+  async logout(@Res() response: Response, @Cookies('refreshToken') token?: string) {
+    if (token) {
+      // const checkToken = await this.tokensRepository.checkTokenFromUsers(token);
+      // if (checkToken) {
+      //   throw new UnauthorizedException();
+      // }
+      try {
+        await this.jwtService.verify(token);
+      } catch (e) {
+        throw new UnauthorizedException();
+      }
+      // await this.tokensRepository.saveToken(token);
+    }
     response.clearCookie('refreshToken').sendStatus(204);
     return;
   }
