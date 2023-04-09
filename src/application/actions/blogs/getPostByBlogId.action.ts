@@ -8,11 +8,15 @@ import {
 import { validateOrReject } from 'class-validator';
 import { plainToClass } from 'class-transformer';
 import { CreateBlogResponse } from '../../../presentation/responses/blogs/create-blog.response';
+import { GetLikesInfoForPostService } from '../../services/posts/get-likes-info-for-post.service';
 
 @Injectable()
 export class GetPostByBlogIdAction {
   logger = new Logger(GetPostByBlogIdAction.name);
-  constructor(@Inject(QueryBlogsRepository) private readonly queryRepository: QueryBlogsRepository) {}
+  constructor(
+    @Inject(QueryBlogsRepository) private readonly queryRepository: QueryBlogsRepository,
+    @Inject(GetLikesInfoForPostService) private readonly likesInfoService: GetLikesInfoForPostService,
+  ) {}
   private async validate(id: string): Promise<void> {
     const blog = await this.queryRepository.getBlogById(id).catch((e) => {
       this.logger.warn(`Error when receiving a blog with id - ${id}. ${JSON.stringify(e, null, 2)}`);
@@ -24,7 +28,7 @@ export class GetPostByBlogIdAction {
     }
   }
 
-  public async execute(id: string, query: GetPostByBlogIdDto): Promise<GetPostByBlogIdResponse> {
+  public async execute(id: string, query: GetPostByBlogIdDto, userId?: string): Promise<GetPostByBlogIdResponse> {
     await this.validate(id);
 
     const { pageSize, pageNumber, sortBy, sortDirection } = query;
@@ -33,26 +37,22 @@ export class GetPostByBlogIdAction {
     const pagesCount = Math.ceil(totalCount / pageSize);
 
     const postsRaw = await this.queryRepository.getPostByBlogId(id, skip, pageSize, sortBy, sortDirection);
-
-    const post = postsRaw.map((item) => {
-      return plainToClass(PostByBlogItem, {
-        ...item,
-        id: item._id.toString(),
-        extendedLikesInfo: {
-          likesCount: 0,
-          dislikesCount: 0,
-          myStatus: 'None',
-          newestLikes: [],
-        },
+    const posts = [];
+    for (const el of postsRaw) {
+      const item = plainToClass(PostByBlogItem, {
+        ...el,
+        id: el._id.toString(),
+        extendedLikesInfo: await this.likesInfoService.likesInfo(id, userId),
       });
-    });
+      posts.push(item);
+    }
 
     return {
       pagesCount,
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount,
-      items: post,
+      items: posts,
     };
   }
 }

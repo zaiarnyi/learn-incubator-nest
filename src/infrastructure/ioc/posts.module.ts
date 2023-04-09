@@ -76,6 +76,12 @@ import { BlogsModule } from './blogs.module';
     CreateCommentForPostAction,
     ValidateBlogByIdValidator,
   ],
-  exports: [CreatePostAction, MainPostRepository, MainLikeStatusPostRepository, QueryPostRepository],
+  exports: [
+    CreatePostAction,
+    MainPostRepository,
+    MainLikeStatusPostRepository,
+    QueryPostRepository,
+    GetLikesInfoForPostService,
+  ],
 })
 export class PostsModule {}

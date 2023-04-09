@@ -13,6 +13,7 @@ import { CreatePostAction } from '../../application/actions/posts/create-post.ac
 import { GetPostByBlogIdAction } from '../../application/actions/blogs/getPostByBlogId.action';
 import { GetPostByBlogIdResponse } from '../responses/blogs/getPostByBlogId.response';
 import { BasicAuthGuard } from '../../domain/auth/guards/basic-auth.guard';
+import { JwtAuthOptionalGuard } from '../../domain/auth/guards/optional-jwt-auth.guard';
 
 @Controller('blogs')
 export class BlogsController {
@@ -31,9 +32,14 @@ export class BlogsController {
     return this.getBlogsService.execute(query);
   }
 
+  @UseGuards(JwtAuthOptionalGuard)
   @Get('/:id/posts')
-  async getPostByBlogId(@Param('id') id: string, @Query() query: GetBlogsRequest): Promise<GetPostByBlogIdResponse> {
-    return this.getPostByBlogIdService.execute(id, query);
+  async getPostByBlogId(
+    @Param('id') id: string,
+    @Query() query: GetBlogsRequest,
+    @Req() req: any,
+  ): Promise<GetPostByBlogIdResponse> {
+    return this.getPostByBlogIdService.execute(id, query, req?.user?.userId);
   }
 
   @Get('/:id')
