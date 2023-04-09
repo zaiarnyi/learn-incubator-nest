@@ -38,6 +38,7 @@ export class GetPostByBlogIdAction {
 
     const postsRaw = await this.queryRepository.getPostByBlogId(id, skip, pageSize, sortBy, sortDirection);
     const posts = [];
+
     for (const el of postsRaw) {
       const item = plainToClass(PostByBlogItem, {
         ...el,
