@@ -12,7 +12,7 @@ export class QueryLikeStatusPostRepository {
   constructor(@InjectModel(LikeStatusPosts.name) private readonly repository: Model<LikeStatusPostsDocument>) {}
 
   async getCountStatuses(postId: string, status: string): Promise<number> {
-    return this.repository.find({ postId, [status]: true }).count();
+    return this.repository.find({ postId, [status.toLowerCase()]: true }).count();
   }
 
   async checkUserStatus(postId: string, userId: string) {
