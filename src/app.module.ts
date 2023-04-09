@@ -29,7 +29,7 @@ import { SecurityModule } from './infrastructure/ioc/security.module';
     AuthModule,
     SecurityModule,
   ],
-  controllers: [TestController],
+  controllers: [],
   providers: [
     {
       provide: APP_FILTER,
