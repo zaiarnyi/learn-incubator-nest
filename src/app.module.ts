@@ -22,11 +22,11 @@ import { SecurityModule } from './infrastructure/ioc/security.module';
     CacheModule.registerAsync({
       useClass: CacheService,
     }),
-    // UsersModule,
+    UsersModule,
     // PostsModule,
     // BlogsModule,
     // CommentsModule,
-    // AuthModule,
+    AuthModule,
     SecurityModule,
   ],
   controllers: [TestController],
