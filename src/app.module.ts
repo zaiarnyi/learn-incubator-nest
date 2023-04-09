@@ -23,7 +23,7 @@ import { SecurityModule } from './infrastructure/ioc/security.module';
       useClass: CacheService,
     }),
     UsersModule,
-    // PostsModule,
+    PostsModule,
     // BlogsModule,
     // CommentsModule,
     AuthModule,
