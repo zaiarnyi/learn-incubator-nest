@@ -40,6 +40,8 @@ export class AuthController {
   private logger = new Logger(AuthController.name);
   httpOnly = true;
   secure = true;
+  isDev = false;
+
   constructor(
     @Inject(UserQueryRepository) private readonly queryUserRepository: UserQueryRepository,
     @Inject(RegistrationActions) private readonly registrationService: RegistrationActions,
@@ -54,7 +56,9 @@ export class AuthController {
   ) {
     this.httpOnly = this.configService.get<string>('HTTPS_ONLY_COOKIES') === 'true';
     this.secure = this.configService.get<string>('SECURITY_COOKIE') === 'true';
+    this.isDev = this.configService.get<string>('NODE_ENV') === 'development';
   }
+
   @Post('password-recovery')
   @HttpCode(204)
   async passwordRecovery(@Body() body: CheckEmail): Promise<void> {
@@ -66,6 +70,7 @@ export class AuthController {
   async createNewPassword(@Body() body: NewPasswordRequest): Promise<void> {
     return this.newPasswordService.execute(body);
   }
+
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() req: any, @Res({ passthrough: true }) response: Response, @Body() body: LoginRequest) {
@@ -100,14 +105,17 @@ export class AuthController {
   }
 
   @Post('registration')
-  @HttpCode(204)
-  async registration(@Body() body: RegistrationRequest) {
+  async registration(@Body() body: RegistrationRequest, @Res() res: Response) {
     const detectUser = await this.queryUserRepository.getUserByEmailOrLogin(body.login, body.email);
     if (detectUser) {
       const filed = body.login === detectUser.login ? 'login' : 'email';
       throw new BadRequestException([{ message: 'A user already exists', field: filed }]);
     }
-    return this.registrationService.execute(body);
+    const registration = await this.registrationService.execute(body);
+    if (!this.isDev) {
+      return res.sendStatus(204);
+    }
+    res.status(200).json(registration);
   }
 
   @Post('registration-email-resending')

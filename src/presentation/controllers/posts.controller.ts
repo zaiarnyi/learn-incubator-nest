@@ -76,8 +76,12 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Put(':id/like-status')
   @HttpCode(204)
-  async changeLikeStatusByPostId(@Param('id') id: string, @Body() body: ChangeLikeStatusPostByIdRequest) {
-    return this.changeLikeStatusByPostIdService.execute(id, body);
+  async changeLikeStatusByPostId(
+    @Param('id') id: string,
+    @Body() body: ChangeLikeStatusPostByIdRequest,
+    @Req() req: any,
+  ) {
+    return this.changeLikeStatusByPostIdService.execute(id, body, req.user.userId);
   }
 
   @UseGuards(BasicAuthGuard)

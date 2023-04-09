@@ -6,6 +6,7 @@ import { generateCode } from '../../../utils/generateCode';
 import { MainActivateCodeRepository } from '../../../infrastructure/database/repositories/activate-code/main-activate-code.repository';
 import { UserMainRepository } from '../../../infrastructure/database/repositories/users/main.repository';
 import { ActivateCodeEnum } from '../../../infrastructure/database/entity/activate-code.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RegistrationActions {
@@ -15,6 +16,7 @@ export class RegistrationActions {
     @Inject(MainActivateCodeRepository) private readonly activateRepository: MainActivateCodeRepository,
     @Inject(UserMainRepository)
     private readonly mainUserRepository: UserMainRepository,
+    @Inject(ConfigService) private readonly configService: ConfigService,
   ) {}
 
   public async execute(payload: CreateUserDto) {
@@ -22,8 +24,15 @@ export class RegistrationActions {
     const code = generateCode(6);
 
     try {
-      await this.emailService.registration(payload.email, code);
-      await this.activateRepository.saveRegActivation(code, users._id.toString(), ActivateCodeEnum.REGISTRATION);
+      const isDev = this.configService.get<string>('NODE_ENV') === 'development';
+      await Promise.all([
+        this.activateRepository.saveRegActivation(code, users._id.toString(), ActivateCodeEnum.REGISTRATION),
+        !isDev && this.emailService.registration(payload.email, code),
+      ]);
+      console.log(isDev, 'isDev');
+      if (isDev) {
+        return { code };
+      }
     } catch (e) {
       await this.mainUserRepository.changeStatusSendEmail(users._id.toString(), false);
     }
