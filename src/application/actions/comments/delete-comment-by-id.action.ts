@@ -15,7 +15,7 @@ export class DeleteCommentByIdAction {
       this.logger.error(`Error in getting a comment - ${id}. ${JSON.stringify(e)}`);
       throw new NotFoundException();
     });
-    this.logger.log(comment, 'delete comment');
+    this.logger.log(comment);
     if (!comment) {
       throw new NotFoundException();
     }
@@ -23,8 +23,9 @@ export class DeleteCommentByIdAction {
       throw new ForbiddenException();
     }
 
-    await this.repository.removeCommentById(id).catch((e) => {
+    const res = await this.repository.removeCommentById(id).catch((e) => {
       this.logger.error(`Error when deleting a comment - ${id}. ${JSON.stringify(e)}`);
     });
+    this.logger.warn(res);
   }
 }

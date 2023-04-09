@@ -12,7 +12,10 @@ import rateLimit from 'express-rate-limit';
 
 async function bootstrap() {
   try {
-    const app = await NestFactory.create(AppModule);
+    const app = await NestFactory.create(AppModule, {
+      cors: true,
+      logger: ['error', 'warn', 'log'],
+    });
     const configService = app.get(ConfigService);
     const PORT = +configService.get('PORT', '3005');
 
