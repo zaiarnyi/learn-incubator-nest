@@ -100,7 +100,7 @@ export class AuthController {
   @Post('refresh-token')
   async createRefreshToken(@Cookies('refreshToken') token: string, @Res({ passthrough: true }) response: Response) {
     const checkToken = await this.tokensRepository.checkTokenFromUsers(token);
-    if (!checkToken) {
+    if (checkToken) {
       throw new UnauthorizedException();
     }
 

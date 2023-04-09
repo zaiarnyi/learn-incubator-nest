@@ -10,6 +10,7 @@ import { SecurityController } from '../../presentation/controllers/security.cont
 import { GetDevicesAction } from '../../application/actions/security/get-devices.action';
 import { DeleteDevicesAction } from '../../application/actions/security/delete-devices.action';
 import { DeleteCurrentDeviceAction } from '../../application/actions/security/delete-current-device.action';
+import { InvalidTokensModule } from './invalidTokens.module';
 
 @Module({
   imports: [
