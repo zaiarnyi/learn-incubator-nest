@@ -54,6 +54,7 @@ async function bootstrap() {
     );
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
     await app.listen(PORT);
+
     Logger.log(`Server is listening on port ${PORT}`, 'Bootstrap');
   } catch (e) {
     Logger.error(`❌ Error starting server, ${e}`, '', 'Bootstrap', false);
