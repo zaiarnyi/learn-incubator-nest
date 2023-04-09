@@ -18,7 +18,7 @@ async function bootstrap() {
 
     app.enableCors();
     app.use(helmet());
-    // app.use(compression());
+    //  app.use(compression());
     app.use(cookieParser());
     app.use(bodyParser.json({ limit: '50mb' }));
     app.use(
