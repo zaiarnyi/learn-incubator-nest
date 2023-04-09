@@ -10,8 +10,8 @@ import { Model } from 'mongoose';
 export class MainLikeStatusPostRepository {
   constructor(@InjectModel(LikeStatusPosts.name) private readonly repository: Model<LikeStatusPostsDocument>) {}
 
-  async changePostMyStatus(id: string, status: string, userId: string) {
-    this.repository.findOneAndUpdate({ postId: id, userId }, { myStatus: status });
+  async changePostMyStatus(id: string, body: LikeStatusPosts) {
+    return this.repository.findOneAndUpdate({ postId: id, userId: body.userId }, body);
   }
 
   async createDefaultStatusForPost(body: LikeStatusPosts): Promise<LikeStatusPostsDocument> {
