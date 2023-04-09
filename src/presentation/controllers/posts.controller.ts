@@ -39,7 +39,6 @@ export class PostsController {
   async getPostById(@Param('id') id: string, @Req() req: any): Promise<GetPost> {
     return this.getPostByIdService.execute(id, req?.user?.userId);
   }
-
   @UseGuards(JwtAuthOptionalGuard)
   @Get(':id/comments')
   async getCommentsByPostId(
