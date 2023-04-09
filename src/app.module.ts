@@ -24,7 +24,7 @@ import { SecurityModule } from './infrastructure/ioc/security.module';
     }),
     UsersModule,
     PostsModule,
-    // BlogsModule,
+    BlogsModule,
     CommentsModule,
     AuthModule,
     SecurityModule,
