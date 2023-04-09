@@ -16,12 +16,12 @@ export class UpdateBlogAction {
       .then((res) => {
         if (!res) {
           this.logger.warn(`Error when updating the blog with ID - ${id}`);
-          throw new NotFoundException('Not found');
+          throw new NotFoundException();
         }
       })
       .catch((e) => {
         this.logger.error(`Error when updating the blog with ID - ${id}. ${JSON.stringify(e)}`);
-        throw new NotFoundException('Not found');
+        throw new NotFoundException();
       });
   }
 }

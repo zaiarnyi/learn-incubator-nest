@@ -13,7 +13,7 @@ export class GetBlogByIdAction {
   async execute(id: string): Promise<CreateBlogResponse> {
     const findBlog = await this.queryRepository.getBlogById(id).catch((e) => {
       this.logger.error(`I can't find the blog. ID: ${id}`);
-      throw new NotFoundException('Not Found');
+      throw new NotFoundException();
     });
     if (!findBlog) {
       throw new NotFoundException();

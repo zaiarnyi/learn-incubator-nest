@@ -17,7 +17,7 @@ export class MainCommentsRepository {
   }
 
   async removeCommentById(id): Promise<DeleteResult> {
-    return this.commentModel.deleteOne({ id });
+    return this.commentModel.findByIdAndRemove(id);
   }
 
   async removeAllComments(): Promise<DeleteResult> {

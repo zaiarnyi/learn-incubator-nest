@@ -21,7 +21,7 @@ export class GetPostsAction {
 
     const postsRaw = await this.queryRepository.getPost(pageSize, skip, sortBy, sortDirection).catch((e) => {
       this.logger.error(`There was an error in receiving the post data.  ${JSON.stringify(e, null, 2)}`);
-      throw new BadRequestException('');
+      throw new BadRequestException();
     });
 
     const posts = [];

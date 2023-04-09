@@ -18,13 +18,13 @@ export class GetPostByIdAction {
       .then((result) => {
         if (!result) {
           this.logger.log(`The post with id - ${id} was not found`);
-          throw new NotFoundException('Not Found');
+          throw new NotFoundException();
         }
         return result;
       })
       .catch((e) => {
         this.logger.error(`Error in getting the post by id: ${id}. ${JSON.stringify(e, null, 2)}`);
-        throw new NotFoundException('Not Found');
+        throw new NotFoundException();
       });
 
     return plainToClass(GetPost, {

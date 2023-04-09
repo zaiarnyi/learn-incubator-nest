@@ -16,12 +16,12 @@ export class DeleteBlogByIdAction {
       .then((res) => {
         if (!res) {
           this.logger.warn(`Error when deleting a blog with ID - ${id}`);
-          throw new NotFoundException('Not Found');
+          throw new NotFoundException();
         }
       })
       .catch((e) => {
         this.logger.error(`Error when deleting a blog with ID - ${id}`);
-        throw new NotFoundException('Not Found');
+        throw new NotFoundException();
       });
   }
 }

@@ -29,13 +29,13 @@ export class CreatePostAction {
       .then((res) => {
         if (!res) {
           this.logger.warn(`Not found blog with ID: ${id}`);
-          throw new NotFoundException('Not Found');
+          throw new NotFoundException();
         }
         return res;
       })
       .catch(() => {
         this.logger.error(`Not found blog with ID: ${id}`);
-        throw new NotFoundException('Not Found');
+        throw new NotFoundException();
       });
   }
 

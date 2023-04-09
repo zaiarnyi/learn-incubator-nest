@@ -12,12 +12,12 @@ export class DeleteUserAction {
       .then((res) => {
         if (!res) {
           this.logger.warn(`Not found user with ID - ${id}`);
-          throw new NotFoundException('If specified user is not exists');
+          throw new NotFoundException();
         }
       })
       .catch(() => {
         this.logger.error(`Error deleting user with ID - ${id}`);
-        throw new NotFoundException('If specified user is not exists');
+        throw new NotFoundException();
       });
   }
 }

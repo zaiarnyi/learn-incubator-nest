@@ -18,31 +18,31 @@ export class UpdatePostAction {
         .then((result) => {
           if (!result) {
             this.logger.log(`The post with id - ${id} was not found`);
-            throw new NotFoundException('Not Found');
+            throw new NotFoundException();
           }
           return result;
         })
         .catch((e) => {
           this.logger.error(`Error in getting the post by id: ${id}. ${JSON.stringify(e, null, 2)}`);
-          throw new NotFoundException('Not Found');
+          throw new NotFoundException();
         }),
       this.queryRepository
         .getPostByBlogId(payload.blogId)
         .then((result) => {
           if (!result) {
             this.logger.log(`The blog with id - ${payload.blogId} was not found`);
-            throw new NotFoundException('Not Found');
+            throw new NotFoundException();
           }
           return result;
         })
         .catch((e) => {
           this.logger.error(`Error in getting the post by id: ${id}. ${JSON.stringify(e, null, 2)}`);
-          throw new NotFoundException('Not Found');
+          throw new NotFoundException();
         }),
     ]);
     await this.repository.updatePost(id, payload).catch((e) => {
       this.logger.error(`Error when updating the post by id: ${id}. ${JSON.stringify(e, null, 2)}`);
-      throw new NotFoundException('Not Found');
+      throw new NotFoundException();
     });
   }
 }
