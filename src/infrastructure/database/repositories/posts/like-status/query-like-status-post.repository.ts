@@ -19,6 +19,6 @@ export class QueryLikeStatusPostRepository {
   }
 
   async getLastLikesStatus(postId: string): Promise<LikeStatusPostsDocument[]> {
-    return this.repository.find({ postId }).sort({ createdAt: 'desc' }).limit(3);
+    return this.repository.find({ postId }).sort({ createdAt: 'asc' }).limit(3);
   }
 }
