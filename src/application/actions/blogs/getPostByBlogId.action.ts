@@ -42,7 +42,7 @@ export class GetPostByBlogIdAction {
       const item = plainToClass(PostByBlogItem, {
         ...el,
         id: el._id.toString(),
-        extendedLikesInfo: await this.likesInfoService.likesInfo(id, userId),
+        extendedLikesInfo: await this.likesInfoService.likesInfo(el._id.toString(), userId),
       });
       posts.push(item);
     }
