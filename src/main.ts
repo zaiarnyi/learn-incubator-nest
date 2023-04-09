@@ -17,42 +17,42 @@ async function bootstrap() {
     const PORT = +configService.get('PORT', '3005');
 
     app.enableCors();
-    // app.use(helmet());
-    // // app.use(compression());
-    // app.use(cookieParser());
-    // app.use(bodyParser.json({ limit: '50mb' }));
-    // app.use(
-    //   bodyParser.urlencoded({
-    //     limit: '50mb',
-    //     extended: true,
-    //     parameterLimit: 50000,
-    //   }),
-    // );
-    //
-    // app.use(
-    //   rateLimit({
-    //     windowMs: 1000 * 60 * 60,
-    //     max: 1000, // 1000 requests per windowMs
-    //     message: '⚠️ Too many request created from this IP, please try again after an hour',
-    //   }),
-    // );
-    // app.useGlobalFilters(new HttpExceptionFilter());
-    // app.useGlobalPipes(
-    //   new ValidationPipe({
-    //     transform: true,
-    //     stopAtFirstError: true,
-    //     // errorHttpStatusCode: HttpStatus.BAD_REQUEST,
-    //     transformOptions: { enableImplicitConversion: true },
-    //     exceptionFactory: (errors) => {
-    //       const err = errors.map((item) => ({
-    //         message: Object.values(item.constraints)[0],
-    //         field: item.property,
-    //       }));
-    //       throw new BadRequestException(err);
-    //     },
-    //   }),
-    // );
-    // useContainer(app.select(AppModule), { fallbackOnErrors: true });
+    app.use(helmet());
+    // app.use(compression());
+    app.use(cookieParser());
+    app.use(bodyParser.json({ limit: '50mb' }));
+    app.use(
+      bodyParser.urlencoded({
+        limit: '50mb',
+        extended: true,
+        parameterLimit: 50000,
+      }),
+    );
+
+    app.use(
+      rateLimit({
+        windowMs: 1000 * 60 * 60,
+        max: 1000, // 1000 requests per windowMs
+        message: '⚠️ Too many request created from this IP, please try again after an hour',
+      }),
+    );
+    app.useGlobalFilters(new HttpExceptionFilter());
+    app.useGlobalPipes(
+      new ValidationPipe({
+        transform: true,
+        stopAtFirstError: true,
+        // errorHttpStatusCode: HttpStatus.BAD_REQUEST,
+        transformOptions: { enableImplicitConversion: true },
+        exceptionFactory: (errors) => {
+          const err = errors.map((item) => ({
+            message: Object.values(item.constraints)[0],
+            field: item.property,
+          }));
+          throw new BadRequestException(err);
+        },
+      }),
+    );
+    useContainer(app.select(AppModule), { fallbackOnErrors: true });
     await app.listen(PORT);
     Logger.log(`Server is listening on port ${PORT}`, 'Bootstrap');
   } catch (e) {

@@ -27,7 +27,7 @@ import { SecurityModule } from './infrastructure/ioc/security.module';
     // BlogsModule,
     // CommentsModule,
     // AuthModule,
-    // SecurityModule,
+    SecurityModule,
   ],
   controllers: [TestController],
   providers: [
