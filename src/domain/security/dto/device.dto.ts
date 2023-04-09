@@ -9,4 +9,7 @@ export class DeviceDto {
 
   @IsString()
   userId: string;
+
+  @IsString()
+  userAgent: string;
 }

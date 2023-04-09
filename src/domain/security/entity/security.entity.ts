@@ -23,6 +23,9 @@ export class Security {
 
   @Prop({ type: String, isRequired: true })
   userId: string;
+
+  @Prop({ type: String, isRequired: true })
+  userAgent: string;
 }
 
 export const SecuritySchema = SchemaFactory.createForClass(Security);

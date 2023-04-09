@@ -9,10 +9,6 @@ export class MainSecurityRepository {
 
   public async insertDevice(device: DeviceDto | null): Promise<SecurityDocument | UpdateResult> {
     if (!device) return;
-    const hasUserDevice = await this.securityRepository.findOne({ userId: device.userId });
-    if (hasUserDevice) {
-      return this.securityRepository.findOneAndUpdate({ userId: device.userId }, device);
-    }
     return this.securityRepository.create(device);
   }
 

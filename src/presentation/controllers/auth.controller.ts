@@ -56,7 +56,7 @@ export class AuthController {
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(RefreshTokenAction) private readonly refreshTokenService: RefreshTokenAction,
     @Inject(MainSecurityRepository) private readonly securityRepository: MainSecurityRepository,
-    // @Inject(InvalidUserTokensService) private readonly tokensRepository: InvalidUserTokensService,
+    @Inject(InvalidUserTokensService) private readonly tokensRepository: InvalidUserTokensService,
     @Inject(JwtService) private readonly jwtService: JwtService,
   ) {
     this.httpOnly = this.configService.get<string>('HTTPS_ONLY_COOKIES') === 'true';
@@ -85,6 +85,7 @@ export class AuthController {
     devicePrepare.ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.socket.remoteAddress || null;
     devicePrepare.userId = userId;
     devicePrepare.title = 'security Name';
+    devicePrepare.title = req.headers['user-agent'];
 
     const device = await this.securityRepository.insertDevice(devicePrepare).catch((e) => {
       this.logger.error(`Error when saving device information. Error: ${JSON.stringify(e)}`);
@@ -98,8 +99,13 @@ export class AuthController {
 
   @Post('refresh-token')
   async createRefreshToken(@Cookies('refreshToken') token: string, @Res({ passthrough: true }) response: Response) {
+    const checkToken = await this.tokensRepository.checkTokenFromUsers(token);
+    if (!checkToken) {
+      throw new UnauthorizedException();
+    }
+
     const { accessToken, refreshToken } = await this.refreshTokenService.execute(token);
-    // await this.tokensRepository.saveToken(token);
+    await this.tokensRepository.saveToken(token);
     response.cookie('refreshToken', refreshToken, { httpOnly: this.httpOnly, secure: this.secure });
     response.status(200).json({ accessToken });
   }
@@ -139,20 +145,20 @@ export class AuthController {
 
   @Post('logout')
   async logout(@Res() response: Response, @Cookies('refreshToken') token?: string) {
-    if (token) {
-      // const checkToken = await this.tokensRepository.checkTokenFromUsers(token);
-      // if (checkToken) {
-      //   throw new UnauthorizedException();
-      // }
-      try {
-        await this.jwtService.verify(token);
-      } catch (e) {
-        throw new UnauthorizedException();
-      }
-      // await this.tokensRepository.saveToken(token);
+    if (!token) {
+      throw new UnauthorizedException();
     }
+    const checkToken = await this.tokensRepository.checkTokenFromUsers(token);
+    if (checkToken) {
+      throw new UnauthorizedException();
+    }
+    try {
+      await this.jwtService.verify(token);
+    } catch (e) {
+      throw new UnauthorizedException();
+    }
+    await this.tokensRepository.saveToken(token);
     response.clearCookie('refreshToken').sendStatus(204);
-    return;
   }
 
   @UseGuards(JwtAuthGuard)

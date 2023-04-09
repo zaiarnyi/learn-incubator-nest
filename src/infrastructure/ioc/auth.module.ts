@@ -30,7 +30,7 @@ import { InvalidTokensModule } from './invalidTokens.module';
       useClass: JwtConfigService,
     }),
     SecurityModule,
-    // InvalidTokensModule,
+    InvalidTokensModule,
   ],
   controllers: [AuthController],
   providers: [
