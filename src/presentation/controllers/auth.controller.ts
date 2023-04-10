@@ -119,7 +119,6 @@ export class AuthController {
     const { accessToken, refreshToken } = await this.refreshTokenService.execute(token);
 
     const findDevice = await this.securityRepository.getDevice(deviceId);
-    await this.tokensRepository.saveToken(token);
     await Promise.all([
       this.tokensRepository.saveToken(token),
       findDevice && this.securityRepository.updateDevice(findDevice),
