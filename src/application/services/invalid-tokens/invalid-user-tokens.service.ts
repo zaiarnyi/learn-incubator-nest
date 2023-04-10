@@ -10,7 +10,7 @@ export class InvalidUserTokensService {
   constructor(@InjectModel(InvalidTokens.name) private model: Model<InvalidTokensDocument>) {}
 
   public async checkTokenFromUsers(token: string): Promise<boolean> {
-    return !!this.model.findOne({ token });
+    return !!(await this.model.findOne({ token }));
   }
 
   public async saveToken(token: string): Promise<InvalidTokensDocument> {
