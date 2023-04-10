@@ -8,7 +8,6 @@ import { InvalidUserTokensService } from '../../application/services/invalid-tok
 import { JwtService } from '@nestjs/jwt';
 import { SkipThrottle } from '@nestjs/throttler';
 
-@SkipThrottle()
 @Controller('security')
 export class SecurityController {
   constructor(

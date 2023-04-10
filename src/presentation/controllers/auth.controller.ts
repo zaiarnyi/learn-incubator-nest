@@ -63,13 +63,11 @@ export class AuthController {
     this.secure = this.configService.get<string>('SECURITY_COOKIE') === 'true';
     this.isDev = this.configService.get<string>('NODE_ENV') === 'development';
   }
-  @SkipThrottle()
   @Post('password-recovery')
   @HttpCode(204)
   async passwordRecovery(@Body() body: CheckEmail): Promise<void> {
     return this.recoveryService.execute(body.email);
   }
-  @SkipThrottle()
   @Post('new-password')
   @HttpCode(204)
   async createNewPassword(@Body() body: NewPasswordRequest): Promise<void> {
@@ -96,7 +94,6 @@ export class AuthController {
     response.status(200).json({ accessToken });
   }
 
-  @SkipThrottle()
   @Post('refresh-token')
   async createRefreshToken(@Cookies('refreshToken') token: string, @Res({ passthrough: true }) response: Response) {
     if (!token?.length) {
@@ -157,7 +154,6 @@ export class AuthController {
     await this.resendingService.execute(body.email, detectUser._id.toString());
   }
 
-  @SkipThrottle()
   @Post('logout')
   async logout(@Res() response: Response, @Cookies('refreshToken') token?: string) {
     if (!token?.length) {
@@ -183,7 +179,6 @@ export class AuthController {
     response.clearCookie('refreshToken').sendStatus(204);
   }
 
-  @SkipThrottle()
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async me(@Req() req): Promise<MeResponse> {
