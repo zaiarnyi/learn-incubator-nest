@@ -29,7 +29,7 @@ export class RegistrationActions {
         this.activateRepository.saveRegActivation(code, users._id.toString(), ActivateCodeEnum.REGISTRATION),
         !isDev && this.emailService.registration(payload.email, code),
       ]);
-      console.log(isDev, 'isDev');
+
       if (isDev) {
         return { code };
       }

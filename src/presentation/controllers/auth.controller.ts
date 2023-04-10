@@ -99,7 +99,6 @@ export class AuthController {
   @SkipThrottle()
   @Post('refresh-token')
   async createRefreshToken(@Cookies('refreshToken') token: string, @Res({ passthrough: true }) response: Response) {
-    console.log(token.length, '===');
     if (!token?.length) {
       throw new UnauthorizedException();
     }
@@ -114,7 +113,6 @@ export class AuthController {
       throw new UnauthorizedException();
     }
     const checkToken = await this.tokensRepository.checkTokenFromUsers(token);
-    console.log(token, checkToken);
     if (checkToken) {
       throw new UnauthorizedException();
     }
