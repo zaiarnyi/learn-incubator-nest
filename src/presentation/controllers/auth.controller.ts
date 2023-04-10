@@ -109,7 +109,6 @@ export class AuthController {
       userId = jwt.id;
       deviceId = jwt.id;
     } catch (e) {
-      console.log(e);
       throw new UnauthorizedException();
     }
     const checkToken = await this.tokensRepository.checkTokenFromUsers(token);
@@ -175,10 +174,10 @@ export class AuthController {
     } catch (e) {
       throw new UnauthorizedException();
     }
-    // const checkToken = await this.tokensRepository.checkTokenFromUsers(token);
-    // if (checkToken) {
-    //   throw new UnauthorizedException();
-    // }
+    const checkToken = await this.tokensRepository.checkTokenFromUsers(token);
+    if (checkToken) {
+      throw new UnauthorizedException();
+    }
     await Promise.all([
       this.tokensRepository.saveToken(token),
       this.securityRepository.deleteDeviceForUser(deviceId, userId),
