@@ -4,11 +4,10 @@ import { GetDevicesResponse } from '../responses/security/get-devices.response';
 import { GetDevicesAction } from '../../application/actions/security/get-devices.action';
 import { DeleteDevicesAction } from '../../application/actions/security/delete-devices.action';
 import { DeleteCurrentDeviceAction } from '../../application/actions/security/delete-current-device.action';
-import { InvalidUserTokensService } from '../../application/services/invalid-tokens/invalid-user-tokens.service';
 import { JwtService } from '@nestjs/jwt';
-import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { SkipThrottle } from '@nestjs/throttler';
 
-@Throttle(5, 10)
+@SkipThrottle()
 @Controller('security')
 export class SecurityController {
   constructor(
