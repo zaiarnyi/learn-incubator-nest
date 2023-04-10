@@ -32,13 +32,13 @@ async function bootstrap() {
       }),
     );
 
-    app.use(
-      rateLimit({
-        windowMs: 1000 * 10,
-        max: 5, // 1000 requests per windowMs
-        message: '⚠️ Too many request created from this IP, please try again after an hour',
-      }),
-    );
+    // app.use(
+    //   rateLimit({
+    //     windowMs: 1000 * 10,
+    //     max: 5, // 1000 requests per windowMs
+    //     message: '⚠️ Too many request created from this IP, please try again after an hour',
+    //   }),
+    // );
     app.useGlobalFilters(new HttpExceptionFilter());
     app.useGlobalPipes(
       new ValidationPipe({
