@@ -48,11 +48,6 @@ export class SecurityController {
     if (!token) {
       throw new UnauthorizedException();
     }
-    try {
-      this.jwtService.verify(token);
-    } catch (e) {
-      throw new UnauthorizedException();
-    }
     return this.deleteCurrentDeviceAction.execute(token, id);
   }
 }

@@ -76,7 +76,7 @@ export class AuthController {
     return this.newPasswordService.execute(body);
   }
 
-  @Throttle(5, 60)
+  @Throttle(5, 10)
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() req: any, @Res({ passthrough: true }) response: Response, @Body() body: LoginRequest) {
@@ -99,25 +99,44 @@ export class AuthController {
 
   @Post('refresh-token')
   async createRefreshToken(@Cookies('refreshToken') token: string, @Res({ passthrough: true }) response: Response) {
+    if (!token?.length) {
+      throw new UnauthorizedException();
+    }
+    let userId;
+    let deviceId;
+    try {
+      const jwt = await this.jwtService.verify(token);
+      userId = jwt.id;
+      deviceId = jwt.id;
+    } catch (e) {
+      throw new UnauthorizedException();
+    }
     const checkToken = await this.tokensRepository.checkTokenFromUsers(token);
     if (checkToken) {
       throw new UnauthorizedException();
     }
 
     const { accessToken, refreshToken } = await this.refreshTokenService.execute(token);
+
+    const findDevice = await this.securityRepository.getDevice(deviceId, userId);
+
     await this.tokensRepository.saveToken(token);
+    await Promise.all([
+      this.tokensRepository.saveToken(token),
+      findDevice && this.securityRepository.updateDevice(findDevice),
+    ]);
     response.cookie('refreshToken', refreshToken, { httpOnly: this.httpOnly, secure: this.secure });
     response.status(200).json({ accessToken });
   }
 
-  @Throttle(5, 60)
+  @Throttle(5, 10)
   @Post('registration-confirmation')
   @HttpCode(204)
   async registrationConfirmation(@Body() body: RegistrationConfirmationRequest) {
     await this.confirmationService.execute(body.code);
   }
 
-  @Throttle(5, 60)
+  @Throttle(5, 10)
   @Post('registration')
   async registration(@Body() body: RegistrationRequest, @Res() res: Response) {
     const detectUser = await this.queryUserRepository.getUserByEmailOrLogin(body.login, body.email);
@@ -132,7 +151,7 @@ export class AuthController {
     res.status(200).json(registration);
   }
 
-  @Throttle(5, 60)
+  @Throttle(5, 10)
   @Post('registration-email-resending')
   @HttpCode(204)
   async registrationEmailResending(@Body() body: CheckEmail): Promise<void> {
@@ -145,19 +164,26 @@ export class AuthController {
 
   @Post('logout')
   async logout(@Res() response: Response, @Cookies('refreshToken') token?: string) {
-    if (!token) {
+    if (!token?.length) {
       throw new UnauthorizedException();
     }
-    const checkToken = await this.tokensRepository.checkTokenFromUsers(token);
-    if (checkToken) {
-      throw new UnauthorizedException();
-    }
+    let userId;
+    let deviceId;
     try {
-      await this.jwtService.verify(token);
+      const jwt = await this.jwtService.verify(token);
+      userId = jwt.id;
+      deviceId = jwt.deviceId;
     } catch (e) {
       throw new UnauthorizedException();
     }
-    await this.tokensRepository.saveToken(token);
+    // const checkToken = await this.tokensRepository.checkTokenFromUsers(token);
+    // if (checkToken) {
+    //   throw new UnauthorizedException();
+    // }
+    await Promise.all([
+      this.tokensRepository.saveToken(token),
+      this.securityRepository.deleteDeviceForUser(deviceId, userId),
+    ]);
     response.clearCookie('refreshToken').sendStatus(204);
   }
 

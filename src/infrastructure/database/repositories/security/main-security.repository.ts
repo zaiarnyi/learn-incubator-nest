@@ -19,8 +19,19 @@ export class MainSecurityRepository {
   public async deleteCurrent(deviceId: string) {
     return this.securityRepository.findByIdAndDelete(deviceId);
   }
+  public async deleteDeviceForUser(deviceId: string, userId: string) {
+    return this.securityRepository.findOneAndRemove({ id: deviceId, userId });
+  }
 
   public async deleteAll() {
     return this.securityRepository.deleteMany();
+  }
+
+  public async getDevice(deviceId: string, userId: string): Promise<SecurityDocument> {
+    return this.securityRepository.findOne({ id: deviceId, userId });
+  }
+
+  public async updateDevice(payload: SecurityDocument): Promise<SecurityDocument> {
+    return this.securityRepository.findByIdAndUpdate(payload._id.toString(), payload);
   }
 }
