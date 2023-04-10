@@ -6,8 +6,9 @@ import { DeleteDevicesAction } from '../../application/actions/security/delete-d
 import { DeleteCurrentDeviceAction } from '../../application/actions/security/delete-current-device.action';
 import { InvalidUserTokensService } from '../../application/services/invalid-tokens/invalid-user-tokens.service';
 import { JwtService } from '@nestjs/jwt';
-import { SkipThrottle } from '@nestjs/throttler';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 
+@Throttle(5, 10)
 @Controller('security')
 export class SecurityController {
   constructor(
