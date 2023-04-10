@@ -12,8 +12,8 @@ export class MainSecurityRepository {
     return this.securityRepository.create(device);
   }
 
-  public async deleteAllExcludeCurrent(deviceId: string): Promise<DeleteResult> {
-    return this.securityRepository.deleteMany({ _id: { $nin: [new Object(deviceId)] } });
+  public async deleteAllExcludeCurrent(deviceId: string, userId: string): Promise<DeleteResult> {
+    return this.securityRepository.deleteMany({ userId, _id: { $nin: [new Object(deviceId)] } });
   }
 
   public async deleteCurrent(deviceId: string) {
@@ -24,7 +24,7 @@ export class MainSecurityRepository {
   }
 
   public async deleteAll() {
-    return this.securityRepository.deleteMany();
+    return this.securityRepository.deleteMany({});
   }
 
   public async getDevice(deviceId: string): Promise<SecurityDocument> {

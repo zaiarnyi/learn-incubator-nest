@@ -38,7 +38,7 @@ import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { JwtService } from '@nestjs/jwt';
 import { InvalidUserTokensService } from '../../application/services/invalid-tokens/invalid-user-tokens.service';
 
-@Throttle(5, 15)
+@Throttle(5, 8)
 @Controller('auth')
 export class AuthController {
   private logger = new Logger(AuthController.name);
