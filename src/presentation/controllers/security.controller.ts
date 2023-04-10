@@ -22,11 +22,6 @@ export class SecurityController {
     if (!token) {
       throw new UnauthorizedException();
     }
-    try {
-      this.jwtService.verify(token);
-    } catch (e) {
-      throw new UnauthorizedException();
-    }
     return this.getDevicesAction.execute(token);
   }
 
@@ -34,11 +29,6 @@ export class SecurityController {
   @HttpCode(204)
   async deleteDevicesCurrentUser(@Cookies('refreshToken') token: string) {
     if (!token) {
-      throw new UnauthorizedException();
-    }
-    try {
-      this.jwtService.verify(token);
-    } catch (e) {
       throw new UnauthorizedException();
     }
     return this.deleteSessionAction.execute(token);

@@ -84,7 +84,7 @@ export class AuthController {
     devicePrepare.ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.socket.remoteAddress || null;
     devicePrepare.userId = userId;
     devicePrepare.title = 'security Name';
-    devicePrepare.title = req.headers['user-agent'];
+    devicePrepare.userAgent = req.headers['user-agent'];
 
     const device = await this.securityRepository.insertDevice(devicePrepare).catch((e) => {
       this.logger.error(`Error when saving device information. Error: ${JSON.stringify(e)}`);
