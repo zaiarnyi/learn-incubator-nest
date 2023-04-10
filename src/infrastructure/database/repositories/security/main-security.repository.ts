@@ -27,8 +27,8 @@ export class MainSecurityRepository {
     return this.securityRepository.deleteMany();
   }
 
-  public async getDevice(deviceId: string, userId: string): Promise<SecurityDocument> {
-    return this.securityRepository.findOne({ id: deviceId, userId });
+  public async getDevice(deviceId: string): Promise<SecurityDocument> {
+    return this.securityRepository.findById(deviceId);
   }
 
   public async updateDevice(payload: SecurityDocument): Promise<SecurityDocument> {

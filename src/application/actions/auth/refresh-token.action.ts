@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UserQueryRepository } from '../../../infrastructure/database/repositories/users/query.repository';
-import { JwtService } from "@nestjs/jwt";
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class RefreshTokenAction {
@@ -26,8 +26,11 @@ export class RefreshTokenAction {
 
       const expires_refresh = this.configService.get<string>('REFRESH_TOKEN_EXPIRE_TIME');
 
-      const accessToken = this.jwtService.sign({ id: userVerify.i, deviceId: userVerify.deviceId });
-      const refreshToken = this.jwtService.sign({ id: userVerify.i, deviceId: userVerify.deviceId }, {expiresIn: expires_refresh});
+      const accessToken = this.jwtService.sign({ id: userVerify.id, deviceId: userVerify.deviceId });
+      const refreshToken = this.jwtService.sign(
+        { id: userVerify.id, deviceId: userVerify.deviceId },
+        { expiresIn: expires_refresh },
+      );
 
       return { accessToken, refreshToken };
     } catch (e) {

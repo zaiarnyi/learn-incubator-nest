@@ -102,12 +102,12 @@ export class AuthController {
     if (!token?.length) {
       throw new UnauthorizedException();
     }
-    let userId;
+
     let deviceId;
     try {
       const jwt = await this.jwtService.verify(token);
-      userId = jwt.id;
-      deviceId = jwt.id;
+
+      deviceId = jwt.deviceId;
     } catch (e) {
       throw new UnauthorizedException();
     }
@@ -118,8 +118,7 @@ export class AuthController {
 
     const { accessToken, refreshToken } = await this.refreshTokenService.execute(token);
 
-    const findDevice = await this.securityRepository.getDevice(deviceId, userId);
-
+    const findDevice = await this.securityRepository.getDevice(deviceId);
     await this.tokensRepository.saveToken(token);
     await Promise.all([
       this.tokensRepository.saveToken(token),
