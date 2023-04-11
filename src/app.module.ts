@@ -24,8 +24,8 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
       useClass: CacheService,
     }),
     ThrottlerModule.forRoot({
-      ttl: 10,
-      limit: 5,
+      ttl: 3600,
+      limit: 1000,
     }),
     UsersModule,
     PostsModule,
