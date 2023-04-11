@@ -24,8 +24,8 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
       useClass: CacheService,
     }),
     ThrottlerModule.forRoot({
-      // ttl: 10,
-      // limit: 5,
+      ttl: 10,
+      limit: 5,
     }),
     UsersModule,
     PostsModule,
@@ -36,10 +36,10 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
   ],
   controllers: [TestController],
   providers: [
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: ThrottlerGuard,
-    // },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,

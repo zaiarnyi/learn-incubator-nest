@@ -74,7 +74,7 @@ export class AuthController {
     return this.newPasswordService.execute(body);
   }
 
-  @Throttle(5, 10)
+  @Throttle()
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() req: any, @Res({ passthrough: true }) response: Response, @Body() body: LoginRequest) {
@@ -125,14 +125,14 @@ export class AuthController {
     response.status(200).json({ accessToken });
   }
 
-  @Throttle(5, 10)
+  @Throttle()
   @Post('registration-confirmation')
   @HttpCode(204)
   async registrationConfirmation(@Body() body: RegistrationConfirmationRequest) {
     await this.confirmationService.execute(body.code);
   }
 
-  @Throttle(5, 10)
+  @Throttle()
   @Post('registration')
   async registration(@Body() body: RegistrationRequest, @Res() res: Response) {
     const detectUser = await this.queryUserRepository.getUserByEmailOrLogin(body.login, body.email);
@@ -147,7 +147,7 @@ export class AuthController {
     res.status(200).json(registration);
   }
 
-  @Throttle(5, 10)
+  @Throttle()
   @Post('registration-email-resending')
   @HttpCode(204)
   async registrationEmailResending(@Body() body: CheckEmail): Promise<void> {
