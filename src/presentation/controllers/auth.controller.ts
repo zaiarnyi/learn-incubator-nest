@@ -34,10 +34,11 @@ import { plainToClass } from 'class-transformer';
 import { MainSecurityRepository } from '../../infrastructure/database/repositories/security/main-security.repository';
 import { DeviceDto } from '../../domain/security/dto/device.dto';
 import { LoginRequest } from '../requests/auth/login.request';
-import { Throttle } from '@nestjs/throttler';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { JwtService } from '@nestjs/jwt';
 import { InvalidUserTokensService } from '../../application/services/invalid-tokens/invalid-user-tokens.service';
 
+@UseGuards(ThrottlerGuard)
 @Controller('auth')
 export class AuthController {
   private logger = new Logger(AuthController.name);
@@ -125,14 +126,15 @@ export class AuthController {
     response.status(200).json({ accessToken });
   }
 
-  @Throttle()
+  // @Throttle(5, 10)
   @Post('registration-confirmation')
   @HttpCode(204)
   async registrationConfirmation(@Body() body: RegistrationConfirmationRequest) {
+    console.log('123123');
     await this.confirmationService.execute(body.code);
   }
 
-  @Throttle()
+  // @Throttle(5, 10)
   @Post('registration')
   async registration(@Body() body: RegistrationRequest, @Res() res: Response) {
     const detectUser = await this.queryUserRepository.getUserByEmailOrLogin(body.login, body.email);
@@ -147,7 +149,6 @@ export class AuthController {
     res.status(200).json(registration);
   }
 
-  @Throttle()
   @Post('registration-email-resending')
   @HttpCode(204)
   async registrationEmailResending(@Body() body: CheckEmail): Promise<void> {
