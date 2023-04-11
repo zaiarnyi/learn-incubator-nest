@@ -13,14 +13,14 @@ export class MainSecurityRepository {
   }
 
   public async deleteAllExcludeCurrent(deviceId: string, userId: string): Promise<DeleteResult> {
-    return this.securityRepository.deleteMany({ userId, _id: { $nin: [new Object(deviceId)] } });
+    return this.securityRepository.deleteMany({ userId, deviceId: { $nin: [deviceId] } });
   }
 
   public async deleteCurrent(deviceId: string) {
-    return this.securityRepository.findByIdAndDelete(deviceId);
+    return this.securityRepository.findOneAndRemove({ deviceId });
   }
   public async deleteDeviceForUser(deviceId: string, userId: string) {
-    return this.securityRepository.findOneAndRemove({ id: deviceId, userId });
+    return this.securityRepository.findOneAndRemove({ deviceId, userId });
   }
 
   public async deleteAll() {
@@ -28,10 +28,10 @@ export class MainSecurityRepository {
   }
 
   public async getDevice(deviceId: string): Promise<SecurityDocument> {
-    return this.securityRepository.findById(deviceId);
+    return this.securityRepository.findOne({ deviceId });
   }
 
   public async updateDevice(payload: SecurityDocument): Promise<SecurityDocument> {
-    return this.securityRepository.findByIdAndUpdate(payload._id.toString(), payload);
+    return this.securityRepository.findOneAndUpdate({ deviceId: payload._id.toString() }, payload);
   }
 }

@@ -9,10 +9,11 @@ import * as cookieParser from 'cookie-parser';
 import { HttpExceptionFilter } from './infrastructure/rest/http-exception.filter';
 import { useContainer } from 'class-validator';
 import rateLimit from 'express-rate-limit';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 async function bootstrap() {
   try {
-    const app = await NestFactory.create(AppModule, {
+    const app = await NestFactory.create<NestExpressApplication>(AppModule, {
       cors: true,
       logger: ['error', 'warn', 'log'],
     });
@@ -56,6 +57,7 @@ async function bootstrap() {
       }),
     );
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
+    app.set('trust proxy', true);
     await app.listen(PORT);
 
     Logger.log(`Server is listening on port ${PORT}`, 'Bootstrap');
