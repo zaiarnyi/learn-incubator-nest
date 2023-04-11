@@ -10,6 +10,6 @@ export class QuerySecurityRepository {
   }
 
   public async getDeviceById(deviceId: string) {
-    return this.securityModel.findById(deviceId);
+    return this.securityModel.findOne({ deviceId });
   }
 }

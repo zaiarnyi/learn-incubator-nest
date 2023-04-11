@@ -21,6 +21,7 @@ async function bootstrap() {
     const PORT = +configService.get('PORT', '3005');
 
     app.enableCors();
+    app.set('trust proxy', true);
     app.use(helmet());
     //  app.use(compression());
     app.use(cookieParser());
@@ -57,7 +58,6 @@ async function bootstrap() {
       }),
     );
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
-    app.set('trust proxy', true);
     await app.listen(PORT);
 
     Logger.log(`Server is listening on port ${PORT}`, 'Bootstrap');
