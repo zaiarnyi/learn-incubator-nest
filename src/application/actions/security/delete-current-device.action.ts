@@ -20,11 +20,17 @@ export class DeleteCurrentDeviceAction {
     @Inject(MainSecurityRepository) private readonly mainRepository: MainSecurityRepository,
   ) {}
 
-  public async execute(deviceId: string, user?: { id: string; deviceId: string }): Promise<void> {
+  public async execute(token: string, deviceId: string): Promise<void> {
     const device = await this.queryRepository.getDeviceById(deviceId);
 
     if (!device) {
       throw new NotFoundException();
+    }
+    let user;
+    try {
+      user = await this.jwtService.verify(token);
+    } catch (e) {
+      throw new UnauthorizedException();
     }
     if (device.userId !== user.id) {
       throw new ForbiddenException();

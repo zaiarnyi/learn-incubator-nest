@@ -10,7 +10,14 @@ export class GetDevicesAction {
     @Inject(JwtService) private readonly jwtService: JwtService,
     @Inject(QuerySecurityRepository) private readonly queryRepository: QuerySecurityRepository,
   ) {}
-  public async execute(userId: string): Promise<GetDevicesResponse[]> {
+  public async execute(token: string): Promise<GetDevicesResponse[]> {
+    let userId;
+    try {
+      const { id } = await this.jwtService.verify(token);
+      userId = id;
+    } catch (e) {
+      throw new UnauthorizedException();
+    }
     const devices = await this.queryRepository.getDevicesByUserId(userId);
     return devices.map((item) =>
       plainToClass(GetDevicesResponse, { ...item.toObject(), deviceId: item._id.toString() }),
