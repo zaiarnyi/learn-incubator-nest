@@ -75,7 +75,6 @@ export class AuthController {
     return this.newPasswordService.execute(body);
   }
 
-  @Throttle()
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() req: any, @Res({ passthrough: true }) response: Response, @Body() body: LoginRequest) {
