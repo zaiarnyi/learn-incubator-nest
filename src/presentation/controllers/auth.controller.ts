@@ -148,7 +148,6 @@ export class AuthController {
     }
     res.status(200).json(registration);
   }
-
   @Throttle(5, 10)
   @UseGuards(ThrottlerGuard)
   @Post('registration-email-resending')
