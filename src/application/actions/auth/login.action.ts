@@ -5,6 +5,7 @@ import { UserQueryRepository } from '../../../infrastructure/database/repositori
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { MainSecurityRepository } from '../../../infrastructure/database/repositories/security/main-security.repository';
 
 @Injectable()
 export class LoginAction {
@@ -13,6 +14,7 @@ export class LoginAction {
     @Inject(UserQueryRepository) private readonly queryUserRepository: UserQueryRepository,
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(JwtService) private readonly jwtService: JwtService,
+    @Inject(MainSecurityRepository) private readonly securityRepository: MainSecurityRepository,
   ) {}
   private async validate(payload: LoginDto) {
     try {
@@ -29,7 +31,11 @@ export class LoginAction {
     return { accessToken, refreshToken, id };
   }
 
-  public async execute(payload: LoginDto, deviceId: string): Promise<{ accessToken: string; refreshToken: string }> {
+  public async execute(
+    payload: LoginDto,
+    deviceId: string,
+    userId: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     await this.validate(payload);
     const user = await this.queryUserRepository
       .getUserByEmailOrLogin(payload.loginOrEmail, payload.loginOrEmail)
@@ -37,12 +43,14 @@ export class LoginAction {
         this.logger.error(`Error when getting a user - ${payload.loginOrEmail}`);
       });
     if (!user) {
+      await this.securityRepository.deleteDeviceForUser(deviceId, userId);
       throw new UnauthorizedException();
     }
 
     const checkHashPassword = await bcrypt.compare(payload.password, user.passwordHash);
 
     if (!checkHashPassword) {
+      await this.securityRepository.deleteDeviceForUser(deviceId, userId);
       throw new UnauthorizedException();
     }
 

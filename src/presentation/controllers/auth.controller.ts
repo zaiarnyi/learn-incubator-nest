@@ -34,11 +34,11 @@ import { plainToClass } from 'class-transformer';
 import { MainSecurityRepository } from '../../infrastructure/database/repositories/security/main-security.repository';
 import { DeviceDto } from '../../domain/security/dto/device.dto';
 import { LoginRequest } from '../requests/auth/login.request';
-import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { Throttle } from '@nestjs/throttler';
 import { JwtService } from '@nestjs/jwt';
 import { InvalidUserTokensService } from '../../application/services/invalid-tokens/invalid-user-tokens.service';
 
-@Throttle(5, 8)
+@Throttle(5, 10)
 @Controller('auth')
 export class AuthController {
   private logger = new Logger(AuthController.name);
@@ -89,7 +89,7 @@ export class AuthController {
       this.logger.error(`Error when saving device information. Error: ${JSON.stringify(e)}`);
       return null;
     });
-    const { accessToken, refreshToken } = await this.loginService.execute(body, device._id.toString());
+    const { accessToken, refreshToken } = await this.loginService.execute(body, device._id.toString(), userId);
 
     response.cookie('refreshToken', refreshToken, { httpOnly: this.httpOnly, secure: this.secure });
     response.status(200).json({ accessToken });
