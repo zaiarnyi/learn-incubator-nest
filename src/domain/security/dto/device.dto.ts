@@ -12,4 +12,7 @@ export class DeviceDto {
 
   @IsString()
   userAgent: string;
+
+  @IsUUID()
+  deviceId: string;
 }

@@ -34,9 +34,10 @@ import { plainToClass } from 'class-transformer';
 import { MainSecurityRepository } from '../../infrastructure/database/repositories/security/main-security.repository';
 import { DeviceDto } from '../../domain/security/dto/device.dto';
 import { LoginRequest } from '../requests/auth/login.request';
-import { SkipThrottle, Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { Throttle } from '@nestjs/throttler';
 import { JwtService } from '@nestjs/jwt';
 import { InvalidUserTokensService } from '../../application/services/invalid-tokens/invalid-user-tokens.service';
+import { v4 as uuidv4 } from 'uuid';
 
 @Controller('auth')
 export class AuthController {
@@ -83,12 +84,12 @@ export class AuthController {
     devicePrepare.userId = userId;
     devicePrepare.title = 'security Name';
     devicePrepare.userAgent = req.headers['user-agent'];
+    devicePrepare.deviceId = uuidv4();
 
-    const device = await this.securityRepository.insertDevice(devicePrepare).catch((e) => {
+    await this.securityRepository.insertDevice(devicePrepare).catch((e) => {
       this.logger.error(`Error when saving device information. Error: ${JSON.stringify(e)}`);
-      return null;
     });
-    const { accessToken, refreshToken } = await this.loginService.execute(body, device._id.toString(), userId);
+    const { accessToken, refreshToken } = await this.loginService.execute(body, devicePrepare.deviceId, userId);
 
     response.cookie('refreshToken', refreshToken, { httpOnly: this.httpOnly, secure: this.secure });
     response.status(200).json({ accessToken });
