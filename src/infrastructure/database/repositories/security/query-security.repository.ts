@@ -9,6 +9,10 @@ export class QuerySecurityRepository {
     return this.securityModel.find({ userId });
   }
 
+  public async getDevicesByUserIdAndDevice(userId: string, deviceId: string): Promise<SecurityDocument> {
+    return this.securityModel.findOne({ userId, deviceId });
+  }
+
   public async getDeviceById(deviceId: string) {
     return this.securityModel.findOne({ deviceId });
   }
