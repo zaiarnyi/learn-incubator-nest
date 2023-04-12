@@ -16,8 +16,8 @@ export class MainSecurityRepository {
     return this.securityRepository.deleteMany({ userId, deviceId: { $nin: [deviceId] } });
   }
 
-  public async deleteCurrent(deviceId: string) {
-    return this.securityRepository.findOneAndRemove({ deviceId });
+  public async deleteCurrent(deviceId: string, userId) {
+    return this.securityRepository.findOneAndRemove({ deviceId, userId });
   }
   public async deleteDeviceForUser(deviceId: string, userId: string) {
     return this.securityRepository.findOneAndRemove({ deviceId, userId });
