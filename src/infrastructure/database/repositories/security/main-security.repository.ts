@@ -32,6 +32,6 @@ export class MainSecurityRepository {
   }
 
   public async updateDevice(payload: SecurityDocument): Promise<SecurityDocument> {
-    return this.securityRepository.findOneAndUpdate({ deviceId: payload._id.toString() }, payload);
+    return this.securityRepository.findOneAndUpdate({ deviceId: payload.deviceId }, payload);
   }
 }
