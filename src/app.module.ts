@@ -20,9 +20,9 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
     MongooseModule.forRootAsync({
       useClass: MongoConfigDatabase,
     }),
-    CacheModule.registerAsync({
-      useClass: CacheService,
-    }),
+    // CacheModule.registerAsync({
+    //   useClass: CacheService,
+    // }),
     ThrottlerModule.forRoot({
       ttl: 3600,
       limit: 1000,

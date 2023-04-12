@@ -181,7 +181,6 @@ export class AuthController {
     response.clearCookie('refreshToken').sendStatus(204);
   }
 
-  @SkipThrottle()
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async me(@Req() req): Promise<MeResponse> {
