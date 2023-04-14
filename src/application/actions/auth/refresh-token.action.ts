@@ -25,12 +25,9 @@ export class RefreshTokenAction {
       }
 
       const expires_refresh = this.configService.get<string>('REFRESH_TOKEN_EXPIRE_TIME');
-
-      const accessToken = this.jwtService.sign({ id: userVerify.id, deviceId: userVerify.deviceId });
-      const refreshToken = this.jwtService.sign(
-        { id: userVerify.id, deviceId: userVerify.deviceId },
-        { expiresIn: expires_refresh },
-      );
+      const payload = { id: userVerify.id, deviceId: userVerify.deviceId, role: userVerify.role };
+      const accessToken = this.jwtService.sign(payload);
+      const refreshToken = this.jwtService.sign(payload, { expiresIn: expires_refresh });
 
       return { accessToken, refreshToken };
     } catch (e) {

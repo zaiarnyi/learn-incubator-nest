@@ -1,6 +1,5 @@
 import {
   registerDecorator,
-  ValidationArguments,
   ValidationOptions,
   ValidatorConstraint,
   ValidatorConstraintInterface,
@@ -13,11 +12,11 @@ import { QueryBlogsRepository } from '../database/repositories/blogs/query-blogs
 export class ValidateBlogByIdValidator implements ValidatorConstraintInterface {
   constructor(private readonly queryRepository: QueryBlogsRepository) {}
 
-  public async validate(val: any, args: ValidationArguments): Promise<boolean> {
+  public async validate(val: any): Promise<boolean> {
     return this.queryRepository.getBlogById(val).then((res) => !!res);
   }
 
-  public defaultMessage(args: ValidationArguments): string {
+  public defaultMessage(): string {
     return `Unauthorized to execute this action`;
   }
 }

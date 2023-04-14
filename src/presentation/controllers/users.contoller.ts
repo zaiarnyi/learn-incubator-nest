@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Query, UseGuards } from '@nestjs/common';
 import { GetUsersRequest } from '../requests/users/get-users.request';
 import { GetUsersResponse } from '../responses/users/get-users.response';
 import { GetAllUsersAction } from '../../application/actions/users/get-all-users.action';

@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Delete, Get, HttpCode, Inject, Logger } from '@nestjs/common';
+import { BadRequestException, Controller, Delete, HttpCode, Inject, Logger } from '@nestjs/common';
 import { UserMainRepository } from '../../infrastructure/database/repositories/users/main.repository';
 import { MainPostRepository } from '../../infrastructure/database/repositories/posts/main-post.repository';
 import { MainBlogsRepository } from '../../infrastructure/database/repositories/blogs/main-blogs.repository';
@@ -35,7 +35,4 @@ export class TestController {
       throw new BadRequestException();
     });
   }
-
-  @Get()
-  async get() {}
 }

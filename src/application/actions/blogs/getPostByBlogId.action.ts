@@ -5,9 +5,7 @@ import {
   GetPostByBlogIdResponse,
   PostByBlogItem,
 } from '../../../presentation/responses/blogs/getPostByBlogId.response';
-import { validateOrReject } from 'class-validator';
 import { plainToClass } from 'class-transformer';
-import { CreateBlogResponse } from '../../../presentation/responses/blogs/create-blog.response';
 import { GetLikesInfoForPostService } from '../../services/posts/get-likes-info-for-post.service';
 
 @Injectable()

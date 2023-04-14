@@ -18,9 +18,10 @@ export class QueryBlogsRepository {
     limit: number,
     sortBy: string,
     direction: string,
+    userId?: string,
   ): Promise<BlogDocument[]> {
     return this.blogModel
-      .find({ name: { $regex: new RegExp(filter, 'gi') } })
+      .find({ name: { $regex: new RegExp(filter, 'gi'), ...(userId && { bloggerId: userId }) } })
       .sort({ [sortBy]: direction as BlogSortDirection })
       .skip(skip)
       .limit(limit)
@@ -34,12 +35,13 @@ export class QueryBlogsRepository {
     return this.postModel.count({ blogId });
   }
 
-  async getCountBlogs(filter?: string) {
-    let filterParam = {};
+  async getCountBlogs(filter?: string, userId?: string) {
+    const filterParam: { bloggerId?: string; name?: any } = {};
     if (filter) {
-      filterParam = {
-        name: { $regex: new RegExp(filter, 'gi') },
-      };
+      filterParam.name = { $regex: new RegExp(filter, 'gi') };
+    }
+    if (userId) {
+      filterParam.bloggerId = userId;
     }
     return this.blogModel.countDocuments(filterParam);
   }

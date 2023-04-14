@@ -1,5 +1,5 @@
 import { IsBoolean, IsString, Matches, MaxLength, MinLength, validateOrReject } from 'class-validator';
-import { BadRequestException, ConflictException } from '@nestjs/common';
+import { BadRequestException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { Exclude, Expose } from 'class-transformer';
 

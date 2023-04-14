@@ -76,6 +76,8 @@ export class CreatePostAction {
     newPost.content = payload.content;
     newPost.title = payload.title;
     newPost.shortDescription = payload.shortDescription;
+    newPost.userId = userId;
+
     const createdPost = await this.mainRepository.createPost(newPost);
     await this.createDefaultStatus(createdPost._id.toString(), userId).catch((e) => {
       this.logger.error(`Error in post status creation. ${JSON.stringify(e)}`);

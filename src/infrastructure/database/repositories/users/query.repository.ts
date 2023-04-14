@@ -48,4 +48,8 @@ export class UserQueryRepository {
   async getUserById(id: string): Promise<UserDocument> {
     return this.userModel.findById(id);
   }
+
+  async getUserRole(id: string, role: number): Promise<UserDocument> {
+    return this.userModel.findOne({ userId: id, role });
+  }
 }

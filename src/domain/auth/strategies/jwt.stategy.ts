@@ -1,6 +1,7 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { UserRoles } from '../enums/roles.enum';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -16,6 +17,6 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!payload.id) {
       throw new UnauthorizedException();
     }
-    return { userId: payload.id, deviceId: payload.deviceId || null };
+    return { userId: payload.id, deviceId: payload.deviceId || null, role: payload.role ?? UserRoles.USER };
   }
 }

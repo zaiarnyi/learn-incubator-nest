@@ -1,4 +1,4 @@
-import { Exclude, Expose, Transform } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { MetaResponse } from '../meta.response';
 import { ExtendedLikesInfo } from '../extendedLikesInfo.response';
 

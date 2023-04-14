@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { MainSecurityRepository } from '../../../infrastructure/database/repositories/security/main-security.repository';
+import { UserRoles } from '../../../domain/auth/enums/roles.enum';
 
 @Injectable()
 export class LoginAction {
@@ -24,10 +25,11 @@ export class LoginAction {
     }
   }
 
-  private generateTokens(id: string, deviceId = '') {
+  private generateTokens(id: string, deviceId = '', role: number) {
     const expires_refresh = this.configService.get<string>('REFRESH_TOKEN_EXPIRE_TIME');
-    const accessToken = this.jwtService.sign({ id, deviceId });
-    const refreshToken = this.jwtService.sign({ id, deviceId }, { expiresIn: expires_refresh });
+    const payload = { id, deviceId, role: role ?? UserRoles.USER };
+    const accessToken = this.jwtService.sign(payload);
+    const refreshToken = this.jwtService.sign(payload, { expiresIn: expires_refresh });
     return { accessToken, refreshToken, id };
   }
 
@@ -54,6 +56,6 @@ export class LoginAction {
       throw new UnauthorizedException();
     }
 
-    return this.generateTokens(user._id.toString(), deviceId);
+    return this.generateTokens(user._id.toString(), deviceId, user.role);
   }
 }

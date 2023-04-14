@@ -11,8 +11,8 @@ export class MainBlogsRepository {
     return this.blogModel.create(dto);
   }
 
-  async updateBlog(id: string, dto: CreateBlogDto): Promise<BlogDocument> {
-    return this.blogModel.findOneAndUpdate({ _id: id }, dto);
+  async updateBlog(id: string, userId: string, dto: CreateBlogDto): Promise<BlogDocument> {
+    return this.blogModel.findOneAndUpdate({ _id: id, userId }, dto);
   }
 
   async deleteBlogById(id: string): Promise<BlogDocument> {

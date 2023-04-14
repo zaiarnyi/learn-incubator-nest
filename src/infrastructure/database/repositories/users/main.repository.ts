@@ -2,6 +2,7 @@ import { CreateUserVo } from '../../../../domain/users/vo/create-user.vo';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from '../../../../domain/users/entities/user.entity';
 import { Model } from 'mongoose';
+import { UpdateResult } from 'mongodb';
 
 export class UserMainRepository {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
@@ -27,5 +28,9 @@ export class UserMainRepository {
 
   async updatePasswordUser(userId: string, hash: string): Promise<UserDocument> {
     return this.userModel.findOneAndUpdate({ _id: userId }, { passwordHash: hash });
+  }
+
+  async changeUserRole(userId: string, role: number): Promise<UpdateResult> {
+    return this.userModel.findOneAndUpdate({ userId }, { role });
   }
 }
