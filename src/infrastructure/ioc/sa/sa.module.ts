@@ -4,5 +4,6 @@ import { SaUsersModule } from './users/sa-users.module';
 
 @Module({
   imports: [SaBlogsModule, SaUsersModule],
+  exports: [SaUsersModule],
 })
 export class SaModule {}
