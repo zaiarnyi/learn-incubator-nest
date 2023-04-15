@@ -3,7 +3,7 @@ import { MetaResponse } from '../../meta.response';
 import { ValidateNested } from 'class-validator';
 
 @Exclude()
-class BanInfo {
+export class BanInfo {
   @Expose()
   isBanned: boolean;
 

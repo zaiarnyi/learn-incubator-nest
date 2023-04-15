@@ -8,6 +8,7 @@ import { CreateUserResponse } from '../../../responses/sa/users/create-user.resp
 import { GetUsersRequest } from '../../../requests/sa/users/get-users.request';
 import { UserBannedRequest } from '../../../requests/sa/users/user-banned.request';
 import { UserBannedAction } from '../../../../application/actions/sa/users/user-banned.action';
+import { GetUsersResponse } from '../../../responses/sa/users/get-users.response';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/users')
@@ -19,14 +20,15 @@ export class SaUserController {
     @Inject(UserBannedAction) private readonly banUserService: UserBannedAction,
   ) {}
   @Get()
-  async getUsers(@Query() query: GetUsersRequest) {
+  async getUsers(@Query() query: GetUsersRequest): Promise<GetUsersResponse> {
     return this.getUsersService.execute(query);
   }
 
   @Post()
   async createUser(@Body() body: any) {
     const createdUser = await this.createUserService.execute(body, true);
-    return plainToClass(CreateUserResponse, createdUser);
+    const payload = Object.assign(createdUser, { banInfo: { isBanned: false, banDate: null, banReason: null } });
+    return plainToClass(CreateUserResponse, payload);
   }
 
   @Delete(':id')

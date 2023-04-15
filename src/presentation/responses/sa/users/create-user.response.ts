@@ -1,4 +1,6 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
+import { BanInfo } from './get-users.response';
+import { ValidateNested } from 'class-validator';
 
 @Exclude()
 export class CreateUserResponse {
@@ -13,4 +15,9 @@ export class CreateUserResponse {
 
   @Expose()
   createdAt: Date;
+
+  @Expose()
+  @Type(() => BanInfo)
+  @ValidateNested()
+  banInfo: BanInfo;
 }
