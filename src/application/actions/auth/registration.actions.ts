@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CreateUserAction } from '../users/create-user.action';
-import { CreateUserDto } from '../../../domain/users/dto/create-user.dto';
+import { CreateUserAction } from '../sa/users/create-user.action';
+import { CreateUserDto } from '../../../domain/sa/users/dto/create-user.dto';
 import { EmailRegistrationService } from '../../services/email/email-registration.service';
 import { generateCode } from '../../../utils/generateCode';
 import { MainActivateCodeRepository } from '../../../infrastructure/database/repositories/activate-code/main-activate-code.repository';

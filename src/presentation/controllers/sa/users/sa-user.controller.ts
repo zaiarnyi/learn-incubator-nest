@@ -1,18 +1,42 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Inject, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { BasicAuthGuard } from '../../../../domain/auth/guards/basic-auth.guard';
+import { GetAllUsersAction } from '../../../../application/actions/sa/users/get-all-users.action';
+import { CreateUserAction } from '../../../../application/actions/sa/users/create-user.action';
+import { DeleteUserAction } from '../../../../application/actions/sa/users/delete-user.action';
+import { plainToClass } from 'class-transformer';
+import { CreateUserResponse } from '../../../responses/sa/users/create-user.response';
+import { GetUsersRequest } from '../../../requests/sa/users/get-users.request';
+import { UserBannedRequest } from '../../../requests/sa/users/user-banned.request';
+import { UserBannedAction } from '../../../../application/actions/sa/users/user-banned.action';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/users')
 export class SaUserController {
+  constructor(
+    @Inject(GetAllUsersAction) private readonly getUsersService: GetAllUsersAction,
+    @Inject(CreateUserAction) private readonly createUserService: CreateUserAction,
+    @Inject(DeleteUserAction) private readonly deleteUserService: DeleteUserAction,
+    @Inject(UserBannedAction) private readonly banUserService: UserBannedAction,
+  ) {}
   @Get()
-  async getUsers(@Query() query: any) {}
+  async getUsers(@Query() query: GetUsersRequest) {
+    return this.getUsersService.execute(query);
+  }
 
   @Post()
-  async createUser(@Body() body: any) {}
+  async createUser(@Body() body: any) {
+    const createdUser = await this.createUserService.execute(body, true);
+    return plainToClass(CreateUserResponse, createdUser);
+  }
 
   @Delete(':id')
-  async deleteUser(@Param('id') id: string) {}
+  async deleteUser(@Param('id') id: string) {
+    return this.deleteUserService.execute(id);
+  }
 
   @Put(':id/ban')
-  async banToUser(@Param('id') id: string) {}
+  @HttpCode(204)
+  async banToUser(@Param('id') id: string, @Body() body: UserBannedRequest) {
+    return this.banUserService.execute(id, body);
+  }
 }

@@ -1,6 +1,5 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
 import { GetPostsRequest } from '../requests/posts/get-posts.request';
-import { CreatePostRequest } from '../requests/posts/create-post.request';
 import { GetPost, GetPostsResponse } from '../responses/posts/get-all-posts.response';
 import { GetCommentsByPostIdResponse, PostCommentInfo } from '../responses/posts/get-comments-by-postId.response';
 import { CreatePostAction } from '../../application/actions/posts/create-post.action';
@@ -15,7 +14,6 @@ import { JwtAuthOptionalGuard } from '../../domain/auth/guards/optional-jwt-auth
 import { ChangeLikeStatusPostAction } from '../../application/actions/posts/change-like-status.action';
 import { CreateCommentForPostRequest } from '../requests/posts/create-comment-for-post.request';
 import { CreateCommentForPostAction } from '../../application/actions/posts/create-comment-for-post.action';
-import { BasicAuthGuard } from '../../domain/auth/guards/basic-auth.guard';
 
 @Controller('posts')
 export class PostsController {
@@ -48,11 +46,11 @@ export class PostsController {
   ): Promise<GetCommentsByPostIdResponse> {
     return this.commentsByPostIdService.execute(id, query, req?.user?.userId);
   }
-  @UseGuards(BasicAuthGuard)
-  @Post()
-  async createPost(@Body() body: CreatePostRequest, @Req() req: any): Promise<GetPost> {
-    return this.createService.execute(body, req?.user?.userId);
-  }
+  // @UseGuards(BasicAuthGuard)
+  // @Post()
+  // async createPost(@Body() body: CreatePostRequest, @Req() req: any): Promise<GetPost> {
+  //   return this.createService.execute(body, req?.user?.userId);
+  // }
 
   @UseGuards(JwtAuthGuard)
   @Post(':id/comments')
@@ -64,12 +62,12 @@ export class PostsController {
     return this.createCommentForPostAction.execute(id, body, req.user.userId);
   }
 
-  @UseGuards(BasicAuthGuard)
-  @Put(':id')
-  @HttpCode(204)
-  async updatePost(@Param('id') id: string, @Body() body: CreatePostRequest): Promise<void> {
-    return this.updatePostService.execute(id, body);
-  }
+  // @UseGuards(BasicAuthGuard)
+  // @Put(':id')
+  // @HttpCode(204)
+  // async updatePost(@Param('id') id: string, @Body() body: CreatePostRequest): Promise<void> {
+  //   return this.updatePostService.execute(id, body);
+  // }
 
   @UseGuards(JwtAuthGuard)
   @Put(':id/like-status')
@@ -82,10 +80,10 @@ export class PostsController {
     return this.changeLikeStatusByPostIdService.execute(id, body, req.user.userId);
   }
 
-  @UseGuards(BasicAuthGuard)
-  @Delete(':id')
-  @HttpCode(204)
-  async deletePostById(@Param('id') id: string): Promise<void> {
-    return this.deletePostService.execute(id);
-  }
+  // @UseGuards(BasicAuthGuard)
+  // @Delete(':id')
+  // @HttpCode(204)
+  // async deletePostById(@Param('id') id: string): Promise<void> {
+  //   return this.deletePostService.execute(id);
+  // }
 }

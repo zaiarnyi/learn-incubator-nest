@@ -1,5 +1,6 @@
 import { IsEnum, IsInt, IsOptional, IsString } from 'class-validator';
-import { SortByEnum, SortDirection } from '../enums/sort.enum';
+import { SortByEnum, SortDirection } from '../../../users/enums/sort.enum';
+import { BanStatusEnum } from '../../../users/enums/banStatus.enum';
 
 export class GetUsersDTO {
   @IsOptional()
@@ -27,4 +28,9 @@ export class GetUsersDTO {
   @IsOptional()
   @IsString()
   searchEmailTerm: string;
+
+  @IsOptional()
+  @IsString()
+  @IsEnum(BanStatusEnum)
+  banStatus: BanStatusEnum = BanStatusEnum.ALL;
 }

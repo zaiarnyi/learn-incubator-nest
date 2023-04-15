@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from '../../presentation/controllers/auth.controller';
 import { UsersModule } from './users.module';
-import { CreateUserAction } from '../../application/actions/users/create-user.action';
+import { CreateUserAction } from '../../application/actions/sa/users/create-user.action';
 import { EmailModule } from './email.module';
 import { RegistrationActions } from '../../application/actions/auth/registration.actions';
 import { ActivateCodeModule } from './activate-code.module';

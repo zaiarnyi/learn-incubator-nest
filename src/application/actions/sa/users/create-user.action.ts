@@ -1,9 +1,9 @@
-import { CreateUserDto } from '../../../domain/users/dto/create-user.dto';
-import { CreateUserVo } from '../../../domain/users/vo/create-user.vo';
-import { UserMainRepository } from '../../../infrastructure/database/repositories/users/main.repository';
+import { CreateUserDto } from '../../../../domain/sa/users/dto/create-user.dto';
+import { CreateUserVo } from '../../../../domain/users/vo/create-user.vo';
+import { UserMainRepository } from '../../../../infrastructure/database/repositories/users/main.repository';
 import { BadRequestException, Inject, Logger, UnauthorizedException } from '@nestjs/common';
 import { validateOrReject } from 'class-validator';
-import { UserQueryRepository } from '../../../infrastructure/database/repositories/users/query.repository';
+import { UserQueryRepository } from '../../../../infrastructure/database/repositories/users/query.repository';
 
 export class CreateUserAction {
   logger = new Logger(CreateUserAction.name);

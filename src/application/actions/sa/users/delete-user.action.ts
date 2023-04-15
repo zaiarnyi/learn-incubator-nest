@@ -1,5 +1,5 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { UserMainRepository } from '../../../infrastructure/database/repositories/users/main.repository';
+import { UserMainRepository } from '../../../../infrastructure/database/repositories/users/main.repository';
 
 @Injectable()
 export class DeleteUserAction {

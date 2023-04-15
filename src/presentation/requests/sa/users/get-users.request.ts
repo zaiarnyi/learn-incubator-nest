@@ -1,6 +1,7 @@
 import { IsEnum, IsInt, IsOptional, IsString, Max } from 'class-validator';
-import { SortByEnum, SortDirection } from '../../../domain/users/enums/sort.enum';
-import { Type } from 'class-transformer';
+import { SortByEnum, SortDirection } from '../../../../domain/users/enums/sort.enum';
+import { Transform } from 'class-transformer';
+import { BanStatusEnum } from '../../../../domain/users/enums/banStatus.enum';
 
 export class GetUsersRequest {
   @IsOptional()
@@ -14,12 +15,12 @@ export class GetUsersRequest {
   sortDirection: SortDirection = SortDirection.DESC;
 
   @IsOptional()
-  @Type(() => Number)
+  @Transform(({ value }) => value && parseInt(value, 10))
   @IsInt()
   pageNumber = 1;
 
   @IsOptional()
-  @Type(() => Number)
+  @Transform(({ value }) => value && parseInt(value, 10))
   @IsInt()
   @Max(100)
   pageSize = 10;
@@ -31,4 +32,9 @@ export class GetUsersRequest {
   @IsOptional()
   @IsString()
   searchEmailTerm = '';
+
+  @IsOptional()
+  @IsString()
+  @IsEnum(BanStatusEnum)
+  banStatus: BanStatusEnum = BanStatusEnum.ALL;
 }

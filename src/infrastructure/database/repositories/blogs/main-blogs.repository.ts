@@ -22,4 +22,8 @@ export class MainBlogsRepository {
   async deleteAllBlogs() {
     return this.blogModel.deleteMany();
   }
+
+  async bindUserToBlog(id: string, userId: string, userLogin: string) {
+    return this.blogModel.findOneAndUpdate({ id }, { userId, userLogin });
+  }
 }
