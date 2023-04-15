@@ -69,7 +69,6 @@ export class GetCommentsByPostIdAction {
         likesInfo: await this.getLikesInfo(comment._id.toString(), userId),
       });
       comments.push(c);
-      console.log(c);
     }
 
     return {

@@ -18,4 +18,8 @@ export class MainUserBannedRepository {
   async deleteBan(userId: string) {
     return this.model.findOneAndRemove({ userId });
   }
+
+  async deleteAll() {
+    return this.model.deleteMany();
+  }
 }

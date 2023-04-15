@@ -28,7 +28,10 @@ export class GetBlogsActions {
       pageSize: query.pageSize,
       totalCount,
       items: blogs.map((item) => {
-        return { ...item.toJSON(), blogOwnerInfo: { userId: item.userId, userLogin: item.userLogin } };
+        return Object.assign(item, {
+          id: item._id.toString(),
+          blogOwnerInfo: { userId: item.userId, userLogin: item.userLogin },
+        });
       }),
     });
   }

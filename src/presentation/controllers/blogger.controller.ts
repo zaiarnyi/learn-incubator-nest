@@ -47,7 +47,6 @@ export class BloggerController {
 
   @Post('blogs')
   async createBlog(@Body() body: CreateBlogRequest, @Req() req: any) {
-    console.log(req.user);
     return this.createBlogService.execute(body, req.user.userId);
   }
 

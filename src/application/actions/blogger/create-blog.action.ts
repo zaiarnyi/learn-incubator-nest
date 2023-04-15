@@ -17,7 +17,6 @@ export class CreateBlogAction {
 
   async execute(payload: CreateBlogDto, userId: string): Promise<CreateBlogResponse> {
     const user = await this.userQueryRepository.getUserById(userId);
-    console.log(user, 'user');
     const blog = new Blog();
     blog.name = payload.name;
     blog.description = payload.description;
