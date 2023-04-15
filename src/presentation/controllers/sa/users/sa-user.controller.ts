@@ -32,6 +32,7 @@ export class SaUserController {
   }
 
   @Delete(':id')
+  @HttpCode(204)
   async deleteUser(@Param('id') id: string) {
     return this.deleteUserService.execute(id);
   }

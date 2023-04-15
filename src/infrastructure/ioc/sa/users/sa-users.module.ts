@@ -31,5 +31,6 @@ import { MainUserBannedRepository } from '../../../database/repositories/sa/user
     QueryUserBannedRepository,
     MainUserBannedRepository,
   ],
+  exports: [QueryUserBannedRepository, MainUserBannedRepository],
 })
 export class SaUsersModule {}

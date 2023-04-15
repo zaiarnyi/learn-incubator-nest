@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { AuthController } from '../../presentation/controllers/auth.controller';
 import { UsersModule } from './users.module';
 import { CreateUserAction } from '../../application/actions/sa/users/create-user.action';
@@ -19,6 +19,7 @@ import { JwtStrategy } from '../../domain/auth/strategies/jwt.stategy';
 import { BasicStrategy } from '../../domain/auth/strategies/basic.strategy';
 import { SecurityModule } from './security.module';
 import { InvalidTokensModule } from './invalidTokens.module';
+import { SaUsersModule } from './sa/users/sa-users.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { InvalidTokensModule } from './invalidTokens.module';
     }),
     SecurityModule,
     InvalidTokensModule,
+    forwardRef(() => SaUsersModule),
   ],
   controllers: [AuthController],
   providers: [

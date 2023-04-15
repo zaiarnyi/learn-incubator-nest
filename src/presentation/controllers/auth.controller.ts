@@ -38,6 +38,7 @@ import { Throttle } from '@nestjs/throttler';
 import { JwtService } from '@nestjs/jwt';
 import { InvalidUserTokensService } from '../../application/services/invalid-tokens/invalid-user-tokens.service';
 import { v4 as uuidv4 } from 'uuid';
+import { QueryUserBannedRepository } from '../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
 
 @Controller('auth')
 export class AuthController {
@@ -59,6 +60,7 @@ export class AuthController {
     @Inject(MainSecurityRepository) private readonly securityRepository: MainSecurityRepository,
     @Inject(InvalidUserTokensService) private readonly tokensRepository: InvalidUserTokensService,
     @Inject(JwtService) private readonly jwtService: JwtService,
+    @Inject(QueryUserBannedRepository) private readonly userBannedRepository: QueryUserBannedRepository,
   ) {
     this.httpOnly = this.configService.get<string>('HTTPS_ONLY_COOKIES') === 'true';
     this.secure = this.configService.get<string>('SECURITY_COOKIE') === 'true';
@@ -79,6 +81,10 @@ export class AuthController {
   @Post('login')
   async login(@Req() req: any, @Res({ passthrough: true }) response: Response, @Body() body: LoginRequest) {
     const { userId } = req.user;
+    const isBanned = await this.userBannedRepository.checkStatus(userId);
+    if (isBanned) {
+      throw new UnauthorizedException();
+    }
     const devicePrepare = new DeviceDto();
     devicePrepare.ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.socket.remoteAddress || null;
     devicePrepare.userId = userId;

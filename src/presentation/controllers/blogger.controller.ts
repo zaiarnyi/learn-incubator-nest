@@ -42,23 +42,24 @@ export class BloggerController {
   ) {}
   @Get('blogs')
   async getBlogs(@Query() query: GetBlogsRequestWithSearch, @Req() req: any): Promise<GetAllBlogsResponse> {
-    return this.getBlogsService.execute(query, req.user.id);
+    return this.getBlogsService.execute(query, req.user.userId);
   }
 
   @Post('blogs')
   async createBlog(@Body() body: CreateBlogRequest, @Req() req: any) {
-    return this.createBlogService.execute(body, req.user.id);
+    console.log(req.user);
+    return this.createBlogService.execute(body, req.user.userId);
   }
 
   @Post('blogs/:blogId/post')
   async createPostByBlog(@Body() body: CreatePostByBlogIdRequest, @Param('blogId') id: string, @Req() req: any) {
-    return this.createPostService.execute({ ...body, blogId: id }, req.user.id);
+    return this.createPostService.execute({ ...body, blogId: id }, req.user.userId);
   }
 
   @Put('blogs/:id')
   @HttpCode(204)
   async updateBlog(@Param('id') id: string, @Body() body: CreateBlogRequest, @Req() req: any) {
-    return this.updateService.execute(id, body, req.user.id);
+    return this.updateService.execute(id, body, req.user.userId);
   }
 
   @Put('blogs/:blogId/posts/:postId')
@@ -68,18 +69,18 @@ export class BloggerController {
     @Param() params: ParamPostByBlogRequest,
     @Req() req: any,
   ) {
-    return this.updatePostByBlogAction.execute({ ...body, blogId: params.blogId }, params.postId, req.user.id);
+    return this.updatePostByBlogAction.execute({ ...body, blogId: params.blogId }, params.postId, req.user.userId);
   }
 
   @Delete('blogs/:id')
   @HttpCode(204)
   async deleteBlog(@Param('id') id: string, @Req() req: any) {
-    return this.deleteService.execute(id, req.user.id);
+    return this.deleteService.execute(id, req.user.userId);
   }
 
   @Delete('blogs/:blogId/posts/:postId')
   @HttpCode(204)
   async deletePostByBlog(@Param() params: ParamPostByBlogRequest, @Req() req: any) {
-    return this.deletePostAction.execute(params.blogId, params.postId, req.user.id);
+    return this.deletePostAction.execute(params.blogId, params.postId, req.user.userId);
   }
 }
