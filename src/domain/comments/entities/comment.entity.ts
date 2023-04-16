@@ -26,6 +26,9 @@ export class Comment {
 
   @Prop({ type: String, isRequired: true })
   postId: string;
+
+  @Prop({ type: String, isRequired: true, default: false })
+  isBanned: boolean;
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);

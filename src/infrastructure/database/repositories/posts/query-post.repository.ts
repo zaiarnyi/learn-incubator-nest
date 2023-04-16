@@ -14,21 +14,21 @@ export class QueryPostRepository {
     @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
   ) {}
   async getCountPosts(): Promise<number> {
-    return this.postModel.find().count();
+    return this.postModel.find().count({ isBanned: false });
   }
   async getPost(limit: number, offset: number, sortBy: string, direction: string): Promise<PostDocument[]> {
     return this.postModel
-      .find()
+      .find({ isBanned: false })
       .sort({ [sortBy]: direction as PostSortDirection })
       .skip(offset)
       .limit(limit)
       .lean();
   }
   async getPostByBlogId(id: string): Promise<BlogDocument> {
-    return this.blogModel.findOne({ id });
+    return this.blogModel.findOne({ id, isBanned: false });
   }
 
   async getPostById(id: string): Promise<PostDocument> {
-    return this.postModel.findOne({ id });
+    return this.postModel.findOne({ id, isBanned: false });
   }
 }

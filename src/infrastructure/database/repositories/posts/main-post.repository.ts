@@ -23,4 +23,7 @@ export class MainPostRepository {
   async deleteAllPosts() {
     return this.postModel.deleteMany();
   }
+  async changeBannedStatus(userId: string, isBanned: boolean) {
+    return this.postModel.updateMany({ userId }, { isBanned });
+  }
 }

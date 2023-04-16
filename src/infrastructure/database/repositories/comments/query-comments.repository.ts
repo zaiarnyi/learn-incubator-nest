@@ -8,7 +8,7 @@ export class QueryCommentsRepository {
   constructor(@InjectModel(Comment.name) private commentModel: Model<CommentDocument>) {}
 
   async getCountComments(postId: string): Promise<number> {
-    return this.commentModel.find({ postId }).count();
+    return this.commentModel.find({ postId }).count({ isBanned: false });
   }
   async getCommentByPostId(
     postId: string,
@@ -18,14 +18,14 @@ export class QueryCommentsRepository {
     direction: string,
   ): Promise<CommentDocument[]> {
     return this.commentModel
-      .find({ postId })
+      .find({ postId, isBanned: false })
       .sort({ [sortBy]: direction as 'asc' | 'desc' })
       .skip(offset)
       .limit(limit);
   }
 
   async getCommentById(id: string): Promise<CommentDocument> {
-    return this.commentModel.findById(id);
+    return this.commentModel.findOne({ id, isBanned: false });
   }
 
   async getCommentByIdForUser(userId: string, id: string): Promise<CommentDocument> {

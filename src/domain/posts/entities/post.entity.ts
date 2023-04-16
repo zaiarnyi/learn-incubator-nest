@@ -32,6 +32,9 @@ export class Post {
 
   @Prop({ type: String, isRequired: false })
   userId: string;
+
+  @Prop({ type: String, isRequired: true, default: false })
+  isBanned: boolean;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

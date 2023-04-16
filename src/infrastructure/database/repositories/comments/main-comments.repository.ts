@@ -27,4 +27,8 @@ export class MainCommentsRepository {
   async createComment(body: Comment): Promise<CommentDocument> {
     return this.commentModel.create(body);
   }
+
+  async changeBannedStatus(userId: string, isBanned: boolean) {
+    return this.commentModel.updateMany({ userId }, { isBanned });
+  }
 }
