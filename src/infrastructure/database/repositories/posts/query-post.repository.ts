@@ -25,10 +25,10 @@ export class QueryPostRepository {
       .lean();
   }
   async getPostByBlogId(id: string): Promise<BlogDocument> {
-    return this.blogModel.findById(id);
+    return this.blogModel.findOne({ id });
   }
 
   async getPostById(id: string): Promise<PostDocument> {
-    return this.postModel.findById(id);
+    return this.postModel.findOne({ id });
   }
 }
