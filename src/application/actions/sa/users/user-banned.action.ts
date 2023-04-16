@@ -29,6 +29,7 @@ export class UserBannedAction {
       this.postRepository.changeBannedStatus(userId, isBanned),
       this.userMainRepository.changeStatusBan(userId, isBanned),
       this.likeStatusRepository.changeStatusForUserBanned(userId, isBanned),
+      this.likeStatusPostRepository.changeStatusBan(userId, isBanned),
     ]);
   }
 
