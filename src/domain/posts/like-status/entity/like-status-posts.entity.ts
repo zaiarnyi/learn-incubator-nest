@@ -33,6 +33,9 @@ export class LikeStatusPosts {
 
   @Prop({ type: String, isRequired: true })
   login: string;
+
+  @Prop({ type: Boolean, isRequired: false, default: false })
+  isBanned: boolean;
 }
 
 export const LikeStatusPostsSchema = SchemaFactory.createForClass(LikeStatusPosts);

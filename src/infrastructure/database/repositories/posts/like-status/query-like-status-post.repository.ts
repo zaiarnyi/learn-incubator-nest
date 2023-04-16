@@ -12,16 +12,16 @@ export class QueryLikeStatusPostRepository {
   constructor(@InjectModel(LikeStatusPosts.name) private readonly repository: Model<LikeStatusPostsDocument>) {}
 
   async getCountStatuses(postId: string, status: string): Promise<number> {
-    return this.repository.find({ postId, [status.toLowerCase()]: true }).count();
+    return this.repository.find({ postId, [status.toLowerCase()]: true, isBanned: false }).count();
   }
 
   async checkUserStatus(postId: string, userId: string) {
-    return this.repository.findOne({ postId, userId });
+    return this.repository.findOne({ postId, userId, isBanned: false });
   }
 
   async getLastLikesStatus(postId: string): Promise<LikeStatusPostsDocument[]> {
     return this.repository
-      .find({ postId, [LikeStatusEnum.Like.toLowerCase()]: true })
+      .find({ postId, [LikeStatusEnum.Like.toLowerCase()]: true, isBanned: false })
       .sort({ createdAt: 'desc' })
       .limit(3);
   }

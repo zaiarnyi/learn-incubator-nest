@@ -21,4 +21,8 @@ export class MainLikeStatusPostRepository {
   async deleteAll() {
     return this.repository.deleteMany();
   }
+
+  async changeStatusBan(userId: string, isBanned: boolean) {
+    return this.repository.updateMany({ userId }, { isBanned });
+  }
 }
