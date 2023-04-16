@@ -3,6 +3,7 @@ import { QueryPostRepository } from '../../../infrastructure/database/repositori
 import { GetPost } from '../../../presentation/responses/posts/get-all-posts.response';
 import { plainToClass } from 'class-transformer';
 import { GetLikesInfoForPostService } from '../../services/posts/get-likes-info-for-post.service';
+import { QueryUserBannedRepository } from '../../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
 
 @Injectable()
 export class GetPostByIdAction {
@@ -10,9 +11,19 @@ export class GetPostByIdAction {
   constructor(
     @Inject(QueryPostRepository) private readonly queryRepository: QueryPostRepository,
     @Inject(GetLikesInfoForPostService) private readonly likesInfoService: GetLikesInfoForPostService,
+    @Inject(QueryUserBannedRepository) private readonly queryUserBannedRepository: QueryUserBannedRepository,
   ) {}
 
+  private async validateIsUserBanned(userId: string) {
+    if (!userId) return;
+    const hasBanned = await this.queryUserBannedRepository.checkStatus(userId);
+    if (hasBanned) {
+      throw new NotFoundException();
+    }
+  }
+
   public async execute(id: string, userId?: string): Promise<GetPost> {
+    await this.validateIsUserBanned(userId);
     const postById = await this.queryRepository
       .getPostById(id)
       .then((result) => {

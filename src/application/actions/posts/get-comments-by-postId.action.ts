@@ -10,6 +10,7 @@ import { QueryLikeStatusRepository } from '../../../infrastructure/database/repo
 import { ExtendedLikesInfo } from '../../../presentation/responses/extendedLikesInfo.response';
 import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
 import { QueryPostRepository } from '../../../infrastructure/database/repositories/posts/query-post.repository';
+import { QueryUserBannedRepository } from '../../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
 
 @Injectable()
 export class GetCommentsByPostIdAction {
@@ -18,6 +19,7 @@ export class GetCommentsByPostIdAction {
     @Inject(QueryCommentsRepository) private readonly queryRepository: QueryCommentsRepository,
     @Inject(QueryPostRepository) private readonly queryPostsRepository: QueryPostRepository,
     @Inject(QueryLikeStatusRepository) private readonly likeStatusCommentRepository: QueryLikeStatusRepository,
+    @Inject(QueryUserBannedRepository) private readonly queryUserBannedRepository: QueryUserBannedRepository,
   ) {}
 
   private async validate(postId: string) {
@@ -59,6 +61,10 @@ export class GetCommentsByPostIdAction {
     const comments = [];
 
     for (const comment of commentsRaw) {
+      const commentUserIsBanned = await this.queryUserBannedRepository.checkStatus(comment.userId);
+      if (commentUserIsBanned) {
+        continue;
+      }
       const c = plainToClass(PostCommentInfo, {
         ...comment.toObject(),
         id: comment._id.toString(),

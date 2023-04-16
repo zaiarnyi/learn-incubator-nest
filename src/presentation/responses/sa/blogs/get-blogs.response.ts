@@ -1,6 +1,7 @@
 import { CreateBlogResponse } from '../../blogs/create-blog.response';
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { MetaResponse } from '../../meta.response';
+import { ValidateNested } from 'class-validator';
 
 @Exclude()
 class BlogOwner {
@@ -14,11 +15,15 @@ class BlogOwner {
 @Exclude()
 class GetBlogsWithOwner extends CreateBlogResponse {
   @Expose()
-  blogOwner: BlogOwner;
+  @ValidateNested()
+  @Type(() => BlogOwner)
+  blogOwnerInfo: BlogOwner;
 }
 
 @Exclude()
 export class GetBlogsWithOwnerResponse extends MetaResponse {
   @Expose()
+  @ValidateNested()
+  @Type(() => GetBlogsWithOwner)
   items: GetBlogsWithOwner;
 }

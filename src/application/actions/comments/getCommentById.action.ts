@@ -18,6 +18,7 @@ export class GetCommentByIdAction {
   ) {}
 
   private async validateIsUserBanned(userId: string) {
+    if (!userId) return;
     const hasBanned = await this.queryUserBannedRepository.checkStatus(userId);
     if (hasBanned) {
       throw new NotFoundException();

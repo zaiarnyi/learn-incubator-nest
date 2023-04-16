@@ -24,6 +24,7 @@ import { CreateCommentForPostAction } from '../../application/actions/posts/crea
 import { CommentsModule } from './comments.module';
 import { ValidateBlogByIdValidator } from '../validators/validateBlogById.validator';
 import { BlogsModule } from './blogs.module';
+import { SaUsersModule } from './sa/users/sa-users.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { BlogsModule } from './blogs.module';
         collection: MongoCollections.COMMENTS,
       },
     ]),
+    SaUsersModule,
     UsersModule,
     CommentsModule,
     BlogsModule,

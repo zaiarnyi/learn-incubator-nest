@@ -26,10 +26,6 @@ export class CreateBlogAction {
 
     const createdBlog = await this.mainRepository.createBlog(blog);
 
-    // return plainToClass(CreateBlogResponse, {
-    //   ...createdBlog.toObject(),
-    //   id: createdBlog._id.toString(),
-    // });
-    return plainToClass(CreateBlogResponse, { ...createdBlog.toJSON() });
+    return plainToClass(CreateBlogResponse, Object.assign(createdBlog, {}));
   }
 }
