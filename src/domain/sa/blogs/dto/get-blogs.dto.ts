@@ -18,12 +18,12 @@ export class GetBlogsDto {
 
   @IsString()
   @IsOptional()
-  @IsEnum(BlogSortByEnum)
+  // @IsEnum(BlogSortByEnum)
   sortBy: BlogSortByEnum = BlogSortByEnum.CREATED_AT;
 
   @IsString()
   @IsOptional()
-  @IsEnum(BlogSortDirection)
+  // @IsEnum(BlogSortDirection)
   sortDirection: BlogSortDirection = BlogSortDirection.DESC;
 
   @IsString()
