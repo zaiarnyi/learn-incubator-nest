@@ -50,7 +50,7 @@ export class BloggerController {
     return this.createBlogService.execute(body, req.user.userId);
   }
 
-  @Post('blogs/:blogId/post')
+  @Post('blogs/:blogId/posts')
   async createPostByBlog(@Body() body: CreatePostByBlogIdRequest, @Param('blogId') id: string, @Req() req: any) {
     return this.createPostService.execute({ ...body, blogId: id }, req.user.userId);
   }

@@ -23,22 +23,6 @@ export class CreatePostAction {
     @Inject(UserQueryRepository) private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
-  private async getBlogById(id: string) {
-    return this.queryPostRepository
-      .getPostByBlogId(id)
-      .then((res) => {
-        if (!res) {
-          this.logger.warn(`Not found blog with ID: ${id}`);
-          throw new NotFoundException();
-        }
-        return res;
-      })
-      .catch(() => {
-        this.logger.error(`Not found blog with ID: ${id}`);
-        throw new NotFoundException();
-      });
-  }
-
   private getLikesInfo() {
     return {
       likesCount: 0,
@@ -66,7 +50,19 @@ export class CreatePostAction {
   }
 
   private async validate(blogId: string) {
-    return this.getBlogById(blogId);
+    return this.queryPostRepository
+      .getPostByBlogId(blogId)
+      .then((res) => {
+        if (!res) {
+          this.logger.warn(`Not found blog with ID: ${blogId}`);
+          throw new NotFoundException();
+        }
+        return res;
+      })
+      .catch(() => {
+        this.logger.error(`Not found blog with ID: ${blogId}`);
+        throw new NotFoundException();
+      });
   }
   public async execute(payload: CreatePostDto, userId: string): Promise<GetPost> {
     const blog = await this.validate(payload.blogId);
