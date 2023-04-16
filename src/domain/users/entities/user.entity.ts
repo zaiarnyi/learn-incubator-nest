@@ -33,6 +33,9 @@ export class User {
 
   @Prop({ enum: UserRoles, isRequired: true, type: String, default: UserRoles.USER })
   role: number;
+
+  @Prop({ type: Boolean, default: false })
+  isBanned: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

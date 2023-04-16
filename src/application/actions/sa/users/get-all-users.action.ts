@@ -22,7 +22,8 @@ export class GetAllUsersAction {
   }
 
   async execute(dto: GetUsersDTO): Promise<GetUsersResponse> {
-    const totalCount = await this.queryRepository.getCountUsers(dto.searchLoginTerm, dto.searchEmailTerm);
+    const bannedStatus = dto.banStatus === BanStatusEnum.BANNED;
+    const totalCount = await this.queryRepository.getCountUsers(dto.searchLoginTerm, dto.searchEmailTerm, bannedStatus);
     const skip = (dto.pageNumber - 1) * dto.pageSize;
     const pagesCount = Math.ceil(totalCount / dto.pageSize);
 
@@ -33,34 +34,23 @@ export class GetAllUsersAction {
       dto.pageSize,
       dto.sortBy,
       dto.sortDirection,
+      bannedStatus,
     );
 
-    const promises = [];
-    for (const user of users) {
-      const banInfo = await this.checkUserBanStatus(user._id.toString());
-      if (dto.banStatus === BanStatusEnum.BANNED && !banInfo.isBanned) continue;
-      if (dto.banStatus === BanStatusEnum.NOT_BANNED && banInfo.isBanned) continue;
-      promises.push({
-        id: user._id.toString(),
-        ...user,
+    const promises = users.map(async (item) => {
+      const banInfo = await this.checkUserBanStatus(item._id.toString());
+      return {
+        id: item._id.toString(),
+        ...item,
         banInfo,
-      });
-    }
-
-    // const promises = users.map(async (item) => {
-    //   const banInfo = await this.checkUserBanStatus(item._id.toString());
-    //   return {
-    //     id: item._id.toString(),
-    //     ...item,
-    //     banInfo,
-    //   };
-    // });
+      };
+    });
 
     return plainToClass(GetUsersResponse, {
       pagesCount,
       page: dto.pageNumber,
       pageSize: dto.pageSize,
-      totalCount: promises.length,
+      totalCount,
       items: await Promise.all(promises),
     });
   }

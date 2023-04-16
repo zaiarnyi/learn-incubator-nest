@@ -33,4 +33,8 @@ export class UserMainRepository {
   async changeUserRole(userId: string, role: number): Promise<UpdateResult> {
     return this.userModel.findOneAndUpdate({ userId }, { role });
   }
+
+  async changeStatusBan(userId: string, isBanned: boolean) {
+    return this.userModel.findOne({ userId, isBanned });
+  }
 }
