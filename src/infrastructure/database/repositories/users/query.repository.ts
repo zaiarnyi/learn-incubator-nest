@@ -14,10 +14,10 @@ export class UserQueryRepository {
     limit: number,
     sortBy: string,
     direction: string,
-    isBanned = false,
+    filter: Record<any, any> = {},
   ): Promise<UserDocument[]> {
     return this.userModel
-      .find({ isBanned })
+      .find(filter)
       .or([{ login: { $regex: new RegExp(searchLogin, 'gi') } }, { email: { $regex: new RegExp(searchEmail, 'gi') } }])
       .sort({ [sortBy]: direction as SortDirection })
       .skip(skip)
@@ -25,9 +25,9 @@ export class UserQueryRepository {
       .lean();
   }
 
-  async getCountUsers(searchLoginTerm: string, searchEmailTerm: string, isBanned = false) {
+  async getCountUsers(searchLoginTerm: string, searchEmailTerm: string, filter: Record<any, any> = {}) {
     return this.userModel.countDocuments({
-      isBanned,
+      filter,
       $or: [
         { login: { $regex: new RegExp(searchLoginTerm, 'gi') } },
         { email: { $regex: new RegExp(searchEmailTerm, 'gi') } },

@@ -13,6 +13,17 @@ export class GetAllUsersAction {
     @Inject(QueryUserBannedRepository) private readonly bannedRepository: QueryUserBannedRepository,
   ) {}
 
+  private checkStatus(status: string) {
+    switch (true) {
+      case status === BanStatusEnum.BANNED:
+        return { isBanned: true };
+      case status === BanStatusEnum.NOT_BANNED:
+        return { isBanned: false };
+      default:
+        return {};
+    }
+  }
+
   private async checkUserBanStatus(userId: string) {
     const checkUserBanned = await this.bannedRepository.checkStatus(userId);
     if (!checkUserBanned) {
@@ -22,8 +33,8 @@ export class GetAllUsersAction {
   }
 
   async execute(dto: GetUsersDTO): Promise<GetUsersResponse> {
-    const bannedStatus = dto.banStatus === BanStatusEnum.BANNED;
-    const totalCount = await this.queryRepository.getCountUsers(dto.searchLoginTerm, dto.searchEmailTerm, bannedStatus);
+    const statusFilter = this.checkStatus(dto.banStatus);
+    const totalCount = await this.queryRepository.getCountUsers(dto.searchLoginTerm, dto.searchEmailTerm, statusFilter);
     const skip = (dto.pageNumber - 1) * dto.pageSize;
     const pagesCount = Math.ceil(totalCount / dto.pageSize);
 
@@ -34,7 +45,7 @@ export class GetAllUsersAction {
       dto.pageSize,
       dto.sortBy,
       dto.sortDirection,
-      bannedStatus,
+      statusFilter,
     );
 
     const promises = users.map(async (item) => {
