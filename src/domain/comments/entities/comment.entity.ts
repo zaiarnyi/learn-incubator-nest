@@ -27,7 +27,7 @@ export class Comment {
   @Prop({ type: String, isRequired: true })
   postId: string;
 
-  @Prop({ type: String, isRequired: true, default: false })
+  @Prop({ type: Boolean, isRequired: true, default: false })
   isBanned: boolean;
 }
 

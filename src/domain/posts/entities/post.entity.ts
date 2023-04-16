@@ -33,7 +33,7 @@ export class Post {
   @Prop({ type: String, isRequired: false })
   userId: string;
 
-  @Prop({ type: String, isRequired: true, default: false })
+  @Prop({ type: Boolean, isRequired: true, default: false })
   isBanned: boolean;
 }
 

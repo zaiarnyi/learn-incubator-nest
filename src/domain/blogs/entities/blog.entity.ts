@@ -33,7 +33,7 @@ export class Blog {
   @Prop({ type: String, isRequired: false, default: null })
   userLogin: string;
 
-  @Prop({ type: String, isRequired: true, default: false })
+  @Prop({ type: Boolean, isRequired: true, default: false })
   isBanned: boolean;
 }
 
