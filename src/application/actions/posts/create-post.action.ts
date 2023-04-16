@@ -33,6 +33,7 @@ export class CreatePostAction {
   }
 
   private async createDefaultStatus(postId: string, userId: string) {
+    if (!userId) return null;
     const user = await this.userQueryRepository.getUserById(userId).catch((e) => {
       this.logger.error(
         `Error when getting a user to create a status for a post with id ${postId}. ${JSON.stringify(e)}`,
@@ -64,7 +65,7 @@ export class CreatePostAction {
         throw new NotFoundException();
       });
   }
-  public async execute(payload: CreatePostDto, userId: string): Promise<GetPost> {
+  public async execute(payload: CreatePostDto, userId?: string): Promise<GetPost> {
     const blog = await this.validate(payload.blogId);
     const newPost = new Post();
     newPost.blogName = blog.name;
@@ -72,7 +73,10 @@ export class CreatePostAction {
     newPost.content = payload.content;
     newPost.title = payload.title;
     newPost.shortDescription = payload.shortDescription;
-    newPost.userId = userId;
+
+    if (userId) {
+      newPost.userId = userId;
+    }
 
     const createdPost = await this.mainRepository.createPost(newPost);
     await this.createDefaultStatus(createdPost._id.toString(), userId).catch((e) => {

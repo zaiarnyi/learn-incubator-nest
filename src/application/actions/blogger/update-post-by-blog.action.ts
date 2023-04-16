@@ -1,4 +1,11 @@
-import { ForbiddenException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { QueryPostRepository } from '../../../infrastructure/database/repositories/posts/query-post.repository';
 import { MainPostRepository } from '../../../infrastructure/database/repositories/posts/main-post.repository';
 import { CreatePostDto } from '../../../domain/posts/dto/create-post.dto';
@@ -16,7 +23,7 @@ export class UpdatePostByBlogAction {
     @Inject(MainPostRepository) private readonly repository: MainPostRepository,
   ) {}
 
-  private async validate(blogId: string, postId: string, userId: string) {
+  private async validate(blogId: string, postId: string, userId?: string) {
     const [findPost, findBlog] = await Promise.all([
       this.queryPostRepository.getPostById(postId),
       this.queryBlogRepository.getBlogById(blogId),
@@ -25,6 +32,9 @@ export class UpdatePostByBlogAction {
     if (!findPost) {
       throw new NotFoundException();
     }
+    if (!userId) {
+      throw new UnauthorizedException();
+    }
     this.logger.warn(findPost, 'findPost');
     this.logger.warn(findBlog, 'findBlog');
     if ((findPost.userId && findPost.userId !== userId) || (findBlog.userId && findBlog.userId !== userId)) {
@@ -32,7 +42,7 @@ export class UpdatePostByBlogAction {
     }
   }
 
-  public async execute(body: CreatePostDto, postId: string, userId: string) {
+  public async execute(body: CreatePostDto, postId: string, userId?: string) {
     await this.validate(body.blogId, postId, userId);
 
     await this.repository.updatePost(postId, body);

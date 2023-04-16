@@ -28,6 +28,7 @@ import { DeletePostByBlogIdAction } from '../../application/actions/blogger/dele
 import { UpdatePostByBlogAction } from '../../application/actions/blogger/update-post-by-blog.action';
 import { JwtAuthOptionalGuard } from '../../domain/auth/guards/optional-jwt-auth.guard';
 
+@UseGuards(JwtAuthOptionalGuard)
 @Controller('blogger')
 export class BloggerController {
   constructor(
@@ -40,32 +41,31 @@ export class BloggerController {
     @Inject(DeletePostByBlogIdAction) private readonly deletePostAction: DeletePostByBlogIdAction,
     @Inject(UpdatePostByBlogAction) private readonly updatePostByBlogAction: UpdatePostByBlogAction,
   ) {}
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('blogs')
   async getBlogs(@Query() query: GetBlogsRequestWithSearch, @Req() req: any): Promise<GetAllBlogsResponse> {
-    return this.getBlogsService.execute(query, req.user.userId);
+    return this.getBlogsService.execute(query, req?.user?.userId);
   }
 
-  @UseGuards(JwtAuthOptionalGuard)
+  // @UseGuards(JwtAuthOptionalGuard)
   @Post('blogs')
   async createBlog(@Body() body: CreateBlogRequest, @Req() req: any) {
     return this.createBlogService.execute(body, req?.user?.userId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthOptionalGuard)
   @Post('blogs/:blogId/posts')
   async createPostByBlog(@Body() body: CreatePostByBlogIdRequest, @Param('blogId') id: string, @Req() req: any) {
-    return this.createPostService.execute({ ...body, blogId: id }, req.user.userId);
+    return this.createPostService.execute({ ...body, blogId: id }, req?.user?.userId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Put('blogs/:id')
   @HttpCode(204)
   async updateBlog(@Param('id') id: string, @Body() body: CreateBlogRequest, @Req() req: any) {
     return this.updateService.execute(id, body, req.user.userId);
   }
 
-  @UseGuards(JwtAuthOptionalGuard)
   @Put('blogs/:blogId/posts/:postId')
   @HttpCode(204)
   async updatePostByBlog(
@@ -76,14 +76,14 @@ export class BloggerController {
     return this.updatePostByBlogAction.execute({ ...body, blogId: params.blogId }, params.postId, req.user.userId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Delete('blogs/:id')
   @HttpCode(204)
   async deleteBlog(@Param('id') id: string, @Req() req: any) {
     return this.deleteService.execute(id, req.user.userId);
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Delete('blogs/:blogId/posts/:postId')
   @HttpCode(204)
   async deletePostByBlog(@Param() params: ParamPostByBlogRequest, @Req() req: any) {

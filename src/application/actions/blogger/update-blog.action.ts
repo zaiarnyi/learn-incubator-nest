@@ -1,4 +1,11 @@
-import { ForbiddenException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { MainBlogsRepository } from '../../../infrastructure/database/repositories/blogs/main-blogs.repository';
 import { CreateBlogDto } from '../../../domain/blogs/dto/create-blog.dto';
 import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
@@ -16,6 +23,10 @@ export class UpdateBlogAction {
     const findBlog = await this.queryRepository.getBlogById(id);
     if (!findBlog) {
       throw new NotFoundException();
+    }
+
+    if (!userId) {
+      throw new UnauthorizedException();
     }
 
     if (findBlog.userId !== userId) {
