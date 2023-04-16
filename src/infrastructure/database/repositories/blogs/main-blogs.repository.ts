@@ -12,7 +12,7 @@ export class MainBlogsRepository {
   }
 
   async updateBlog(id: string, userId: string, dto: CreateBlogDto): Promise<BlogDocument> {
-    return this.blogModel.findOneAndUpdate({ _id: id, userId }, dto);
+    return this.blogModel.findOneAndUpdate({ id, userId }, dto);
   }
 
   async deleteBlogById(id: string): Promise<BlogDocument> {

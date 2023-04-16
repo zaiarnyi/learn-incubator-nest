@@ -36,7 +36,7 @@ export class UserQueryRepository {
 
   async getCountUsers(searchLoginTerm: string, searchEmailTerm: string, filter: Record<any, any> = {}) {
     return this.userModel.countDocuments({
-      filter,
+      ...filter,
       $and: [
         {
           $or: [

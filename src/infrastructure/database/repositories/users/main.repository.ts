@@ -35,6 +35,6 @@ export class UserMainRepository {
   }
 
   async changeStatusBan(userId: string, isBanned: boolean) {
-    return this.userModel.findOne({ userId, isBanned });
+    return this.userModel.findByIdAndUpdate(userId, { isBanned });
   }
 }
