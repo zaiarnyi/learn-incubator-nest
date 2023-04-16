@@ -5,6 +5,7 @@ import { CommentResponse } from '../../../presentation/responses/commentById.res
 import { QueryLikeStatusRepository } from '../../../infrastructure/database/repositories/comments/like-status/query-like-status.repository';
 import { ExtendedLikesInfo } from '../../../presentation/responses/extendedLikesInfo.response';
 import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
+import { QueryUserBannedRepository } from '../../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
 
 @Injectable()
 export class GetCommentByIdAction {
@@ -13,7 +14,15 @@ export class GetCommentByIdAction {
   constructor(
     @Inject(QueryCommentsRepository) private readonly queryRepository: QueryCommentsRepository,
     @Inject(QueryLikeStatusRepository) private readonly queryLikeStatusRepository: QueryLikeStatusRepository,
+    @Inject(QueryUserBannedRepository) private readonly queryUserBannedRepository: QueryUserBannedRepository,
   ) {}
+
+  private async validateIsUserBanned(userId: string) {
+    const hasBanned = await this.queryUserBannedRepository.checkStatus(userId);
+    if (hasBanned) {
+      throw new NotFoundException();
+    }
+  }
 
   private async getLikesInfo(commentId: string, userId?: string): Promise<ExtendedLikesInfo> {
     const [likesCount, dislikesCount, info] = await Promise.all([
@@ -29,14 +38,15 @@ export class GetCommentByIdAction {
   }
 
   public async execute(id: string, userId?: string): Promise<CommentResponse> {
+    await this.validateIsUserBanned(userId);
     const comment = await this.queryRepository.getCommentById(id).catch((e) => {
       this.logger.error(`An error occurred when receiving comments with id - ${id}. ${JSON.stringify(e, null, 2)}`);
       throw new NotFoundException();
     });
-    this.logger.log(comment);
     if (!comment) {
       throw new NotFoundException();
     }
+    await this.validateIsUserBanned(comment.userId);
     return plainToClass(CommentResponse, {
       ...comment.toObject(),
       id: comment._id.toString(),

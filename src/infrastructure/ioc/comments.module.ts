@@ -16,6 +16,7 @@ import {
 import { MainLikeStatusRepository } from '../database/repositories/comments/like-status/main-like-status.repository';
 import { QueryLikeStatusRepository } from '../database/repositories/comments/like-status/query-like-status.repository';
 import { PostsModule } from './posts.module';
+import { SaUsersModule } from './sa/users/sa-users.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { PostsModule } from './posts.module';
       },
     ]),
     forwardRef(() => PostsModule),
+    SaUsersModule,
   ],
   controllers: [CommentsController],
   providers: [

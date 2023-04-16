@@ -50,7 +50,6 @@ export class CreatePostAction {
   }
 
   private async validate(blogId: string) {
-    console.log(blogId, 'blogId');
     return this.queryPostRepository
       .getPostByBlogId(blogId)
       .then((res) => {
