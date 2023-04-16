@@ -38,6 +38,8 @@ export class GetPostByIdAction {
         throw new NotFoundException();
       });
 
+    await this.validateIsUserBanned(postById.userId);
+
     return plainToClass(GetPost, {
       ...postById.toObject(),
       id,
