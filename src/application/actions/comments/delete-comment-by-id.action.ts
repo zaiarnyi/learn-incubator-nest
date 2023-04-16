@@ -15,7 +15,6 @@ export class DeleteCommentByIdAction {
       this.logger.error(`Error in getting a comment - ${id}. ${JSON.stringify(e)}`);
       throw new NotFoundException();
     });
-    this.logger.log(comment);
     if (!comment) {
       throw new NotFoundException();
     }

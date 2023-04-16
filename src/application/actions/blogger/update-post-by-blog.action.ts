@@ -2,6 +2,7 @@ import { ForbiddenException, Inject, Injectable, Logger, NotFoundException } fro
 import { QueryPostRepository } from '../../../infrastructure/database/repositories/posts/query-post.repository';
 import { MainPostRepository } from '../../../infrastructure/database/repositories/posts/main-post.repository';
 import { CreatePostDto } from '../../../domain/posts/dto/create-post.dto';
+import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 
 @Injectable()
 export class UpdatePostByBlogAction {
@@ -10,17 +11,23 @@ export class UpdatePostByBlogAction {
   constructor(
     @Inject(QueryPostRepository)
     private readonly queryPostRepository: QueryPostRepository,
+    @Inject(QueryBlogsRepository)
+    private readonly queryBlogRepository: QueryBlogsRepository,
     @Inject(MainPostRepository) private readonly repository: MainPostRepository,
   ) {}
 
   private async validate(blogId: string, postId: string, userId: string) {
-    const findPost = await this.queryPostRepository.getPostById(postId);
+    const [findPost, findBlog] = await Promise.all([
+      this.queryPostRepository.getPostById(postId),
+      this.queryBlogRepository.getBlogById(blogId),
+    ]);
 
     if (!findPost) {
       throw new NotFoundException();
     }
-
-    if (findPost.userId !== userId || findPost.blogId !== blogId) {
+    this.logger.warn(findPost, 'findPost');
+    this.logger.warn(findBlog, 'findBlog');
+    if ((findPost.userId && findPost.userId !== userId) || (findBlog.userId && findBlog.userId !== userId)) {
       throw new ForbiddenException();
     }
   }
