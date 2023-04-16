@@ -4,6 +4,7 @@ import { UserQueryRepository } from '../../../../infrastructure/database/reposit
 import { GetUsersResponse } from '../../../../presentation/responses/sa/users/get-users.response';
 import { plainToClass } from 'class-transformer';
 import { QueryUserBannedRepository } from '../../../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
+import { BanStatusEnum } from '../../../../domain/users/enums/banStatus.enum';
 
 @Injectable()
 export class GetAllUsersAction {
@@ -34,20 +35,32 @@ export class GetAllUsersAction {
       dto.sortDirection,
     );
 
-    const promises = users.map(async (item) => {
-      const banInfo = await this.checkUserBanStatus(item._id.toString());
-      return {
-        id: item._id.toString(),
-        ...item,
+    const promises = [];
+    for (const user of users) {
+      const banInfo = await this.checkUserBanStatus(user._id.toString());
+      if (dto.banStatus === BanStatusEnum.BANNED && !banInfo.isBanned) continue;
+      if (dto.banStatus === BanStatusEnum.NOT_BANNED && banInfo.isBanned) continue;
+      promises.push({
+        id: user._id.toString(),
+        ...user,
         banInfo,
-      };
-    });
+      });
+    }
+
+    // const promises = users.map(async (item) => {
+    //   const banInfo = await this.checkUserBanStatus(item._id.toString());
+    //   return {
+    //     id: item._id.toString(),
+    //     ...item,
+    //     banInfo,
+    //   };
+    // });
 
     return plainToClass(GetUsersResponse, {
       pagesCount,
       page: dto.pageNumber,
       pageSize: dto.pageSize,
-      totalCount,
+      totalCount: promises.length,
       items: await Promise.all(promises),
     });
   }

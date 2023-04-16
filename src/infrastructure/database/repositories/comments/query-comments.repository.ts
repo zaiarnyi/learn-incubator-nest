@@ -25,7 +25,7 @@ export class QueryCommentsRepository {
   }
 
   async getCommentById(id: string): Promise<CommentDocument> {
-    return this.commentModel.findOne({ id, isBanned: false });
+    return this.commentModel.findOne({ id });
   }
 
   async getCommentByIdForUser(userId: string, id: string): Promise<CommentDocument> {
