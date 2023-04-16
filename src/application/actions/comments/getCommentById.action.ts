@@ -44,6 +44,7 @@ export class GetCommentByIdAction {
       this.logger.error(`An error occurred when receiving comments with id - ${id}. ${JSON.stringify(e, null, 2)}`);
       throw new NotFoundException();
     });
+    this.logger.warn(comment, 'comment');
     if (!comment || comment.isBanned) {
       throw new NotFoundException();
     }

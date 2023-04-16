@@ -26,6 +26,7 @@ import { GetAllBlogsResponse } from '../responses/blogs/get-all-blogs.response';
 import { UserQueryRepository } from '../../infrastructure/database/repositories/users/query.repository';
 import { DeletePostByBlogIdAction } from '../../application/actions/blogger/delete-post-by-blogId.action';
 import { UpdatePostByBlogAction } from '../../application/actions/blogger/update-post-by-blog.action';
+import { JwtAuthOptionalGuard } from '../../domain/auth/guards/optional-jwt-auth.guard';
 
 @UseGuards(JwtAuthGuard)
 @Controller('blogger')
@@ -45,9 +46,10 @@ export class BloggerController {
     return this.getBlogsService.execute(query, req.user.userId);
   }
 
+  @UseGuards(JwtAuthOptionalGuard)
   @Post('blogs')
   async createBlog(@Body() body: CreateBlogRequest, @Req() req: any) {
-    return this.createBlogService.execute(body, req.user.userId);
+    return this.createBlogService.execute(body, req?.user?.userId);
   }
 
   @Post('blogs/:blogId/posts')

@@ -15,14 +15,17 @@ export class CreateBlogAction {
     @Inject(UserQueryRepository) private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
-  async execute(payload: CreateBlogDto, userId: string): Promise<CreateBlogResponse> {
+  async execute(payload: CreateBlogDto, userId?: string): Promise<CreateBlogResponse> {
     const user = await this.userQueryRepository.getUserById(userId);
     const blog = new Blog();
     blog.name = payload.name;
     blog.description = payload.description;
     blog.websiteUrl = payload.websiteUrl;
-    blog.userId = userId;
-    blog.userLogin = user.login;
+
+    if (user) {
+      blog.userId = userId;
+      blog.userLogin = user.login;
+    }
 
     const createdBlog = await this.mainRepository.createBlog(blog);
 

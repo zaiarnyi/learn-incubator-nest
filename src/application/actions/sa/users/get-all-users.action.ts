@@ -13,7 +13,7 @@ export class GetAllUsersAction {
     @Inject(QueryUserBannedRepository) private readonly bannedRepository: QueryUserBannedRepository,
   ) {}
 
-  private checkStatus(status: string) {
+  private checkStatus(status: string): { isBanned?: boolean } {
     switch (true) {
       case status === BanStatusEnum.BANNED:
         return { isBanned: true };

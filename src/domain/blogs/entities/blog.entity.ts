@@ -27,10 +27,10 @@ export class Blog {
   @Prop({ type: Boolean, default: false })
   isMembership: boolean;
 
-  @Prop({ type: String, isRequired: true })
+  @Prop({ type: String, isRequired: false, default: null })
   userId: string;
 
-  @Prop({ type: String, isRequired: true })
+  @Prop({ type: String, isRequired: false, default: null })
   userLogin: string;
 
   @Prop({ type: String, isRequired: true, default: false })

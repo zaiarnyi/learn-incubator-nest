@@ -17,8 +17,17 @@ export class UserQueryRepository {
     filter: Record<any, any> = {},
   ): Promise<UserDocument[]> {
     return this.userModel
-      .find(filter)
-      .or([{ login: { $regex: new RegExp(searchLogin, 'gi') } }, { email: { $regex: new RegExp(searchEmail, 'gi') } }])
+      .find({
+        ...filter,
+        $and: [
+          {
+            $or: [
+              { login: { $regex: new RegExp(searchLogin, 'gi') } },
+              { email: { $regex: new RegExp(searchEmail, 'gi') } },
+            ],
+          },
+        ],
+      })
       .sort({ [sortBy]: direction as SortDirection })
       .skip(skip)
       .limit(limit)
@@ -28,9 +37,13 @@ export class UserQueryRepository {
   async getCountUsers(searchLoginTerm: string, searchEmailTerm: string, filter: Record<any, any> = {}) {
     return this.userModel.countDocuments({
       filter,
-      $or: [
-        { login: { $regex: new RegExp(searchLoginTerm, 'gi') } },
-        { email: { $regex: new RegExp(searchEmailTerm, 'gi') } },
+      $and: [
+        {
+          $or: [
+            { login: { $regex: new RegExp(searchLoginTerm, 'gi') } },
+            { email: { $regex: new RegExp(searchEmailTerm, 'gi') } },
+          ],
+        },
       ],
     });
   }
