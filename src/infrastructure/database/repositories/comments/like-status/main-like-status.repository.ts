@@ -24,4 +24,8 @@ export class MainLikeStatusRepository {
   async deleteAll() {
     return this.model.deleteMany();
   }
+
+  async changeStatusForUserBanned(userId: string, isBanned: boolean) {
+    return this.model.updateMany({ userId }, { isBanned });
+  }
 }

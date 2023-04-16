@@ -30,6 +30,9 @@ export class LikeStatusComment {
 
   @Prop({ type: String, isRequired: true })
   commentId: string;
+
+  @Prop({ type: Boolean, isRequired: false, default: false })
+  isBanned: boolean;
 }
 
 export const LikeStatusCommentSchema = SchemaFactory.createForClass(LikeStatusComment);

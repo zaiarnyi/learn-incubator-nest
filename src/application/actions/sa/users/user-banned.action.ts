@@ -6,6 +6,7 @@ import { MainCommentsRepository } from '../../../../infrastructure/database/repo
 import { MainBlogsRepository } from '../../../../infrastructure/database/repositories/blogs/main-blogs.repository';
 import { MainPostRepository } from '../../../../infrastructure/database/repositories/posts/main-post.repository';
 import { UserMainRepository } from '../../../../infrastructure/database/repositories/users/main.repository';
+import { MainLikeStatusRepository } from '../../../../infrastructure/database/repositories/comments/like-status/main-like-status.repository';
 
 @Injectable()
 export class UserBannedAction {
@@ -16,6 +17,7 @@ export class UserBannedAction {
     @Inject(MainPostRepository) private readonly postRepository: MainPostRepository,
     @Inject(MainCommentsRepository) private readonly commentsRepository: MainCommentsRepository,
     @Inject(UserMainRepository) private readonly userMainRepository: UserMainRepository,
+    @Inject(MainLikeStatusRepository) private readonly likeStatusRepository: MainLikeStatusRepository,
   ) {}
 
   private async changeStatus(userId: string, isBanned: boolean) {
@@ -24,6 +26,7 @@ export class UserBannedAction {
       this.commentsRepository.changeBannedStatus(userId, isBanned),
       this.postRepository.changeBannedStatus(userId, isBanned),
       this.userMainRepository.changeStatusBan(userId, isBanned),
+      this.likeStatusRepository.changeStatusForUserBanned(userId, isBanned),
     ]);
   }
 
