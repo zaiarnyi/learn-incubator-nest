@@ -21,7 +21,7 @@ export class QueryBlogsRepository {
     userId?: string,
   ): Promise<BlogDocument[]> {
     return this.blogModel
-      .find({ name: { $regex: new RegExp(filter, 'gi'), ...(userId && { bloggerId: userId }) }, isBanned: false })
+      .find({ name: { $regex: new RegExp(filter, 'gi') }, ...(userId && { bloggerId: userId }), isBanned: false })
       .sort({ [sortBy]: direction as BlogSortDirection })
       .skip(skip)
       .limit(limit)
@@ -43,6 +43,7 @@ export class QueryBlogsRepository {
     if (userId) {
       filterParam.bloggerId = userId;
     }
+    console.log(filterParam, 'filterParam');
     return this.blogModel.countDocuments(filterParam);
   }
 
