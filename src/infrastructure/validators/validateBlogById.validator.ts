@@ -4,7 +4,7 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { QueryBlogsRepository } from '../database/repositories/blogs/query-blogs.repository';
 
 @ValidatorConstraint({ name: 'ValidateBlogById', async: true })
@@ -13,7 +13,12 @@ export class ValidateBlogByIdValidator implements ValidatorConstraintInterface {
   constructor(private readonly queryRepository: QueryBlogsRepository) {}
 
   public async validate(val: any): Promise<boolean> {
-    return this.queryRepository.getBlogById(val).then((res) => !!res);
+    return this.queryRepository.getBlogById(val).then((res) => {
+      if (!res) {
+        throw new NotFoundException();
+      }
+      return true;
+    });
   }
 
   public defaultMessage(): string {
