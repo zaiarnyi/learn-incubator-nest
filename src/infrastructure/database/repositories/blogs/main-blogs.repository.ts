@@ -24,7 +24,7 @@ export class MainBlogsRepository {
   }
 
   async bindUserToBlog(id: string, userId: string, userLogin: string) {
-    return this.blogModel.findOneAndUpdate({ id }, { userId, userLogin });
+    return this.blogModel.findByIdAndUpdate(id, { userId, userLogin });
   }
 
   async changeBannedStatus(userId: string, isBanned: boolean) {
