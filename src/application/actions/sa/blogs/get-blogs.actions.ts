@@ -1,6 +1,5 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { GetBlogsWithOwnerResponse } from '../../../../presentation/responses/sa/blogs/get-blogs.response';
-import { GetBlogsDto } from '../../../../domain/sa/blogs/dto/get-blogs.dto';
 import { QueryBlogsRepository } from '../../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 import { plainToClass } from 'class-transformer';
 
@@ -10,7 +9,7 @@ export class GetBlogsActions {
 
   constructor(@Inject(QueryBlogsRepository) private readonly blogRepository: QueryBlogsRepository) {}
 
-  public async execute(query: GetBlogsDto): Promise<GetBlogsWithOwnerResponse | any> {
+  public async execute(query: any): Promise<GetBlogsWithOwnerResponse | any> {
     const totalCount = await this.blogRepository.getCountBlogs(query.searchNameTerm);
     const skip = (query.pageNumber - 1) * query.pageSize;
     const pagesCount = Math.ceil(totalCount / query.pageSize);

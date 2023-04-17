@@ -3,17 +3,17 @@ import { IsEnum, IsInt, IsOptional, IsPositive, IsString, Max } from 'class-vali
 import { BlogSortByEnum, BlogSortDirection } from '../../../blogs/enums/blog-sort.enum';
 
 export class GetBlogsDto {
-  @Transform((value) => value && Number(value))
+  @Transform(({ value }) => Number(value))
   @IsInt()
   @IsPositive()
   @IsOptional()
   pageNumber = 1;
 
-  @IsInt()
   @Max(100)
+  @Transform(({ value }) => Number(value))
+  @IsInt()
   @IsPositive()
   @IsOptional()
-  @Transform((value) => value && Number(value))
   pageSize = 10;
 
   @IsString()

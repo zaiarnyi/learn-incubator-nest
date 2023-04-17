@@ -1,19 +1,17 @@
 import { Transform } from 'class-transformer';
-import { IsEnum, IsInt, IsOptional, IsPositive, IsString, Max } from 'class-validator';
+import { IsEnum, IsInt, IsNumber, IsOptional, IsPositive, IsString, Max } from 'class-validator';
 import { BlogSortByEnum, BlogSortDirection } from '../../../../domain/blogs/enums/blog-sort.enum';
 
 export class GetBlogListRequest {
-  @Transform((value) => value && Number(value))
-  @IsInt()
-  @IsPositive()
+  @IsNumber()
   @IsOptional()
+  @Transform(({ value }) => Number(value.trim()) || 1)
   pageNumber = 1;
 
-  @IsInt()
   @Max(100)
-  @IsPositive()
+  @IsNumber()
   @IsOptional()
-  @Transform((value) => value && Number(value))
+  @Transform(({ value }) => Number(value.trim()) || 10)
   pageSize = 10;
 
   @IsString()
