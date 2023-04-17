@@ -59,7 +59,7 @@ export class BloggerController {
     return this.createPostService.execute({ ...body, blogId: id }, req?.user?.userId);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Put('blogs/:id')
   @HttpCode(204)
   async updateBlog(@Param('id') id: string, @Body() body: CreateBlogRequest, @Req() req: any) {
