@@ -25,9 +25,9 @@ export class UpdateBlogAction {
       throw new NotFoundException();
     }
 
-    if (!userId) {
-      throw new UnauthorizedException();
-    }
+    // if (!userId) {
+    //   throw new UnauthorizedException();
+    // }
 
     if (findBlog.userId !== userId) {
       throw new ForbiddenException();
