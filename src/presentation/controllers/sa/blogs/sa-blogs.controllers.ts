@@ -16,7 +16,6 @@ export class SaBlogsControllers {
 
   @Get()
   async getBlogs(@Query() query: GetBlogListRequest): Promise<GetBlogsWithOwnerResponse> {
-    console.log(query, 'query- getBlogs');
     return this.getBlogsAction.execute(query);
   }
 

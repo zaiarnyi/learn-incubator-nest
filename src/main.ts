@@ -53,6 +53,7 @@ async function bootstrap() {
             message: Object.values(item.constraints)[0],
             field: item.property,
           }));
+          console.log(errors, 'err');
           throw new BadRequestException(err);
         },
       }),
