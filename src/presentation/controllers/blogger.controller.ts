@@ -27,6 +27,8 @@ import { UserQueryRepository } from '../../infrastructure/database/repositories/
 import { DeletePostByBlogIdAction } from '../../application/actions/blogger/delete-post-by-blogId.action';
 import { UpdatePostByBlogAction } from '../../application/actions/blogger/update-post-by-blog.action';
 import { JwtAuthOptionalGuard } from '../../domain/auth/guards/optional-jwt-auth.guard';
+import { ValidateBlogById } from '../../infrastructure/validators/validateBlogById.validator';
+import { CheckBlogIdRequest } from '../requests/blogger/check-blog-id.request';
 
 @UseGuards(JwtAuthOptionalGuard)
 @Controller('blogger')
@@ -62,8 +64,8 @@ export class BloggerController {
   @UseGuards(JwtAuthGuard)
   @Put('blogs/:id')
   @HttpCode(204)
-  async updateBlog(@Param('id') id: string, @Body() body: CreateBlogRequest, @Req() req: any) {
-    return this.updateService.execute(id, body, req?.user?.userId);
+  async updateBlog(@Param() param: CheckBlogIdRequest, @Body() body: CreateBlogRequest, @Req() req: any) {
+    return this.updateService.execute(param.id, body, req?.user?.userId);
   }
 
   @Put('blogs/:blogId/posts/:postId')
@@ -79,8 +81,8 @@ export class BloggerController {
   // @UseGuards(JwtAuthGuard)
   @Delete('blogs/:id')
   @HttpCode(204)
-  async deleteBlog(@Param('id') id: string, @Req() req: any) {
-    return this.deleteService.execute(id, req?.user?.userId);
+  async deleteBlog(@Param() param: CheckBlogIdRequest, @Req() req: any) {
+    return this.deleteService.execute(param.id, req?.user?.userId);
   }
 
   // @UseGuards(JwtAuthGuard)
