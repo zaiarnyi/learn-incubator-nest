@@ -35,8 +35,6 @@ export class UpdatePostByBlogAction {
     if (!userId) {
       throw new UnauthorizedException();
     }
-    this.logger.warn(findPost, 'findPost');
-    this.logger.warn(findBlog, 'findBlog');
     if ((findPost.userId && findPost.userId !== userId) || (findBlog.userId && findBlog.userId !== userId)) {
       throw new ForbiddenException();
     }

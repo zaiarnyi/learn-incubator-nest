@@ -13,7 +13,7 @@ export class MainPostRepository {
     return this.postModel.create(post);
   }
   async updatePost(id: string, payload: CreatePostDto): Promise<PostDocument> {
-    return this.postModel.findOneAndUpdate({ id }, payload);
+    return this.postModel.findOneAndUpdate({ _id: id }, payload);
   }
 
   async deletePost(id: string): Promise<PostDocument> {

@@ -25,14 +25,14 @@ export class QueryPostRepository {
       .lean();
   }
   async getPostByBlogId(id: string): Promise<BlogDocument> {
-    return this.blogModel.findOne({ id, isBanned: false });
+    return this.blogModel.findOne({ _id: id, isBanned: false });
   }
 
   async getPostById(id: string): Promise<PostDocument> {
-    return this.postModel.findOne({ id, isBanned: false });
+    return this.postModel.findOne({ _id: id, isBanned: false });
   }
 
   async getAllPostById(id: string): Promise<PostDocument> {
-    return this.postModel.findOne({ id });
+    return this.postModel.findOne({ _id: id });
   }
 }
