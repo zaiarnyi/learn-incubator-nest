@@ -25,19 +25,6 @@ export class GetAllBlogsAction {
       query.sortDirection,
       userId,
     );
-    if (totalCount === 13) {
-      this.logger.warn(
-        JSON.stringify(
-          {
-            userId: userId ?? 'not userId',
-            blogs: blogs.map((item) => [item.userId, item.name, item._id.toString(), item.isBanned]),
-          },
-          null,
-          2,
-        ),
-      );
-    }
-
     return {
       pagesCount,
       page: query.pageNumber,

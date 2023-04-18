@@ -49,13 +49,13 @@ export class BloggerController {
     return this.getBlogsService.execute(query, req?.user?.userId);
   }
 
-  // @UseGuards(JwtAuthOptionalGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('blogs')
   async createBlog(@Body() body: CreateBlogRequest, @Req() req: any) {
     return this.createBlogService.execute(body, req?.user?.userId);
   }
 
-  // @UseGuards(JwtAuthOptionalGuard)
+  // @UseGuards(JwtAuthGuard)
   @Post('blogs/:blogId/posts')
   async createPostByBlog(@Body() body: CreatePostByBlogIdRequest, @Param('blogId') id: string, @Req() req: any) {
     return this.createPostService.execute({ ...body, blogId: id }, req?.user?.userId);
