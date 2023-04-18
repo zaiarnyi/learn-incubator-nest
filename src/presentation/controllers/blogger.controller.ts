@@ -43,10 +43,9 @@ export class BloggerController {
     @Inject(DeletePostByBlogIdAction) private readonly deletePostAction: DeletePostByBlogIdAction,
     @Inject(UpdatePostByBlogAction) private readonly updatePostByBlogAction: UpdatePostByBlogAction,
   ) {}
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('blogs')
   async getBlogs(@Query() query: GetBlogsRequestWithSearch, @Req() req: any): Promise<GetAllBlogsResponse> {
-    console.log(req.user, req.headers.authorization);
     return this.getBlogsService.execute(query, req?.user?.userId);
   }
 
@@ -62,7 +61,7 @@ export class BloggerController {
     return this.createPostService.execute({ ...body, blogId: id }, req?.user?.userId);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Put('blogs/:id')
   @HttpCode(204)
   async updateBlog(@Param() param: CheckBlogIdRequest, @Body() body: CreateBlogRequest, @Req() req: any) {
@@ -70,6 +69,7 @@ export class BloggerController {
   }
 
   @Put('blogs/:blogId/posts/:postId')
+  @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   async updatePostByBlog(
     @Body() body: CreatePostByBlogIdRequest,
@@ -79,14 +79,14 @@ export class BloggerController {
     return this.updatePostByBlogAction.execute({ ...body, blogId: params.blogId }, params.postId, req?.user?.userId);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Delete('blogs/:id')
   @HttpCode(204)
   async deleteBlog(@Param() param: CheckBlogIdRequest, @Req() req: any) {
     return this.deleteService.execute(param.id, req?.user?.userId);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Delete('blogs/:blogId/posts/:postId')
   @HttpCode(204)
   async deletePostByBlog(@Param() params: ParamPostByBlogRequest, @Req() req: any) {
