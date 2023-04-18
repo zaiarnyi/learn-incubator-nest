@@ -46,6 +46,7 @@ export class BloggerController {
   // @UseGuards(JwtAuthGuard)
   @Get('blogs')
   async getBlogs(@Query() query: GetBlogsRequestWithSearch, @Req() req: any): Promise<GetAllBlogsResponse> {
+    console.log(req.user, req.headers.authorization);
     return this.getBlogsService.execute(query, req?.user?.userId);
   }
 

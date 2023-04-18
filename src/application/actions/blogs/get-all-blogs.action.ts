@@ -29,7 +29,7 @@ export class GetAllBlogsAction {
       this.logger.warn(
         JSON.stringify(
           {
-            userId,
+            userId: userId ?? 'not userId',
             blogs: blogs.map((item) => [item.userId, item.name, item._id.toString(), item.isBanned]),
           },
           null,
