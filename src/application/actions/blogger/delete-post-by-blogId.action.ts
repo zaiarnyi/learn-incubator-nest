@@ -14,7 +14,7 @@ export class DeletePostByBlogIdAction {
 
   private async validate(blogId: string, postId: string, userId: string) {
     const findPost = await this.queryPostRepository.getPostById(postId);
-    if (!findPost || findPost.blogId !== blogId) {
+    if (!findPost) {
       throw new NotFoundException();
     }
 
