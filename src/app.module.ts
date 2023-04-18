@@ -7,7 +7,7 @@ import { BlogsModule } from './infrastructure/ioc/blogs.module';
 import { CommentsModule } from './infrastructure/ioc/comments.module';
 import { TestController } from './presentation/controllers/test.controller';
 import { ConfigModule } from '@nestjs/config';
-import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { HttpExceptionFilter } from './infrastructure/rest/http-exception.filter';
 import { AuthModule } from './infrastructure/ioc/auth.module';
 import { SecurityModule } from './infrastructure/ioc/security.module';
@@ -15,6 +15,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { BloggerModule } from './infrastructure/ioc/blogger.module';
 import { CacheService } from './infrastructure/cache';
 import { SaModule } from './infrastructure/ioc/sa/sa.module';
+import { LoggerInterceptor } from './infrastructure/interseptor/logger.interseptor';
 
 @Module({
   imports: [
@@ -47,6 +48,10 @@ import { SaModule } from './infrastructure/ioc/sa/sa.module';
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggerInterceptor,
     },
   ],
 })
