@@ -31,4 +31,8 @@ export class QueryPostRepository {
   async getPostById(id: string): Promise<PostDocument> {
     return this.postModel.findOne({ id, isBanned: false });
   }
+
+  async getAllPostById(id: string): Promise<PostDocument> {
+    return this.postModel.findOne({ id });
+  }
 }

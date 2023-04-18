@@ -1,5 +1,5 @@
 import { CreatePostDto } from '../../../domain/posts/dto/create-post.dto';
-import { Inject, Logger, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Inject, Logger, NotFoundException } from '@nestjs/common';
 import { Post } from '../../../domain/posts/entities/post.entity';
 import { MainPostRepository } from '../../../infrastructure/database/repositories/posts/main-post.repository';
 import { plainToClass } from 'class-transformer';
@@ -50,13 +50,16 @@ export class CreatePostAction {
     return this.statusMainRepository.createDefaultStatusForPost(statusPost);
   }
 
-  private async validate(blogId: string) {
+  private async validate(blogId: string, userId: string) {
     return this.queryPostRepository
       .getPostByBlogId(blogId)
       .then((res) => {
         if (!res) {
           this.logger.warn(`Not found blog with ID: ${blogId}`);
           throw new NotFoundException();
+        }
+        if (res.userId !== userId) {
+          throw new ForbiddenException();
         }
         return res;
       })
@@ -66,7 +69,7 @@ export class CreatePostAction {
       });
   }
   public async execute(payload: CreatePostDto, userId?: string): Promise<GetPost> {
-    const blog = await this.validate(payload.blogId);
+    const blog = await this.validate(payload.blogId, userId);
     const newPost = new Post();
     newPost.blogName = blog.name;
     newPost.blogId = payload.blogId;
