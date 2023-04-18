@@ -43,7 +43,7 @@ export class BloggerController {
     @Inject(DeletePostByBlogIdAction) private readonly deletePostAction: DeletePostByBlogIdAction,
     @Inject(UpdatePostByBlogAction) private readonly updatePostByBlogAction: UpdatePostByBlogAction,
   ) {}
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Get('blogs')
   async getBlogs(@Query() query: GetBlogsRequestWithSearch, @Req() req: any): Promise<GetAllBlogsResponse> {
     return this.getBlogsService.execute(query, req?.user?.userId);
