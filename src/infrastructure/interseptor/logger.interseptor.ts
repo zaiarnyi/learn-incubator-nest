@@ -21,7 +21,7 @@ export class LoggerInterceptor implements NestInterceptor {
           params,
           query,
           body,
-          isAuth: /^Bearer/.test(headers.authorization),
+          isAuth: /^Bearer/.test(headers?.authorization),
         }),
     );
 
@@ -34,7 +34,7 @@ export class LoggerInterceptor implements NestInterceptor {
               statusCode,
               data,
               time: Date.now() - now,
-              isAuth: /^Bearer/.test(headers.authorization),
+              isAuth: /^Bearer/.test(headers?.authorization),
             }),
         );
       }),
