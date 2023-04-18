@@ -52,12 +52,12 @@ export class CreatePostAction {
 
   private async validate(blogId: string, userId: string) {
     return this.queryPostRepository.getPostByBlogId(blogId).then((res) => {
-      if (!res?.userId || res?.userId !== userId) {
-        throw new ForbiddenException();
-      }
       if (!res) {
         // this.logger.warn(`Not found blog with ID: ${blogId}`);
         throw new NotFoundException();
+      }
+      if (res?.userId !== userId) {
+        throw new ForbiddenException();
       }
       return res;
     });
