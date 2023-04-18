@@ -63,8 +63,8 @@ export class CreatePostAction {
         }
         return res;
       })
-      .catch(() => {
-        this.logger.error(`Not found blog with ID: ${blogId}`);
+      .catch((e) => {
+        this.logger.error(`Not found blog with ID: ${blogId}.Message: ${JSON.stringify(e)}`);
         throw new NotFoundException();
       });
   }
