@@ -54,7 +54,7 @@ export class CreatePostAction {
     return this.queryPostRepository
       .getPostByBlogId(blogId)
       .then((res) => {
-        if (res.userId !== userId) {
+        if (!res.userId || res.userId !== userId) {
           throw new ForbiddenException();
         }
         if (!res) {
@@ -82,8 +82,6 @@ export class CreatePostAction {
     await this.createDefaultStatus(createdPost._id.toString(), userId).catch((e) => {
       this.logger.error(`Error in post status creation. ${JSON.stringify(e)}`);
     });
-
-    console.log(createdPost.userId);
 
     return {
       ...plainToClass(GetPost, {
