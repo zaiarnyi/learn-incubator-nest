@@ -51,22 +51,16 @@ export class CreatePostAction {
   }
 
   private async validate(blogId: string, userId: string) {
-    return this.queryPostRepository
-      .getPostByBlogId(blogId)
-      .then((res) => {
-        if (!res.userId || res.userId !== userId) {
-          throw new ForbiddenException();
-        }
-        if (!res) {
-          this.logger.warn(`Not found blog with ID: ${blogId}`);
-          throw new NotFoundException();
-        }
-        return res;
-      })
-      .catch((e) => {
-        this.logger.error(`Not found blog with ID: ${blogId}.Message: ${JSON.stringify(e)}`);
+    return this.queryPostRepository.getPostByBlogId(blogId).then((res) => {
+      if (!res?.userId || res?.userId !== userId) {
+        throw new ForbiddenException();
+      }
+      if (!res) {
+        // this.logger.warn(`Not found blog with ID: ${blogId}`);
         throw new NotFoundException();
-      });
+      }
+      return res;
+    });
   }
   public async execute(payload: CreatePostDto, userId?: string): Promise<GetPost> {
     const blog = await this.validate(payload.blogId, userId);
