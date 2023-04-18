@@ -43,7 +43,7 @@ export class BloggerController {
     @Inject(DeletePostByBlogIdAction) private readonly deletePostAction: DeletePostByBlogIdAction,
     @Inject(UpdatePostByBlogAction) private readonly updatePostByBlogAction: UpdatePostByBlogAction,
   ) {}
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @Get('blogs')
   async getBlogs(@Query() query: GetBlogsRequestWithSearch, @Req() req: any): Promise<GetAllBlogsResponse> {
     return this.getBlogsService.execute(query, req?.user?.userId);
@@ -55,7 +55,7 @@ export class BloggerController {
     return this.createBlogService.execute(body, req?.user?.userId);
   }
 
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @Post('blogs/:blogId/posts')
   async createPostByBlog(@Body() body: CreatePostByBlogIdRequest, @Param('blogId') id: string, @Req() req: any) {
     return this.createPostService.execute({ ...body, blogId: id }, req?.user?.userId);
