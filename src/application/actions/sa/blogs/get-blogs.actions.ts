@@ -9,8 +9,9 @@ export class GetBlogsActions {
 
   constructor(@Inject(QueryBlogsRepository) private readonly blogRepository: QueryBlogsRepository) {}
 
-  public async execute(query: any): Promise<GetBlogsWithOwnerResponse | any> {
-    const totalCount = await this.blogRepository.getCountBlogs(query.searchNameTerm);
+  public async execute(query: any): Promise<GetBlogsWithOwnerResponse> {
+    const filter = { userId: { $ne: null } };
+    const totalCount = await this.blogRepository.getCountBlogs(query.searchNameTerm, '', filter);
     const skip = (query.pageNumber - 1) * query.pageSize;
     const pagesCount = Math.ceil(totalCount / query.pageSize);
     const blogs = await this.blogRepository.getBlogs(
@@ -19,6 +20,8 @@ export class GetBlogsActions {
       query.pageSize,
       query.sortBy,
       query.sortDirection,
+      '',
+      filter,
     );
 
     return plainToClass(GetBlogsWithOwnerResponse, {
