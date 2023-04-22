@@ -8,7 +8,7 @@ import { GetPostByBlogIdAction } from '../../application/actions/blogs/getPostBy
 import { GetPostByBlogIdResponse } from '../responses/blogger/getPostByBlogId.response';
 import { JwtAuthOptionalGuard } from '../../domain/auth/guards/optional-jwt-auth.guard';
 
-@Controller('blogger')
+@Controller('blogs')
 export class BlogsController {
   constructor(
     private readonly getBlogsService: GetAllBlogsAction,
