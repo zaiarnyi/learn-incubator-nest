@@ -22,7 +22,7 @@ export class QueryBlogsRepository {
     anyFilter?: any,
     isBanned?: boolean,
   ): Promise<BlogDocument[]> {
-    let findFilter: Record<string, any> = { name: { $regex: new RegExp(filter, 'gi') }, isBanned: false };
+    let findFilter: Record<string, any> = { name: { $regex: new RegExp(filter, 'gi') } };
     if (userId) {
       findFilter.userId = userId;
     }

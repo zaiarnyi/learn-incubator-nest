@@ -14,7 +14,7 @@ export class GetAllBlogsAction {
   ) {}
 
   public async execute(query: GetBlogsDto, userId?: string): Promise<GetAllBlogsResponse> {
-    const totalCount = await this.queryRepository.getCountBlogs(query.searchNameTerm, userId, false);
+    const totalCount = await this.queryRepository.getCountBlogs(query.searchNameTerm, userId, null, false);
     const skip = (query.pageNumber - 1) * query.pageSize;
     const pagesCount = Math.ceil(totalCount / query.pageSize);
     const blogs = await this.queryRepository.getBlogs(
@@ -27,6 +27,7 @@ export class GetAllBlogsAction {
       null,
       false,
     );
+    this.logger.warn(blogs.length);
     return {
       pagesCount,
       page: query.pageNumber,
