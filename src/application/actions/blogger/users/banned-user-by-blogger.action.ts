@@ -57,6 +57,8 @@ export class BannedUserByBloggerAction {
     bannedUserByBlog.blogId = body.blogId;
     bannedUserByBlog.userLogin = user?.login || '';
 
-    return this.banRepository.save(bannedUserByBlog);
+    return this.banRepository.save(bannedUserByBlog).catch((e) => {
+      this.logger.error(`Error when save blog banner. MEssage: ${JSON.stringify(e)}`);
+    });
   }
 }
