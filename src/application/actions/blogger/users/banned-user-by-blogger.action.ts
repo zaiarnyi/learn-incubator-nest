@@ -55,7 +55,7 @@ export class BannedUserByBloggerAction {
     bannedUserByBlog.userId = userId;
     bannedUserByBlog.banReason = body.banReason;
     bannedUserByBlog.blogId = body.blogId;
-    bannedUserByBlog.userLogin = user.login;
+    bannedUserByBlog.userLogin = user?.login || '';
 
     return this.banRepository.save(bannedUserByBlog);
   }

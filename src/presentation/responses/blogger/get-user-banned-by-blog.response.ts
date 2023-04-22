@@ -3,6 +3,18 @@ import { Exclude, Expose, Type } from 'class-transformer';
 import { ValidateNested } from 'class-validator';
 
 @Exclude()
+class BanInfo {
+  @Expose()
+  isBanned: boolean;
+
+  @Expose()
+  banDate: Date;
+
+  @Expose()
+  banReason: string;
+}
+
+@Exclude()
 class UserBannedInfo {
   @Expose()
   id: string;
@@ -11,10 +23,9 @@ class UserBannedInfo {
   login: string;
 
   @Expose()
-  banDate: Date;
-
-  @Expose()
-  banReason: string;
+  @ValidateNested()
+  @Type(() => BanInfo)
+  banInfo: BanInfo;
 }
 
 @Exclude()
