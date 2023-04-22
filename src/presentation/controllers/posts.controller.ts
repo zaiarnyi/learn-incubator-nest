@@ -46,11 +46,6 @@ export class PostsController {
   ): Promise<GetCommentsByPostIdResponse> {
     return this.commentsByPostIdService.execute(id, query, req?.user?.userId);
   }
-  // @UseGuards(BasicAuthGuard)
-  // @Post()
-  // async createPost(@Body() body: CreatePostRequest, @Req() req: any): Promise<GetPost> {
-  //   return this.createService.execute(body, req?.user?.userId);
-  // }
 
   @UseGuards(JwtAuthGuard)
   @Post(':id/comments')
@@ -62,13 +57,6 @@ export class PostsController {
     return this.createCommentForPostAction.execute(id, body, req.user.userId);
   }
 
-  // @UseGuards(BasicAuthGuard)
-  // @Put(':id')
-  // @HttpCode(204)
-  // async updatePost(@Param('id') id: string, @Body() body: CreatePostRequest): Promise<void> {
-  //   return this.updatePostService.execute(id, body);
-  // }
-
   @UseGuards(JwtAuthGuard)
   @Put(':id/like-status')
   @HttpCode(204)
@@ -79,11 +67,4 @@ export class PostsController {
   ) {
     return this.changeLikeStatusByPostIdService.execute(id, body, req.user.userId);
   }
-
-  // @UseGuards(BasicAuthGuard)
-  // @Delete(':id')
-  // @HttpCode(204)
-  // async deletePostById(@Param('id') id: string): Promise<void> {
-  //   return this.deletePostService.execute(id);
-  // }
 }

@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
-export type CommentDocument = HydratedDocument<Comment>;
+export type CommentDocument = HydratedDocument<Comment & { createdAt: Date; updatedAt: Date }>;
 
 @Schema({
   timestamps: true,
@@ -26,6 +26,9 @@ export class Comment {
 
   @Prop({ type: String, isRequired: true })
   postId: string;
+
+  @Prop({ type: String, isRequired: true })
+  blogId: string;
 
   @Prop({ type: Boolean, isRequired: true, default: false })
   isBanned: boolean;

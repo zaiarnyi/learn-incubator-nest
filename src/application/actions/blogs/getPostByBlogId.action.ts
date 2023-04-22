@@ -4,7 +4,7 @@ import { GetPostByBlogIdDto } from '../../../domain/blogs/dto/getPostByBlogId.dt
 import {
   GetPostByBlogIdResponse,
   PostByBlogItem,
-} from '../../../presentation/responses/blogs/getPostByBlogId.response';
+} from '../../../presentation/responses/blogger/getPostByBlogId.response';
 import { plainToClass } from 'class-transformer';
 import { GetLikesInfoForPostService } from '../../services/posts/get-likes-info-for-post.service';
 

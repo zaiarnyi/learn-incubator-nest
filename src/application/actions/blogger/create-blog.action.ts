@@ -3,7 +3,7 @@ import { Blog } from '../../../domain/blogs/entities/blog.entity';
 import { MainBlogsRepository } from '../../../infrastructure/database/repositories/blogs/main-blogs.repository';
 import { Inject } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
-import { CreateBlogResponse } from '../../../presentation/responses/blogs/create-blog.response';
+import { CreateBlogResponse } from '../../../presentation/responses/blogger/create-blog.response';
 import { UserMainRepository } from '../../../infrastructure/database/repositories/users/main.repository';
 import { UserQueryRepository } from '../../../infrastructure/database/repositories/users/query.repository';
 

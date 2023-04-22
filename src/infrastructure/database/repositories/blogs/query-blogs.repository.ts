@@ -78,4 +78,9 @@ export class QueryBlogsRepository {
       .limit(limit)
       .lean();
   }
+
+  async getBlogsByBlogger(userId: string): Promise<string[]> {
+    const blogs = await this.blogModel.find({ userId });
+    return blogs.map((item) => item._id.toString());
+  }
 }

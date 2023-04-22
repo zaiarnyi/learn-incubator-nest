@@ -1,9 +1,9 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
 import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 import { GetBlogsDto } from '../../../domain/blogs/dto/get-blogs.dto';
-import { GetAllBlogsResponse } from '../../../presentation/responses/blogs/get-all-blogs.response';
+import { GetAllBlogsResponse } from '../../../presentation/responses/blogger/get-all-blogs.response';
 import { plainToClass } from 'class-transformer';
-import { CreateBlogResponse } from '../../../presentation/responses/blogs/create-blog.response';
+import { CreateBlogResponse } from '../../../presentation/responses/blogger/create-blog.response';
 
 @Injectable()
 export class GetAllBlogsAction {

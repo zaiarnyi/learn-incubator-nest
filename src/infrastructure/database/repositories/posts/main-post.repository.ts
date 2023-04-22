@@ -26,4 +26,8 @@ export class MainPostRepository {
   async changeBannedStatus(userId: string, isBanned: boolean) {
     return this.postModel.updateMany({ userId }, { isBanned });
   }
+
+  async changeBannedStatusByBlogger(userId: string, blogId: string, isBanned: boolean) {
+    return this.postModel.updateMany({ userId, blogId }, { isBanned });
+  }
 }

@@ -8,6 +8,8 @@ import { MainPostRepository } from '../../../../infrastructure/database/reposito
 import { UserMainRepository } from '../../../../infrastructure/database/repositories/users/main.repository';
 import { MainLikeStatusRepository } from '../../../../infrastructure/database/repositories/comments/like-status/main-like-status.repository';
 import { MainLikeStatusPostRepository } from '../../../../infrastructure/database/repositories/posts/like-status/main-like-status-post.repository';
+import { UserDocument } from '../../../../domain/users/entities/user.entity';
+import { UserBanned } from '../../../../domain/sa/users/entities/user-bans.entity';
 
 @Injectable()
 export class UserBannedAction {
@@ -33,17 +35,22 @@ export class UserBannedAction {
     ]);
   }
 
-  private async validate(userId: string) {
+  private async validateAndGetUser(userId: string): Promise<UserDocument> {
     const user = await this.userRepository.getUserById(userId);
     if (!user) {
       throw new NotFoundException();
     }
+    return user;
   }
 
   public async execute(userId: string, body: UserBannedDto) {
-    await this.validate(userId);
+    const user = await this.validateAndGetUser(userId);
     if (body.isBanned) {
-      await this.repository.setUserBan(userId, body.banReason);
+      const userBanned = new UserBanned();
+      userBanned.userLogin = user.login;
+      userBanned.userId = userId;
+      userBanned.banReason = body.banReason;
+      await this.repository.setUserBan(userBanned);
     } else {
       await this.repository.deleteBan(userId);
     }

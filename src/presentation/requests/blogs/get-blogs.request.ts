@@ -21,7 +21,7 @@ export class GetBlogsRequest {
 
   @IsString()
   @IsOptional()
-  @IsEnum(BlogSortDirection)
+  // @IsEnum(BlogSortDirection)
   sortDirection: BlogSortDirection = BlogSortDirection.DESC;
 }
 

@@ -10,6 +10,7 @@ import { plainToClass } from 'class-transformer';
 import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
 import { LikeStatusComment } from '../../../domain/comments/like-status/entity/like-status-comments.entity';
 import { MainLikeStatusRepository } from '../../../infrastructure/database/repositories/comments/like-status/main-like-status.repository';
+import { PostDocument } from '../../../domain/posts/entities/post.entity';
 
 @Injectable()
 export class CreateCommentForPostAction {
@@ -32,7 +33,7 @@ export class CreateCommentForPostAction {
     return this.mainLikeStatusCommentRepository.createLikeStatusForComment(status);
   }
 
-  private async validate(postId: string, body: CreateCommentForPostDto) {
+  private async getPost(postId: string, body: CreateCommentForPostDto): Promise<PostDocument> {
     try {
       await validateOrReject(body);
     } catch (e) {
@@ -45,10 +46,12 @@ export class CreateCommentForPostAction {
     if (!post) {
       throw new NotFoundException();
     }
+
+    return post;
   }
 
   public async execute(postId: string, body: CreateCommentForPostDto, userId: string): Promise<PostCommentInfo | any> {
-    await this.validate(postId, body);
+    const post = await this.getPost(postId, body);
 
     const user = await this.queryUserRepository.getUserById(userId).catch((e) => {
       this.logger.error(`Error when getting a user to create a comment - ${userId}. ${JSON.stringify(e)}`);
@@ -62,6 +65,7 @@ export class CreateCommentForPostAction {
     comment.userId = userId;
     comment.content = body.content;
     comment.userLogin = user.login;
+    comment.blogId = post.blogId;
 
     const createdComment = await this.commentMainRepository.createComment(comment);
     const commentId = createdComment._id.toString();

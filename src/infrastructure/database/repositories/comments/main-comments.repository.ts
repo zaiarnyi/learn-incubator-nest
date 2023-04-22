@@ -31,4 +31,8 @@ export class MainCommentsRepository {
   async changeBannedStatus(userId: string, isBanned: boolean) {
     return this.commentModel.updateMany({ userId }, { isBanned });
   }
+
+  async changeBannedStatusByBlogger(userId: string, blogId: string, isBanned: boolean) {
+    return this.commentModel.updateMany({ userId, blogId }, { isBanned });
+  }
 }

@@ -24,19 +24,13 @@ export class GetPostByIdAction {
 
   public async execute(id: string, userId?: string): Promise<GetPost> {
     await this.validateIsUserBanned(userId);
-    const postById = await this.queryRepository
-      .getPostById(id)
-      .then((result) => {
-        if (!result) {
-          this.logger.log(`The post with id - ${id} was not found`);
-          throw new NotFoundException();
-        }
-        return result;
-      })
-      .catch((e) => {
-        this.logger.error(`Error in getting the post by id: ${id}. ${JSON.stringify(e, null, 2)}`);
+    const postById = await this.queryRepository.getPostById(id).then((result) => {
+      if (!result) {
+        this.logger.log(`The post with id - ${id} was not found`);
         throw new NotFoundException();
-      });
+      }
+      return result;
+    });
 
     return plainToClass(GetPost, {
       ...postById.toObject(),

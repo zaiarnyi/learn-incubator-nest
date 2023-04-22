@@ -1,4 +1,4 @@
-import { CreateBlogResponse } from '../../blogs/create-blog.response';
+import { CreateBlogResponse } from '../../blogger/create-blog.response';
 import { Exclude, Expose, Type } from 'class-transformer';
 import { MetaResponse } from '../../meta.response';
 import { ValidateNested } from 'class-validator';

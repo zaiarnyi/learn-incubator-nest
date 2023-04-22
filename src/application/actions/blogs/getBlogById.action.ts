@@ -1,7 +1,7 @@
 import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 import { plainToClass } from 'class-transformer';
-import { CreateBlogResponse } from '../../../presentation/responses/blogs/create-blog.response';
+import { CreateBlogResponse } from '../../../presentation/responses/blogger/create-blog.response';
 
 @Injectable()
 export class GetBlogByIdAction {

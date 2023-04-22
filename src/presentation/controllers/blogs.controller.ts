@@ -1,14 +1,14 @@
 import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { GetBlogsRequest, GetBlogsRequestWithSearch } from '../requests/blogs/get-blogs.request';
-import { CreateBlogResponse } from '../responses/blogs/create-blog.response';
+import { CreateBlogResponse } from '../responses/blogger/create-blog.response';
 import { GetBlogByIdAction } from '../../application/actions/blogs/getBlogById.action';
 import { GetAllBlogsAction } from '../../application/actions/blogs/get-all-blogs.action';
-import { GetAllBlogsResponse } from '../responses/blogs/get-all-blogs.response';
+import { GetAllBlogsResponse } from '../responses/blogger/get-all-blogs.response';
 import { GetPostByBlogIdAction } from '../../application/actions/blogs/getPostByBlogId.action';
-import { GetPostByBlogIdResponse } from '../responses/blogs/getPostByBlogId.response';
+import { GetPostByBlogIdResponse } from '../responses/blogger/getPostByBlogId.response';
 import { JwtAuthOptionalGuard } from '../../domain/auth/guards/optional-jwt-auth.guard';
 
-@Controller('blogs')
+@Controller('blogger')
 export class BlogsController {
   constructor(
     private readonly getBlogsService: GetAllBlogsAction,

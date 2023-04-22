@@ -46,6 +46,6 @@ import { SaUsersModule } from './sa/users/sa-users.module';
     MainLikeStatusRepository,
     QueryLikeStatusRepository,
   ],
-  exports: [MainCommentsRepository, MainLikeStatusRepository, QueryLikeStatusRepository],
+  exports: [MainCommentsRepository, MainLikeStatusRepository, QueryLikeStatusRepository, QueryCommentsRepository],
 })
 export class CommentsModule {}
