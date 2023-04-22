@@ -4,12 +4,14 @@ import { GetPost } from '../../../presentation/responses/posts/get-all-posts.res
 import { plainToClass } from 'class-transformer';
 import { GetLikesInfoForPostService } from '../../services/posts/get-likes-info-for-post.service';
 import { QueryUserBannedRepository } from '../../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
+import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 
 @Injectable()
 export class GetPostByIdAction {
   logger = new Logger(GetPostByIdAction.name);
   constructor(
     @Inject(QueryPostRepository) private readonly queryRepository: QueryPostRepository,
+    @Inject(QueryBlogsRepository) private readonly queryBlogRepository: QueryBlogsRepository,
     @Inject(GetLikesInfoForPostService) private readonly likesInfoService: GetLikesInfoForPostService,
     @Inject(QueryUserBannedRepository) private readonly queryUserBannedRepository: QueryUserBannedRepository,
   ) {}
@@ -31,6 +33,10 @@ export class GetPostByIdAction {
       }
       return result;
     });
+    const blog = await this.queryBlogRepository.getBlogById(postById.blogId);
+    if (blog.isBanned) {
+      throw new NotFoundException();
+    }
 
     return plainToClass(GetPost, {
       ...postById.toObject(),
