@@ -72,7 +72,7 @@ export class BloggerController {
     return this.getBannedUserAction.execute(id, query);
   }
 
-  @Post('blogger')
+  @Post('blogs')
   async createBlog(@Body() body: CreateBlogRequest, @Req() req: any) {
     return this.createBlogService.execute(body, req?.user?.userId);
   }
