@@ -1,81 +1,81 @@
-name: Vercel Deployment
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-
-
-on:
-  push:
-    branches:
-      - 'feature/**'
-      - main
-      - develop
-
-jobs:
-#  Testing:
+#name: Vercel Deployment
+#env:
+#  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+#  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+#
+#
+#on:
+#  push:
+#    branches:
+#      - 'feature/**'
+#      - main
+#      - develop
+#
+#jobs:
+##  Testing:
+##    runs-on: ubuntu-latest
+##    steps:
+##      - uses: actions/checkout@v2
+##      - name: Use Node.js 16.x
+##        uses: actions/setup-node@v3
+##        with:
+##          node-version: '16.x'
+##      - name: Install dependencies
+##        run: npm install
+##      - name: Run test
+##        run: npm test
+##        env:
+##          BASIC_LOGIN: ${{secrets.BASIC_LOGIN}}
+##          BASIC_PASSWORD: ${{secrets.BASIC_PASSWORD}}
+##          MONGO_DB_URL: ${{secrets.MONGO_DB_URL}}
+##          MONGO_DB_NAME: test
+##          JWT_SECRET: ${{secrets.JWT_SECRET}}
+#  Deploy:
+##    needs: Testing
 #    runs-on: ubuntu-latest
 #    steps:
-#      - uses: actions/checkout@v2
+#      - uses: actions/checkout@v3
 #      - name: Use Node.js 16.x
 #        uses: actions/setup-node@v3
 #        with:
 #          node-version: '16.x'
-#      - name: Install dependencies
-#        run: npm install
-#      - name: Run test
-#        run: npm test
+#      - name: Install Vercel CLI
+#        run: npm install --global vercel@latest
+#      - name: Pull Vercel Environment Information
+#        run: |
+#          prodRun="preview"
+#          if [[ ${GITHUB_REF} == "refs/heads/main" ]]; then
+#            prodRun="production"
+#          fi
+#          echo "${{ secrets.VERCEL_ORG_ID }}"
+#          npx vercel pull --yes --environment=$prodRun --token=${VERCEL_TOKEN}
 #        env:
-#          BASIC_LOGIN: ${{secrets.BASIC_LOGIN}}
-#          BASIC_PASSWORD: ${{secrets.BASIC_PASSWORD}}
+#          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+#      - name: Build Project Artifacts
+#        run: |
+#          prodRun=""
+#          if [[ ${GITHUB_REF} == "refs/heads/main" ]]; then
+#            prodRun="--prod"
+#          fi
+#          npx vercel build $prodRun --token=${VERCEL_TOKEN}
+#        env:
+#          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+#      - name: Deploy Project Artifacts to Vercel
+#        run: |
+#          prodRun=""
+#          if [[ ${GITHUB_REF} == "refs/heads/main" ]]; then
+#            prodRun="--prod"
+#          fi
+#          npx vercel deploy --prebuilt $prodRun --token=${VERCEL_TOKEN} -e SECURITY_COOKIE=${SECURITY_COOKIE} -e HTTPS_ONLY_COOKIES=${HTTPS_ONLY_COOKIES} -e REFRESH_TOKEN_EXPIRE_TIME=${REFRESH_TOKEN_EXPIRE_TIME} -e ACCESS_TOKEN_EXPIRE_TIME=${ACCESS_TOKEN_EXPIRE_TIME} -e NODEMAILER_PASSWORD=${NODEMAILER_PASSWORD}  -e NODEMAILER_EMAIL=${NODEMAILER_EMAIL} -e PORT=${PORT}  -e MONGO_DB_NAME=${MONGO_DB_NAME} -e MONGO_DB_URL=${MONGO_DB_URL} -e JWT_SECRET=${JWT_SECRET}
+#        env:
+#          PORT: ${{ secrets.PORT }}
+#          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+#          MONGO_DB_NAME: ${{secrets.MONGO_DB_NAME}}
 #          MONGO_DB_URL: ${{secrets.MONGO_DB_URL}}
-#          MONGO_DB_NAME: test
 #          JWT_SECRET: ${{secrets.JWT_SECRET}}
-  Deploy:
-#    needs: Testing
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js 16.x
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16.x'
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-      - name: Pull Vercel Environment Information
-        run: |
-          prodRun="preview"
-          if [[ ${GITHUB_REF} == "refs/heads/main" ]]; then
-            prodRun="production"
-          fi
-          echo "${{ secrets.VERCEL_ORG_ID }}"
-          npx vercel pull --yes --environment=$prodRun --token=${VERCEL_TOKEN}
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      - name: Build Project Artifacts
-        run: |
-          prodRun=""
-          if [[ ${GITHUB_REF} == "refs/heads/main" ]]; then
-            prodRun="--prod"
-          fi
-          npx vercel build $prodRun --token=${VERCEL_TOKEN}
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      - name: Deploy Project Artifacts to Vercel
-        run: |
-          prodRun=""
-          if [[ ${GITHUB_REF} == "refs/heads/main" ]]; then
-            prodRun="--prod"
-          fi
-          npx vercel deploy --prebuilt $prodRun --token=${VERCEL_TOKEN} -e SECURITY_COOKIE=${SECURITY_COOKIE} -e HTTPS_ONLY_COOKIES=${HTTPS_ONLY_COOKIES} -e REFRESH_TOKEN_EXPIRE_TIME=${REFRESH_TOKEN_EXPIRE_TIME} -e ACCESS_TOKEN_EXPIRE_TIME=${ACCESS_TOKEN_EXPIRE_TIME} -e NODEMAILER_PASSWORD=${NODEMAILER_PASSWORD}  -e NODEMAILER_EMAIL=${NODEMAILER_EMAIL} -e PORT=${PORT}  -e MONGO_DB_NAME=${MONGO_DB_NAME} -e MONGO_DB_URL=${MONGO_DB_URL} -e JWT_SECRET=${JWT_SECRET}
-        env:
-          PORT: ${{ secrets.PORT }}
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          MONGO_DB_NAME: ${{secrets.MONGO_DB_NAME}}
-          MONGO_DB_URL: ${{secrets.MONGO_DB_URL}}
-          JWT_SECRET: ${{secrets.JWT_SECRET}}
-          NODEMAILER_PASSWORD: ${{secrets.NODEMAILER_PASSWORD}}
-          NODEMAILER_EMAIL: ${{secrets.NODEMAILER_EMAIL}}
-          ACCESS_TOKEN_EXPIRE_TIME: ${{secrets.ACCESS_TOKEN_EXPIRE_TIME}}
-          REFRESH_TOKEN_EXPIRE_TIME: ${{secrets.REFRESH_TOKEN_EXPIRE_TIME}}
-          HTTPS_ONLY_COOKIES: ${{secrets.HTTPS_ONLY_COOKIES}}
-          SECURITY_COOKIE: ${{secrets.SECURITY_COOKIE}}
+#          NODEMAILER_PASSWORD: ${{secrets.NODEMAILER_PASSWORD}}
+#          NODEMAILER_EMAIL: ${{secrets.NODEMAILER_EMAIL}}
+#          ACCESS_TOKEN_EXPIRE_TIME: ${{secrets.ACCESS_TOKEN_EXPIRE_TIME}}
+#          REFRESH_TOKEN_EXPIRE_TIME: ${{secrets.REFRESH_TOKEN_EXPIRE_TIME}}
+#          HTTPS_ONLY_COOKIES: ${{secrets.HTTPS_ONLY_COOKIES}}
+#          SECURITY_COOKIE: ${{secrets.SECURITY_COOKIE}}
