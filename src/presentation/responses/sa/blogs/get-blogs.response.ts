@@ -13,11 +13,25 @@ class BlogOwner {
 }
 
 @Exclude()
+class BanInfo {
+  @Expose()
+  isBanned: boolean | null;
+
+  @Expose()
+  banDate: Date | null;
+}
+
+@Exclude()
 class GetBlogsWithOwner extends CreateBlogResponse {
   @Expose()
   @ValidateNested()
   @Type(() => BlogOwner)
   blogOwnerInfo: BlogOwner;
+
+  @Expose()
+  @ValidateNested()
+  @Type(() => BanInfo)
+  banInfo: BanInfo;
 }
 
 @Exclude()
