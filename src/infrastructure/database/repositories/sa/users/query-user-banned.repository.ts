@@ -11,8 +11,11 @@ export class QueryUserBannedRepository {
     return this.model.findOne({ userId, blogId: null });
   }
 
-  async checkStatusByBlog(userId: string, blogId: string): Promise<UserBannedDocument> {
+  async checkStatusByUserBlog(userId: string, blogId: string): Promise<UserBannedDocument> {
     return this.model.findOne({ userId, blogId });
+  }
+  async checkStatusByBlog(blogId: string): Promise<UserBannedDocument> {
+    return this.model.findOne({ blogId });
   }
 
   async getCountByBlog(searchLogin: string, blogId: string): Promise<number> {

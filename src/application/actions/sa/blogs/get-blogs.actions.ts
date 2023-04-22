@@ -29,13 +29,13 @@ export class GetBlogsActions {
     );
 
     const promises = blogs.map(async (item) => {
-      const banned = await this.userBannedRepository.checkStatusByBlog(item.userId, item._id.toString());
+      const banned = await this.userBannedRepository.checkStatusByBlog(item._id.toString());
       return Object.assign(item, {
         id: item._id.toString(),
         blogOwnerInfo: { userId: item.userId, userLogin: item.userLogin },
         banInfo: {
-          isBanned: banned ?? null,
-          banDate: banned?.createdAt ?? null,
+          isBanned: Boolean(banned) || null,
+          banDate: banned?.banDate || null,
         },
       });
     });

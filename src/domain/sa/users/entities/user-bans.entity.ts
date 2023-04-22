@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 
-export type UserBannedDocument = HydratedDocument<UserBanned & { createdAt: Date }>;
+export type UserBannedDocument = HydratedDocument<UserBanned & { banDate: Date }>;
 
 @Schema({
   timestamps: { createdAt: 'banDate' },
@@ -15,13 +15,13 @@ export type UserBannedDocument = HydratedDocument<UserBanned & { createdAt: Date
   },
 })
 export class UserBanned {
-  @Prop({ type: String, isRequired: true })
+  @Prop({ type: String, isRequired: false, default: null })
   banReason: string;
 
-  @Prop({ type: String, isRequired: true })
+  @Prop({ type: String, isRequired: false, default: null })
   userId: string;
 
-  @Prop({ type: String, isRequired: true })
+  @Prop({ type: String, isRequired: false, default: null })
   userLogin: string;
 
   @Prop({ type: String, isRequired: false, default: null })
