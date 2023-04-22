@@ -20,6 +20,7 @@ export class QueryBlogsRepository {
     direction: string,
     userId?: string,
     anyFilter?: any,
+    isBanned?: boolean,
   ): Promise<BlogDocument[]> {
     let findFilter: Record<string, any> = { name: { $regex: new RegExp(filter, 'gi') }, isBanned: false };
     if (userId) {
@@ -30,6 +31,9 @@ export class QueryBlogsRepository {
         ...findFilter,
         ...anyFilter,
       };
+    }
+    if (typeof isBanned === 'boolean') {
+      findFilter.isBanned = isBanned;
     }
     return this.blogModel
       .find(findFilter)
@@ -46,13 +50,17 @@ export class QueryBlogsRepository {
     return this.postModel.count({ blogId, isBanned: false });
   }
 
-  async getCountBlogs(filter?: string, userId?: string, anyFilter?: any) {
-    let filterParam: Record<string, any> = { isBanned: false };
+  async getCountBlogs(filter?: string, userId?: string, anyFilter?: any, isBanned?: boolean) {
+    let filterParam: Record<string, any> = {};
     if (filter) {
       filterParam.name = { $regex: new RegExp(filter, 'gi') };
     }
     if (userId) {
       filterParam.userId = userId;
+    }
+
+    if (typeof isBanned === 'boolean') {
+      filterParam.isBanned = isBanned;
     }
 
     if (anyFilter) {
