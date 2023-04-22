@@ -34,7 +34,7 @@ export class GetPostByIdAction {
       return result;
     });
     const blog = await this.queryBlogRepository.getBlogById(postById.blogId);
-    if (blog.isBanned) {
+    if (!blog) {
       throw new NotFoundException();
     }
 
