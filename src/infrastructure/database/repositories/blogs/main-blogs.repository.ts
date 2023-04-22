@@ -36,6 +36,6 @@ export class MainBlogsRepository {
   }
 
   async changeBannedStatusByBlogId(blogId: string, isBanned: boolean) {
-    return this.blogModel.updateOne({ _id: blogId }, { isBanned });
+    return this.blogModel.updateOne({ _id: blogId }, { isBanned, banDate: isBanned ? new Date().toISOString() : null });
   }
 }

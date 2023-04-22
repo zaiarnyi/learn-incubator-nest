@@ -15,13 +15,13 @@ export type UserBannedDocument = HydratedDocument<UserBanned & { banDate: Date }
   },
 })
 export class UserBanned {
-  @Prop({ type: String, isRequired: false, default: null })
+  @Prop({ type: String, isRequired: true })
   banReason: string;
 
-  @Prop({ type: String, isRequired: false, default: null })
+  @Prop({ type: String, isRequired: true })
   userId: string;
 
-  @Prop({ type: String, isRequired: false, default: null })
+  @Prop({ type: String, isRequired: true })
   userLogin: string;
 
   @Prop({ type: String, isRequired: false, default: null })
