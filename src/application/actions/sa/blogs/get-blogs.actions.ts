@@ -33,7 +33,7 @@ export class GetBlogsActions {
         id: item._id.toString(),
         blogOwnerInfo: { userId: item.userId, userLogin: item.userLogin },
         banInfo: {
-          isBanned: item?.isBanned || null,
+          isBanned: item?.isBanned ?? false,
           banDate: item?.banDate || null,
         },
       });
