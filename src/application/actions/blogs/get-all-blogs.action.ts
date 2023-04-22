@@ -27,7 +27,7 @@ export class GetAllBlogsAction {
       null,
       false,
     );
-    this.logger.warn(blogs.length);
+
     return {
       pagesCount,
       page: query.pageNumber,

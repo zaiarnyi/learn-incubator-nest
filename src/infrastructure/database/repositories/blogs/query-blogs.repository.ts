@@ -43,7 +43,7 @@ export class QueryBlogsRepository {
       .lean();
   }
   async getBlogById(id: string): Promise<BlogDocument> {
-    return this.blogModel.findOne({ _id: id });
+    return this.blogModel.findOne({ _id: id, isBanned: false });
   }
 
   async getPostsCount(blogId: string): Promise<number> {

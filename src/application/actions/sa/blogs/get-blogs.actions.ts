@@ -23,7 +23,7 @@ export class GetBlogsActions {
       '',
       filter,
     );
-    this.logger.warn(blogs.length);
+
     return plainToClass(GetBlogsWithOwnerResponse, {
       pagesCount,
       page: query.pageNumber,
