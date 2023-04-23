@@ -52,13 +52,11 @@ export class CreateCommentForPostAction {
     }
 
     const blog = await this.queryBlogsRepository.getBlogById(post.blogId);
-    this.logger.log(JSON.stringify({ ...blog, blogId: post.blogId }, null, 2));
     if (blog.isBanned) {
       throw new ForbiddenException();
     }
 
     const userIsBanned = await this.queryUserBannedRepository.checkStatusByUserBlog(userId, post.blogId);
-    this.logger.log(JSON.stringify({ ...userIsBanned, userId, blogId: post.blogId }, null, 2));
     if (userIsBanned) {
       throw new ForbiddenException();
     }

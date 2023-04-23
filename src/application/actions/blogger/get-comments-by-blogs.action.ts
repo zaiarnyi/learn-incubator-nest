@@ -18,12 +18,11 @@ export class GetCommentsByBlogsAction {
   public async execute(query: GetPostByBlogIdDto, userId: string): Promise<GetCommentsByBlogResponse | any> {
     const blogIds = await this.queryRepository.getBlogsByBlogger(userId);
 
-    const totalCount = await this.commentMainRepository.getCountCommentsForAllBlogs(userId, blogIds);
+    const totalCount = await this.commentMainRepository.getCountCommentsForAllBlogs(blogIds);
     const skip = (query.pageNumber - 1) * query.pageSize;
     const pagesCount = Math.ceil(totalCount / query.pageSize);
 
     const comments = await this.commentMainRepository.getCommentForAllBlogs(
-      userId,
       blogIds,
       skip,
       query.pageSize,

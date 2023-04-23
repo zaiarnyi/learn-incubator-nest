@@ -32,22 +32,15 @@ export class QueryCommentsRepository {
     return this.commentModel.findOne({ userId, id });
   }
 
-  async getCommentForAllBlogs(
-    userId: string,
-    blogIds: string[],
-    skip: number,
-    limit: number,
-    sortBy: string,
-    sortDir: string,
-  ) {
+  async getCommentForAllBlogs(blogIds: string[], skip: number, limit: number, sortBy: string, sortDir: string) {
     return this.commentModel
-      .find({ userId, blogId: { $in: blogIds }, isBanned: false })
+      .find({ blogId: { $in: blogIds }, isBanned: false })
       .sort({ [sortBy]: sortDir as 'asc' | 'desc' })
       .skip(skip)
       .limit(limit);
   }
 
-  async getCountCommentsForAllBlogs(userId: string, blogIds: string[]) {
-    return this.commentModel.count({ userId, blogId: { $in: blogIds }, isBanned: false });
+  async getCountCommentsForAllBlogs(blogIds: string[]) {
+    return this.commentModel.count({ blogId: { $in: blogIds }, isBanned: false });
   }
 }
