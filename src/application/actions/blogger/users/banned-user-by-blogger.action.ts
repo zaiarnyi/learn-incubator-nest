@@ -1,4 +1,11 @@
-import { Inject, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserBannedByBloggerDto } from '../../../../domain/blogger/dto/user-banned-by-blogger.dto';
 import { UserBanned } from '../../../../domain/sa/users/entities/user-bans.entity';
 import { UserQueryRepository } from '../../../../infrastructure/database/repositories/users/query.repository';
@@ -43,7 +50,7 @@ export class BannedUserByBloggerAction {
     }
 
     if (blog.userId !== userId) {
-      throw new UnauthorizedException();
+      throw new ForbiddenException();
     }
 
     return user;
