@@ -1,6 +1,7 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 import { MetaResponse } from '../meta.response';
 import { ValidateNested } from 'class-validator';
+import { ExtendedLikesInfo } from '../extendedLikesInfo.response';
 
 @Exclude()
 class CommentatorInfo {
@@ -35,12 +36,17 @@ class CommentItem {
   content: string;
 
   @Expose()
+  createdAt: Date;
+
+  @Expose()
+  @Type(() => ExtendedLikesInfo)
+  @ValidateNested()
+  likesInfo: ExtendedLikesInfo;
+
+  @Expose()
   @Type(() => CommentatorInfo)
   @ValidateNested()
   commentatorInfo: CommentatorInfo;
-
-  @Expose()
-  createdAt: Date;
 
   @Expose()
   @Type(() => PostInfo)
