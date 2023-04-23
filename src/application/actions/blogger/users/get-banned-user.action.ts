@@ -23,7 +23,7 @@ export class GetBannedUserAction {
     );
 
     const items = users.map((item) => ({
-      id: item._id.toString(),
+      id: item.userId,
       login: item.userLogin,
       banInfo: {
         isBanned: true,
