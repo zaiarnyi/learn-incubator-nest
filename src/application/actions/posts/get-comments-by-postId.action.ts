@@ -11,6 +11,7 @@ import { ExtendedLikesInfo } from '../../../presentation/responses/extendedLikes
 import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
 import { QueryPostRepository } from '../../../infrastructure/database/repositories/posts/query-post.repository';
 import { QueryUserBannedRepository } from '../../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
+import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 
 @Injectable()
 export class GetCommentsByPostIdAction {
@@ -18,11 +19,11 @@ export class GetCommentsByPostIdAction {
   constructor(
     @Inject(QueryCommentsRepository) private readonly queryRepository: QueryCommentsRepository,
     @Inject(QueryPostRepository) private readonly queryPostsRepository: QueryPostRepository,
-    @Inject(QueryUserBannedRepository) private readonly queryUserBannedRepository: QueryUserBannedRepository,
+    @Inject(QueryBlogsRepository) private readonly queryBlogsRepository: QueryBlogsRepository,
     @Inject(QueryLikeStatusRepository) private readonly likeStatusCommentRepository: QueryLikeStatusRepository,
   ) {}
 
-  private async validate(postId: string, userId?: string) {
+  private async validate(postId: string) {
     const post = await this.queryPostsRepository.getPostById(postId).catch((e) => {
       this.logger.error(e);
     });
@@ -30,9 +31,9 @@ export class GetCommentsByPostIdAction {
     if (!post) {
       throw new NotFoundException();
     }
-    if (!userId) return;
-    const isBannedUser = await this.queryUserBannedRepository.checkStatusByBlog(post.blogId);
-    if (isBannedUser) {
+
+    const blog = await this.queryBlogsRepository.getBlogById(post.blogId);
+    if (blog.isBanned) {
       throw new ForbiddenException();
     }
   }
@@ -55,7 +56,7 @@ export class GetCommentsByPostIdAction {
     query: GetCommentsByPostIdDto,
     userId?: string,
   ): Promise<GetCommentsByPostIdResponse> {
-    await this.validate(postId, userId);
+    await this.validate(postId);
 
     const { pageSize, pageNumber, sortDirection, sortBy } = query;
     const totalCount = await this.queryRepository.getCountComments(postId);
