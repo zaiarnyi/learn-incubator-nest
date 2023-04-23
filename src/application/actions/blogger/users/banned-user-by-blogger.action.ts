@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UserBannedByBloggerDto } from '../../../../domain/blogger/dto/user-banned-by-blogger.dto';
 import { UserBanned } from '../../../../domain/sa/users/entities/user-bans.entity';
 import { UserQueryRepository } from '../../../../infrastructure/database/repositories/users/query.repository';
@@ -40,6 +40,10 @@ export class BannedUserByBloggerAction {
     if (!blog) {
       this.logger.warn(`Not found blog(${blogId}) for banned`);
       throw new NotFoundException();
+    }
+
+    if (blog.userId !== userId) {
+      throw new UnauthorizedException();
     }
 
     return user;
