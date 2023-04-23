@@ -31,7 +31,7 @@ export class GetCommentsByPostIdAction {
       throw new NotFoundException();
     }
     if (!userId) return;
-    const isBannedUser = await this.queryUserBannedRepository.checkStatusByUserBlog(userId, post.blogId);
+    const isBannedUser = await this.queryUserBannedRepository.checkStatusByBlog(post.blogId);
     if (isBannedUser) {
       throw new ForbiddenException();
     }
