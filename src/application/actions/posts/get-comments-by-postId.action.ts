@@ -19,8 +19,6 @@ export class GetCommentsByPostIdAction {
   constructor(
     @Inject(QueryCommentsRepository) private readonly queryRepository: QueryCommentsRepository,
     @Inject(QueryPostRepository) private readonly queryPostsRepository: QueryPostRepository,
-    @Inject(QueryBlogsRepository) private readonly queryBlogsRepository: QueryBlogsRepository,
-    @Inject(QueryUserBannedRepository) private readonly queryUserBannedRepository: QueryUserBannedRepository,
     @Inject(QueryLikeStatusRepository) private readonly likeStatusCommentRepository: QueryLikeStatusRepository,
   ) {}
 
@@ -31,16 +29,6 @@ export class GetCommentsByPostIdAction {
 
     if (!post) {
       throw new NotFoundException();
-    }
-
-    const blog = await this.queryBlogsRepository.getBlogById(post.blogId);
-    if (blog.isBanned) {
-      throw new ForbiddenException();
-    }
-    if (!userId) return;
-    const userIsBanned = await this.queryUserBannedRepository.checkStatus(userId);
-    if (userIsBanned) {
-      throw new ForbiddenException();
     }
   }
 

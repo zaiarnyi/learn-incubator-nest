@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { PostCommentInfo } from '../../../presentation/responses/posts/get-comments-by-postId.response';
 import { CreateCommentForPostDto } from '../../../domain/posts/dto/create-comment-for-post.dto';
 import { MainCommentsRepository } from '../../../infrastructure/database/repositories/comments/main-comments.repository';
@@ -11,6 +11,8 @@ import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
 import { LikeStatusComment } from '../../../domain/comments/like-status/entity/like-status-comments.entity';
 import { MainLikeStatusRepository } from '../../../infrastructure/database/repositories/comments/like-status/main-like-status.repository';
 import { PostDocument } from '../../../domain/posts/entities/post.entity';
+import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
+import { QueryUserBannedRepository } from '../../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
 
 @Injectable()
 export class CreateCommentForPostAction {
@@ -21,6 +23,8 @@ export class CreateCommentForPostAction {
     @Inject(QueryPostRepository) private readonly queryPostRepository: QueryPostRepository,
     @Inject(UserQueryRepository) private readonly queryUserRepository: UserQueryRepository,
     @Inject(MainLikeStatusRepository) private readonly mainLikeStatusCommentRepository: MainLikeStatusRepository,
+    @Inject(QueryBlogsRepository) private readonly queryBlogsRepository: QueryBlogsRepository,
+    @Inject(QueryUserBannedRepository) private readonly queryUserBannedRepository: QueryUserBannedRepository,
   ) {}
 
   private async createLikeStatusForComment(commentId: string, userId: string) {
@@ -33,7 +37,7 @@ export class CreateCommentForPostAction {
     return this.mainLikeStatusCommentRepository.createLikeStatusForComment(status);
   }
 
-  private async getPost(postId: string, body: CreateCommentForPostDto): Promise<PostDocument> {
+  private async getPost(postId: string, body: CreateCommentForPostDto, userId: string): Promise<PostDocument> {
     try {
       await validateOrReject(body);
     } catch (e) {
@@ -47,11 +51,21 @@ export class CreateCommentForPostAction {
       throw new NotFoundException();
     }
 
+    const blog = await this.queryBlogsRepository.getBlogById(post.blogId);
+    if (blog.isBanned) {
+      throw new ForbiddenException();
+    }
+
+    const userIsBanned = await this.queryUserBannedRepository.checkStatus(userId);
+    if (userIsBanned) {
+      throw new ForbiddenException();
+    }
+
     return post;
   }
 
   public async execute(postId: string, body: CreateCommentForPostDto, userId: string): Promise<PostCommentInfo | any> {
-    const post = await this.getPost(postId, body);
+    const post = await this.getPost(postId, body, userId);
 
     const user = await this.queryUserRepository.getUserById(userId).catch((e) => {
       this.logger.error(`Error when getting a user to create a comment - ${userId}. ${JSON.stringify(e)}`);
