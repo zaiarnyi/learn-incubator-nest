@@ -100,8 +100,8 @@ export class BloggerController {
 
   @Put('users/:id/ban')
   @HttpCode(204)
-  async setBanToUser(@Param('id') id: string, @Body() body: UserBannedByBlogRequest): Promise<void> {
-    await this.changeBannedStatusUserAction.execute(id, body);
+  async setBanToUser(@Param('id') id: string, @Body() body: UserBannedByBlogRequest, @Req() req: any): Promise<void> {
+    await this.changeBannedStatusUserAction.execute(id, body, req.user.userId);
   }
 
   @Delete('blogs/:id')

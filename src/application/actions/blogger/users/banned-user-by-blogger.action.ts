@@ -36,7 +36,7 @@ export class BannedUserByBloggerAction {
     ]);
   }
 
-  private async validateAndGetUser(blogId: string, userId: string): Promise<UserDocument> {
+  private async validateAndGetUser(blogId: string, userId: string, bloggerId): Promise<UserDocument> {
     const user = await this.userRepository.getUserById(userId);
     if (!user) {
       this.logger.warn(`Not found user(${userId}) for banned`);
@@ -49,15 +49,15 @@ export class BannedUserByBloggerAction {
       throw new NotFoundException();
     }
 
-    // if (blog.userId !== userId) {
-    //   throw new ForbiddenException();
-    // }
+    if (blog.userId !== bloggerId) {
+      throw new ForbiddenException();
+    }
 
     return user;
   }
 
-  public async execute(userId: string, body: UserBannedByBloggerDto) {
-    const user = await this.validateAndGetUser(body.blogId, userId);
+  public async execute(userId: string, body: UserBannedByBloggerDto, bloggerId: string) {
+    const user = await this.validateAndGetUser(body.blogId, userId, bloggerId);
     await this.changeStatus(userId, body.blogId, body.isBanned);
 
     if (!body.isBanned) {
