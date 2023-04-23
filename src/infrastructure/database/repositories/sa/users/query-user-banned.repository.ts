@@ -30,10 +30,13 @@ export class QueryUserBannedRepository {
     sortBy: string,
     sortDir: string,
   ): Promise<UserBannedDocument[]> {
+    if (sortBy === 'login') {
+      sortBy = 'userLogin';
+    }
     return this.model
       .find({ blogId, userLogin: { $regex: new RegExp(searchLogin, 'gi') } })
+      .sort({ [sortBy]: sortDir as 'asc' | 'desc' })
       .skip(skip)
-      .limit(limit)
-      .sort({ [sortBy]: sortDir as 'asc' | 'desc' });
+      .limit(limit);
   }
 }
