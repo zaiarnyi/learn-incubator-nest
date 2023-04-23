@@ -20,6 +20,7 @@ export class GetBannedUserAction {
   }
 
   public async execute(blogId: string, query: QueryGetBannedUsersDto): Promise<GetUserBannedByBlogResponse | any> {
+    await this.validateBlogId(blogId);
     const totalCount = await this.userBannedRepository.getCountByBlog(query.searchLoginTerm, blogId);
     const skip = (query.pageNumber - 1) * query.pageSize;
     const pagesCount = Math.ceil(totalCount / query.pageSize);
