@@ -56,7 +56,7 @@ export class CreatePostAction {
         // this.logger.warn(`Not found blog with ID: ${blogId}`);
         throw new NotFoundException();
       }
-      if (res?.userId !== userId) {
+      if (res?.userId !== userId || res.isBanned) {
         throw new ForbiddenException();
       }
       return res;
