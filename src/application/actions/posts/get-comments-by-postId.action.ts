@@ -20,10 +20,11 @@ export class GetCommentsByPostIdAction {
     @Inject(QueryCommentsRepository) private readonly queryRepository: QueryCommentsRepository,
     @Inject(QueryPostRepository) private readonly queryPostsRepository: QueryPostRepository,
     @Inject(QueryBlogsRepository) private readonly queryBlogsRepository: QueryBlogsRepository,
+    @Inject(QueryUserBannedRepository) private readonly queryUserBannedRepository: QueryUserBannedRepository,
     @Inject(QueryLikeStatusRepository) private readonly likeStatusCommentRepository: QueryLikeStatusRepository,
   ) {}
 
-  private async validate(postId: string) {
+  private async validate(postId: string, userId?: string) {
     const post = await this.queryPostsRepository.getPostById(postId).catch((e) => {
       this.logger.error(e);
     });
@@ -34,6 +35,11 @@ export class GetCommentsByPostIdAction {
 
     const blog = await this.queryBlogsRepository.getBlogById(post.blogId);
     if (blog.isBanned) {
+      throw new ForbiddenException();
+    }
+    if (!userId) return;
+    const userIsBanned = await this.queryUserBannedRepository.checkStatus(userId);
+    if (userIsBanned) {
       throw new ForbiddenException();
     }
   }
@@ -56,7 +62,7 @@ export class GetCommentsByPostIdAction {
     query: GetCommentsByPostIdDto,
     userId?: string,
   ): Promise<GetCommentsByPostIdResponse> {
-    await this.validate(postId);
+    await this.validate(postId, userId);
 
     const { pageSize, pageNumber, sortDirection, sortBy } = query;
     const totalCount = await this.queryRepository.getCountComments(postId);
