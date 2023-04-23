@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { GetUserBannedByBlogResponse } from '../../../../presentation/responses/blogger/get-user-banned-by-blog.response';
 import { QueryGetBannedUsersDto } from '../../../../domain/blogger/dto/query-get-banned-users.dto';
 import { QueryUserBannedRepository } from '../../../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
@@ -19,7 +19,7 @@ export class GetBannedUserAction {
     }
 
     if (blog.userId !== bloggerId) {
-      throw new UnauthorizedException();
+      throw new ForbiddenException();
     }
   }
 
