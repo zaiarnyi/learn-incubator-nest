@@ -69,7 +69,7 @@ export class BloggerController {
     @Param('id') id: string,
     @Req() req: any,
   ): Promise<GetUserBannedByBlogResponse> {
-    return this.getBannedUserAction.execute(id, query);
+    return this.getBannedUserAction.execute(id, query, req.user.userId);
   }
 
   @Post('blogs')

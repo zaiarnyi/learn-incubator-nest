@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { GetUserBannedByBlogResponse } from '../../../../presentation/responses/blogger/get-user-banned-by-blog.response';
 import { QueryGetBannedUsersDto } from '../../../../domain/blogger/dto/query-get-banned-users.dto';
 import { QueryUserBannedRepository } from '../../../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
@@ -12,15 +12,23 @@ export class GetBannedUserAction {
     @Inject(QueryBlogsRepository) private readonly blogRepository: QueryBlogsRepository,
   ) {}
 
-  private async validateBlogId(blogId: string) {
+  private async validateBlogId(blogId: string, bloggerId: string) {
     const blog = await this.blogRepository.getBlogById(blogId);
     if (!blog) {
       throw new NotFoundException();
     }
+
+    if (blog.userId !== bloggerId) {
+      throw new UnauthorizedException();
+    }
   }
 
-  public async execute(blogId: string, query: QueryGetBannedUsersDto): Promise<GetUserBannedByBlogResponse | any> {
-    await this.validateBlogId(blogId);
+  public async execute(
+    blogId: string,
+    query: QueryGetBannedUsersDto,
+    bloggerId: string,
+  ): Promise<GetUserBannedByBlogResponse | any> {
+    await this.validateBlogId(blogId, bloggerId);
     const totalCount = await this.userBannedRepository.getCountByBlog(query.searchLoginTerm, blogId);
     const skip = (query.pageNumber - 1) * query.pageSize;
     const pagesCount = Math.ceil(totalCount / query.pageSize);
