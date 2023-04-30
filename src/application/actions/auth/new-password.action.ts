@@ -1,8 +1,8 @@
 import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
 import { NewPasswordDto } from '../../../domain/auth/dto/new-password.dto';
 import { MainActivateCodeRepository } from '../../../infrastructure/database/repositories/activate-code/main-activate-code.repository';
-import { ActivateCodeEnum } from '../../../infrastructure/database/entity/activate-code.entity';
-import * as bcrypt from 'bcrypt';
+import { ActivateCodeEnum } from '../../../domain/auth/entity/activate-code.entity';
+import * as bcrypt from 'bcryptjs';
 import { UserMainRepository } from '../../../infrastructure/database/repositories/users/main.repository';
 
 @Injectable()
@@ -14,8 +14,8 @@ export class NewPasswordAction {
   ) {}
 
   public async execute(payload: NewPasswordDto) {
-    const user = await this.activateRepository.getItemByCode(payload.recoveryCode, ActivateCodeEnum.RECOVERY);
-    if (!user || Date.now() > user.expireAt) {
+    const activatedCode = await this.activateRepository.getItemByCode(payload.recoveryCode, ActivateCodeEnum.RECOVERY);
+    if (!activatedCode || Date.now() > activatedCode.expireAt) {
       throw new BadRequestException([
         {
           field: 'recoveryCode',
@@ -26,7 +26,7 @@ export class NewPasswordAction {
 
     const passwordHash = await bcrypt.hash(payload.newPassword, 10);
     await Promise.all([
-      this.userRepository.updatePasswordUser(user.userId, passwordHash),
+      this.userRepository.updatePasswordUser(activatedCode.user as number, passwordHash),
       this.activateRepository.deleteByCode(payload.recoveryCode, ActivateCodeEnum.RECOVERY),
     ]);
   }

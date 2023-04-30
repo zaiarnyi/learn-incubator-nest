@@ -18,10 +18,10 @@ export class GetPostByIdAction {
 
   private async validateIsUserBanned(userId: string) {
     if (!userId) return;
-    const hasBanned = await this.queryUserBannedRepository.checkStatus(userId);
-    if (hasBanned) {
-      throw new NotFoundException();
-    }
+    // const hasBanned = await this.queryUserBannedRepository.checkStatus(userId);
+    // if (hasBanned) {
+    //   throw new NotFoundException();
+    // }
   }
 
   public async execute(id: string, userId?: string): Promise<GetPost> {

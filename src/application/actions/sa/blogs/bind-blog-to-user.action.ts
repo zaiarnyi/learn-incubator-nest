@@ -27,11 +27,11 @@ export class BindBlogToUserAction {
   public async execute(param: BingUserParamDto) {
     if (await this.validate(param)) return;
 
-    const user = await this.userRepository.getUserById(param.id);
+    const user = await this.userRepository.getUserById(param.userId as number);
 
     if (!user) {
       throw new BadGatewayException([{ message: 'any text', field: 'userId' }]);
     }
-    await this.mainBlogRepository.bindUserToBlog(param.id, param.userId, user.login);
+    await this.mainBlogRepository.bindUserToBlog(param.id, param.userId as string, user.login);
   }
 }

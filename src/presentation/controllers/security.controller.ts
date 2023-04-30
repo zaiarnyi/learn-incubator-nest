@@ -6,6 +6,7 @@ import {
   Inject,
   NotFoundException,
   Param,
+  ParseIntPipe,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Cookies } from '../../infrastructure/decorators/cookies.decorator';
@@ -44,7 +45,7 @@ export class SecurityController {
 
   @Delete('/devices/:id')
   @HttpCode(204)
-  async deleteCurrentDevice(@Cookies('refreshToken') token: string, @Param('id') id: string) {
+  async deleteCurrentDevice(@Cookies('refreshToken') token: string, @Param('id', ParseIntPipe) id: number) {
     if (!token) {
       throw new UnauthorizedException();
     }

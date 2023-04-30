@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Blog, BlogDocument } from '../../../../domain/blogs/entities/blog.entity';
 import { Injectable } from '@nestjs/common';
+import { DeleteResult } from 'mongodb';
 
 @Injectable()
 export class MainBlogsRepository {
@@ -19,23 +20,23 @@ export class MainBlogsRepository {
     return this.blogModel.findByIdAndDelete(id);
   }
 
-  async deleteAllBlogs() {
+  async deleteAllBlogs(): Promise<DeleteResult> {
     return this.blogModel.deleteMany();
   }
 
-  async bindUserToBlog(id: string, userId: string, userLogin: string) {
+  async bindUserToBlog(id: string, userId: string, userLogin: string): Promise<any> {
     return this.blogModel.findByIdAndUpdate(id, { userId, userLogin });
   }
 
-  async changeBannedStatus(userId: string, isBanned: boolean) {
+  async changeBannedStatus(userId: string, isBanned: boolean): Promise<any> {
     return this.blogModel.updateMany({ userId }, { isBanned });
   }
 
-  async changeBannedStatusByBlogger(userId: string, blogId: string, isBanned: boolean) {
+  async changeBannedStatusByBlogger(userId: string, blogId: string, isBanned: boolean): Promise<any> {
     return this.blogModel.updateMany({ userId, _id: blogId }, { isBanned });
   }
 
-  async changeBannedStatusByBlogId(blogId: string, isBanned: boolean) {
+  async changeBannedStatusByBlogId(blogId: string, isBanned: boolean): Promise<any> {
     return this.blogModel.updateOne({ _id: blogId }, { isBanned, banDate: isBanned ? new Date().toISOString() : null });
   }
 }

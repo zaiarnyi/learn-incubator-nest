@@ -39,3 +39,17 @@ export class User {
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
+
+export class UserEntity {
+  id: number;
+  login: string;
+  email: string;
+  password_hash: string;
+  is_confirm: boolean;
+  is_send_email: boolean;
+  role: UserRoles;
+  is_banned: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date;
+}

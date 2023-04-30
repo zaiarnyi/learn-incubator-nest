@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { UserEntity } from '../../users/entities/user.entity';
 
 export type ActivateCodeDocument = HydratedDocument<ActivateCode>;
 
@@ -34,3 +35,14 @@ export class ActivateCode {
 }
 
 export const ActivateCodeSchema = SchemaFactory.createForClass(ActivateCode);
+
+export class ActivateEmailsCodeEntity {
+  id: number;
+  code: string;
+  expireAt: number;
+  user: UserEntity | number;
+  type: string;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date;
+}

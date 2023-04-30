@@ -6,7 +6,7 @@ export class DeleteUserAction {
   logger = new Logger(DeleteUserAction.name);
   constructor(private readonly repository: UserMainRepository) {}
 
-  async execute(id: string): Promise<void> {
+  async execute(id: number): Promise<void> {
     await this.repository
       .deleteUserById(id)
       .then((res) => {

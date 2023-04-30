@@ -3,7 +3,7 @@ import {
   LikeStatusComment,
   LikeStatusCommentDocument,
 } from '../../../../../domain/comments/like-status/entity/like-status-comments.entity';
-import { UpdateResult } from 'mongodb';
+import { DeleteResult, UpdateResult } from 'mongodb';
 import { Model } from 'mongoose';
 
 export class MainLikeStatusRepository {
@@ -21,11 +21,11 @@ export class MainLikeStatusRepository {
     return this.model.create(body);
   }
 
-  async deleteAll() {
+  async deleteAll(): Promise<DeleteResult> {
     return this.model.deleteMany();
   }
 
-  async changeStatusForUserBanned(userId: string, isBanned: boolean) {
+  async changeStatusForUserBanned(userId: string, isBanned: boolean): Promise<any> {
     return this.model.updateMany({ userId }, { isBanned });
   }
 }

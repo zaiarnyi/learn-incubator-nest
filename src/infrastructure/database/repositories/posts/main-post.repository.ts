@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Post, PostDocument } from '../../../../domain/posts/entities/post.entity';
 import { SaveNewPostDto } from '../../../../domain/posts/dto/save-new-post.dto';
 import { CreatePostDto } from '../../../../domain/posts/dto/create-post.dto';
+import { DeleteResult } from 'mongodb';
 
 @Injectable()
 export class MainPostRepository {
@@ -20,14 +21,14 @@ export class MainPostRepository {
     return this.postModel.findByIdAndDelete(id);
   }
 
-  async deleteAllPosts() {
+  async deleteAllPosts(): Promise<DeleteResult> {
     return this.postModel.deleteMany();
   }
-  async changeBannedStatus(userId: string, isBanned: boolean) {
+  async changeBannedStatus(userId: string, isBanned: boolean): Promise<any> {
     return this.postModel.updateMany({ userId }, { isBanned });
   }
 
-  async changeBannedStatusByBlogger(userId: string, blogId: string, isBanned: boolean) {
+  async changeBannedStatusByBlogger(userId: string, blogId: string, isBanned: boolean): Promise<any> {
     return this.postModel.updateMany({ userId, blogId }, { isBanned });
   }
 }

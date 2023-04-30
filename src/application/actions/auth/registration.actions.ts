@@ -5,7 +5,7 @@ import { EmailRegistrationService } from '../../services/email/email-registratio
 import { generateCode } from '../../../utils/generateCode';
 import { MainActivateCodeRepository } from '../../../infrastructure/database/repositories/activate-code/main-activate-code.repository';
 import { UserMainRepository } from '../../../infrastructure/database/repositories/users/main.repository';
-import { ActivateCodeEnum } from '../../../infrastructure/database/entity/activate-code.entity';
+import { ActivateCodeEnum } from '../../../domain/auth/entity/activate-code.entity';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -20,13 +20,13 @@ export class RegistrationActions {
   ) {}
 
   public async execute(payload: CreateUserDto) {
-    const users = await this.createUserService.execute(payload, false);
+    const user = await this.createUserService.execute(payload, false);
     const code = generateCode(6);
 
     try {
       const isDev = this.configService.get<string>('NODE_ENV') === 'development';
       await Promise.all([
-        this.activateRepository.saveRegActivation(code, users._id.toString(), ActivateCodeEnum.REGISTRATION),
+        this.activateRepository.saveRegActivation(code, user.id, ActivateCodeEnum.REGISTRATION),
         !isDev && this.emailService.registration(payload.email, code),
       ]);
 
@@ -34,7 +34,8 @@ export class RegistrationActions {
         return { code };
       }
     } catch (e) {
-      await this.mainUserRepository.changeStatusSendEmail(users._id.toString(), false);
+      console.log(e, ' === error');
+      await this.mainUserRepository.changeStatusSendEmail(user.id, false);
     }
   }
 }

@@ -14,7 +14,7 @@ import { MainUserBannedRepository } from '../../../../infrastructure/database/re
 import { MainBlogsRepository } from '../../../../infrastructure/database/repositories/blogs/main-blogs.repository';
 import { MainPostRepository } from '../../../../infrastructure/database/repositories/posts/main-post.repository';
 import { MainCommentsRepository } from '../../../../infrastructure/database/repositories/comments/main-comments.repository';
-import { UserDocument } from '../../../../domain/users/entities/user.entity';
+import { UserDocument, UserEntity } from '../../../../domain/users/entities/user.entity';
 
 @Injectable()
 export class BannedUserByBloggerAction {
@@ -36,8 +36,8 @@ export class BannedUserByBloggerAction {
     ]);
   }
 
-  private async validateAndGetUser(blogId: string, userId: string, bloggerId): Promise<UserDocument> {
-    const user = await this.userRepository.getUserById(userId);
+  private async validateAndGetUser(blogId: string, userId: string | number, bloggerId): Promise<UserEntity> {
+    const user = await this.userRepository.getUserById(userId as number);
     if (!user) {
       this.logger.warn(`Not found user(${userId}) for banned`);
       throw new NotFoundException();
@@ -56,16 +56,16 @@ export class BannedUserByBloggerAction {
     return user;
   }
 
-  public async execute(userId: string, body: UserBannedByBloggerDto, bloggerId: string) {
+  public async execute(userId: string | number, body: UserBannedByBloggerDto, bloggerId: string) {
     const user = await this.validateAndGetUser(body.blogId, userId, bloggerId);
-    await this.changeStatus(userId, body.blogId, body.isBanned);
+    await this.changeStatus(userId as string, body.blogId, body.isBanned);
 
     if (!body.isBanned) {
-      return this.banRepository.deleteBan(userId);
+      return this.banRepository.deleteBan(userId as number);
     }
 
     const bannedUserByBlog = new UserBanned();
-    bannedUserByBlog.userId = userId;
+    bannedUserByBlog.userId = userId as string;
     bannedUserByBlog.banReason = body.banReason;
     bannedUserByBlog.blogId = body.blogId;
     bannedUserByBlog.userLogin = user?.login || '';

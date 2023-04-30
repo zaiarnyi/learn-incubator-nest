@@ -8,8 +8,8 @@ import { MainPostRepository } from '../../../../infrastructure/database/reposito
 import { UserMainRepository } from '../../../../infrastructure/database/repositories/users/main.repository';
 import { MainLikeStatusRepository } from '../../../../infrastructure/database/repositories/comments/like-status/main-like-status.repository';
 import { MainLikeStatusPostRepository } from '../../../../infrastructure/database/repositories/posts/like-status/main-like-status-post.repository';
-import { UserDocument } from '../../../../domain/users/entities/user.entity';
-import { UserBanned } from '../../../../domain/sa/users/entities/user-bans.entity';
+import { UserDocument, UserEntity } from '../../../../domain/users/entities/user.entity';
+import { UserBanned, UserBannedEntity } from '../../../../domain/sa/users/entities/user-bans.entity';
 
 @Injectable()
 export class UserBannedAction {
@@ -24,18 +24,18 @@ export class UserBannedAction {
     @Inject(MainLikeStatusPostRepository) private readonly likeStatusPostRepository: MainLikeStatusPostRepository,
   ) {}
 
-  private async changeStatus(userId: string, isBanned: boolean) {
+  private async changeStatus(userId: number, isBanned: boolean) {
     await Promise.all([
-      this.blogRepository.changeBannedStatus(userId, isBanned),
-      this.commentsRepository.changeBannedStatus(userId, isBanned),
-      this.postRepository.changeBannedStatus(userId, isBanned),
-      this.userMainRepository.changeStatusBan(userId, isBanned),
-      this.likeStatusRepository.changeStatusForUserBanned(userId, isBanned),
-      this.likeStatusPostRepository.changeStatusBan(userId, isBanned),
+      // this.blogRepository.changeBannedStatus(userId as string, isBanned),
+      // this.commentsRepository.changeBannedStatus(userId as string, isBanned),
+      // this.postRepository.changeBannedStatus(userId as string, isBanned),
+      this.userMainRepository.changeStatusBan(userId as number, isBanned),
+      // this.likeStatusRepository.changeStatusForUserBanned(userId as string, isBanned),
+      // this.likeStatusPostRepository.changeStatusBan(userId as string, isBanned),
     ]);
   }
 
-  private async validateAndGetUser(userId: string): Promise<UserDocument> {
+  private async validateAndGetUser(userId: number): Promise<UserEntity> {
     const user = await this.userRepository.getUserById(userId);
     if (!user) {
       throw new NotFoundException();
@@ -43,16 +43,15 @@ export class UserBannedAction {
     return user;
   }
 
-  public async execute(userId: string, body: UserBannedDto) {
+  public async execute(userId: number, body: UserBannedDto) {
     const user = await this.validateAndGetUser(userId);
     if (body.isBanned) {
-      const userBanned = new UserBanned();
-      userBanned.userLogin = user.login;
-      userBanned.userId = userId;
+      const userBanned = new UserBannedEntity();
+      userBanned.user = user.id;
       userBanned.banReason = body.banReason;
       await this.repository.setUserBan(userBanned);
     } else {
-      await this.repository.deleteBan(userId);
+      await this.repository.deleteBan(user.id);
     }
     await this.changeStatus(userId, body.isBanned);
   }

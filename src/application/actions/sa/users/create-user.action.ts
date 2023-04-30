@@ -4,6 +4,7 @@ import { UserMainRepository } from '../../../../infrastructure/database/reposito
 import { BadRequestException, Inject, Logger, UnauthorizedException } from '@nestjs/common';
 import { validateOrReject } from 'class-validator';
 import { UserQueryRepository } from '../../../../infrastructure/database/repositories/users/query.repository';
+import { UserEntity } from '../../../../domain/users/entities/user.entity';
 
 export class CreateUserAction {
   logger = new Logger(CreateUserAction.name);
@@ -26,7 +27,7 @@ export class CreateUserAction {
       throw new UnauthorizedException();
     }
   }
-  async execute(dto: CreateUserDto, isConfirm = false) {
+  async execute(dto: CreateUserDto, isConfirm = false): Promise<UserEntity> {
     await this.validate(dto);
 
     const user = new CreateUserVo(dto.login, dto.password, dto.email, isConfirm);

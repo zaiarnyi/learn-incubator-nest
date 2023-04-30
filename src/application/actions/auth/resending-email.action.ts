@@ -3,7 +3,7 @@ import { EmailRegistrationService } from '../../services/email/email-registratio
 import { MainActivateCodeRepository } from '../../../infrastructure/database/repositories/activate-code/main-activate-code.repository';
 import { generateCode } from '../../../utils/generateCode';
 import { UserMainRepository } from '../../../infrastructure/database/repositories/users/main.repository';
-import { ActivateCodeEnum } from '../../../infrastructure/database/entity/activate-code.entity';
+import { ActivateCodeEnum } from '../../../domain/auth/entity/activate-code.entity';
 
 @Injectable()
 export class ResendingEmailAction {
@@ -15,11 +15,14 @@ export class ResendingEmailAction {
     private readonly mainUserRepository: UserMainRepository,
   ) {}
 
-  public async execute(email: string, userId: string) {
+  public async execute(email: string, userId: number) {
     const code = generateCode(6);
     try {
-      await this.emailService.registration(email, code);
-      await this.activationRepository.saveRegActivation(code, userId, ActivateCodeEnum.REGISTRATION);
+      await Promise.all([
+        this.emailService.registration(email, code),
+        this.activationRepository.saveRegActivation(code, userId, ActivateCodeEnum.REGISTRATION),
+        this.mainUserRepository.changeStatusSendEmail(userId, true),
+      ]);
     } catch (e) {
       await this.mainUserRepository.changeStatusSendEmail(userId, false);
     }

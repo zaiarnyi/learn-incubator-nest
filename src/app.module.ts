@@ -16,12 +16,17 @@ import { BloggerModule } from './infrastructure/ioc/blogger.module';
 import { CacheService } from './infrastructure/cache';
 import { SaModule } from './infrastructure/ioc/sa/sa.module';
 import { LoggerInterceptor } from './infrastructure/interseptor/logger.interseptor';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PostgresqlConfigDatabase } from './infrastructure/database/configs/databases/postgresql-config.database';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     MongooseModule.forRootAsync({
       useClass: MongoConfigDatabase,
+    }),
+    TypeOrmModule.forRootAsync({
+      useClass: PostgresqlConfigDatabase,
     }),
     CacheModule.registerAsync({
       useClass: CacheService,

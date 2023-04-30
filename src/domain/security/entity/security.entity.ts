@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { UserEntity } from '../../users/entities/user.entity';
 
 export type SecurityDocument = HydratedDocument<Security>;
 
@@ -32,3 +33,14 @@ export class Security {
 }
 
 export const SecuritySchema = SchemaFactory.createForClass(Security);
+
+export class SecurityEntity {
+  id: number;
+  ip: string;
+  title: string;
+  user: UserEntity | number;
+  userAgent: string;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date;
+}

@@ -13,19 +13,15 @@ export class RefreshTokenAction {
     @Inject(JwtService) private readonly jwtService: JwtService,
   ) {}
 
-  public async execute(refresh: string): Promise<{ accessToken: string; refreshToken: string }> {
+  public async execute(deviceId: number, userId: number): Promise<{ accessToken: string; refreshToken: string }> {
     try {
-      const userVerify = this.jwtService.verify(refresh);
-      if (typeof userVerify === 'string') {
-        throw new UnauthorizedException();
-      }
-      const user = await this.queryUserRepository.getUserById(userVerify.id);
+      const user = await this.queryUserRepository.getUserById(userId);
       if (!user) {
         throw new UnauthorizedException();
       }
 
       const expires_refresh = this.configService.get<string>('REFRESH_TOKEN_EXPIRE_TIME');
-      const payload = { id: userVerify.id, deviceId: userVerify.deviceId, role: userVerify.role };
+      const payload = { id: userId, deviceId };
       const accessToken = this.jwtService.sign(payload);
       const refreshToken = this.jwtService.sign(payload, { expiresIn: expires_refresh });
 

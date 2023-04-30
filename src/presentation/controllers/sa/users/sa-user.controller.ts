@@ -1,4 +1,17 @@
-import { Body, Controller, Delete, Get, HttpCode, Inject, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Inject,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { BasicAuthGuard } from '../../../../domain/auth/guards/basic-auth.guard';
 import { GetAllUsersAction } from '../../../../application/actions/sa/users/get-all-users.action';
 import { CreateUserAction } from '../../../../application/actions/sa/users/create-user.action';
@@ -9,6 +22,7 @@ import { GetUsersRequest } from '../../../requests/sa/users/get-users.request';
 import { UserBannedRequest } from '../../../requests/sa/users/user-banned.request';
 import { UserBannedAction } from '../../../../application/actions/sa/users/user-banned.action';
 import { GetUsersResponse } from '../../../responses/sa/users/get-users.response';
+import { CreateUserRequest } from '../../../requests/sa/users/create-user.request';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/users')
@@ -25,7 +39,7 @@ export class SaUserController {
   }
 
   @Post()
-  async createUser(@Body() body: any) {
+  async createUser(@Body() body: CreateUserRequest): Promise<CreateUserResponse> {
     const createdUser = await this.createUserService.execute(body, true);
     const payload = Object.assign(createdUser, { banInfo: { isBanned: false, banDate: null, banReason: null } });
     return plainToClass(CreateUserResponse, payload);
@@ -33,13 +47,13 @@ export class SaUserController {
 
   @Delete(':id')
   @HttpCode(204)
-  async deleteUser(@Param('id') id: string) {
+  async deleteUser(@Param('id', ParseIntPipe) id: number) {
     return this.deleteUserService.execute(id);
   }
 
   @Put(':id/ban')
   @HttpCode(204)
-  async banToUser(@Param('id') id: string, @Body() body: UserBannedRequest) {
+  async banToUser(@Param('id', ParseIntPipe) id: number, @Body() body: UserBannedRequest) {
     return this.banUserService.execute(id, body);
   }
 }

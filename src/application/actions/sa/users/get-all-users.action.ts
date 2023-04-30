@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { GetUsersDTO } from '../../../../domain/sa/users/dto/get-all-users.dto';
 import { UserQueryRepository } from '../../../../infrastructure/database/repositories/users/query.repository';
-import { GetUsersResponse } from '../../../../presentation/responses/sa/users/get-users.response';
+import { BanInfo, GetUsersResponse } from '../../../../presentation/responses/sa/users/get-users.response';
 import { plainToClass } from 'class-transformer';
 import { QueryUserBannedRepository } from '../../../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
 import { BanStatusEnum } from '../../../../domain/users/enums/banStatus.enum';
@@ -24,12 +24,16 @@ export class GetAllUsersAction {
     }
   }
 
-  private async checkUserBanStatus(userId: string) {
-    const checkUserBanned = await this.bannedRepository.checkStatus(userId);
-    if (!checkUserBanned) {
+  private async checkUserBanStatus(userId: number, isBanned: boolean): Promise<BanInfo> {
+    if (!isBanned) {
       return { isBanned: false, banDate: null, banReason: null };
     }
-    return Object.assign(checkUserBanned, { isBanned: true });
+    const checkUserBanned = await this.bannedRepository.checkStatus(userId);
+    return plainToClass(BanInfo, {
+      isBanned: true,
+      banDate: checkUserBanned.createdAt,
+      banReason: checkUserBanned.banReason,
+    });
   }
 
   async execute(dto: GetUsersDTO): Promise<GetUsersResponse> {
@@ -49,9 +53,9 @@ export class GetAllUsersAction {
     );
 
     const promises = users.map(async (item) => {
-      const banInfo = await this.checkUserBanStatus(item._id.toString());
+      const banInfo = await this.checkUserBanStatus(item.id, item.is_banned);
       return {
-        id: item._id.toString(),
+        id: item.id,
         ...item,
         banInfo,
       };

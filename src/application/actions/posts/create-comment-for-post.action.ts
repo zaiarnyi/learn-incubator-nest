@@ -64,10 +64,14 @@ export class CreateCommentForPostAction {
     return post;
   }
 
-  public async execute(postId: string, body: CreateCommentForPostDto, userId: string): Promise<PostCommentInfo | any> {
-    const post = await this.getPost(postId, body, userId);
+  public async execute(
+    postId: string,
+    body: CreateCommentForPostDto,
+    userId: string | number,
+  ): Promise<PostCommentInfo | any> {
+    const post = await this.getPost(postId, body, userId as string);
 
-    const user = await this.queryUserRepository.getUserById(userId).catch((e) => {
+    const user = await this.queryUserRepository.getUserById(userId as number).catch((e) => {
       this.logger.error(`Error when getting a user to create a comment - ${userId}. ${JSON.stringify(e)}`);
     });
     if (!user) {
@@ -76,14 +80,14 @@ export class CreateCommentForPostAction {
 
     const comment = new Comment();
     comment.postId = postId;
-    comment.userId = userId;
+    comment.userId = userId as string;
     comment.content = body.content;
     comment.userLogin = user.login;
     comment.blogId = post.blogId;
 
     const createdComment = await this.commentMainRepository.createComment(comment);
     const commentId = createdComment._id.toString();
-    await this.createLikeStatusForComment(commentId, userId).catch((e) => {
+    await this.createLikeStatusForComment(commentId, userId as string).catch((e) => {
       this.logger.error(`Error creating likes statuses for comments. ${commentId} / ${userId}. ${JSON.stringify(e)}`);
     });
     return plainToClass(PostCommentInfo, {

@@ -1,14 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { UserBanned, UserBannedDocument } from '../../../../../domain/sa/users/entities/user-bans.entity';
+import {
+  UserBanned,
+  UserBannedDocument,
+  UserBannedEntity,
+} from '../../../../../domain/sa/users/entities/user-bans.entity';
 import { Model } from 'mongoose';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class QueryUserBannedRepository {
-  constructor(@InjectModel(UserBanned.name) private readonly model: Model<UserBannedDocument>) {}
+  constructor(
+    @InjectModel(UserBanned.name) private readonly model: Model<UserBannedDocument>,
+    @InjectDataSource() private readonly dataSource: DataSource,
+  ) {}
 
-  async checkStatus(userId: string): Promise<UserBannedDocument> {
-    return this.model.findOne({ userId, blogId: null });
+  async checkStatus(userId: number): Promise<UserBannedEntity> {
+    return this.dataSource.query(`SELECT * FROM user_bans WHERE user = $1`, [userId]);
   }
 
   async checkStatusByUserBlog(userId: string, blogId: string): Promise<UserBannedDocument> {

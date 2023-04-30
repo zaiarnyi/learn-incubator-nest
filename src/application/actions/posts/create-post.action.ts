@@ -32,9 +32,9 @@ export class CreatePostAction {
     };
   }
 
-  private async createDefaultStatus(postId: string, userId: string) {
+  private async createDefaultStatus(postId: string, userId: string | number) {
     if (!userId) return null;
-    const user = await this.userQueryRepository.getUserById(userId).catch((e) => {
+    const user = await this.userQueryRepository.getUserById(userId as number).catch((e) => {
       this.logger.error(
         `Error when getting a user to create a status for a post with id ${postId}. ${JSON.stringify(e)}`,
       );
@@ -45,7 +45,7 @@ export class CreatePostAction {
     statusPost.like = false;
     statusPost.dislike = false;
     statusPost.myStatus = LikeStatusEnum.None;
-    statusPost.userId = userId;
+    statusPost.userId = userId as string;
     statusPost.login = user.login;
     return this.statusMainRepository.createDefaultStatusForPost(statusPost);
   }

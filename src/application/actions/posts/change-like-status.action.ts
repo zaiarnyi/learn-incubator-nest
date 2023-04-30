@@ -39,10 +39,10 @@ export class ChangeLikeStatusPostAction {
     }
   }
 
-  public async execute(id: string, body: ChangeLikeStatusPostDto, userId: string) {
+  public async execute(id: string, body: ChangeLikeStatusPostDto, userId: string | number) {
     await this.validate(id, body);
 
-    const user = await this.userQueryRepository.getUserById(userId).catch((e) => {
+    const user = await this.userQueryRepository.getUserById(userId as number).catch((e) => {
       this.logger.error(`Error when getting a user to create a status for a post with id ${id}. ${JSON.stringify(e)}`);
     });
 
@@ -52,13 +52,13 @@ export class ChangeLikeStatusPostAction {
 
     const status = new LikeStatusPosts();
     status.postId = id;
-    status.userId = userId;
+    status.userId = userId as string;
     status.login = user.login;
     status.myStatus = body.likeStatus;
     status.like = LikeStatusEnum.Like === body.likeStatus;
     status.dislike = LikeStatusEnum.Dislike === body.likeStatus;
 
-    const findMyStatus = await this.statusQueryRepository.checkUserStatus(id, userId);
+    const findMyStatus = await this.statusQueryRepository.checkUserStatus(id, userId as string);
     if (findMyStatus) {
       await this.statusMainRepository.changePostMyStatus(id, status).catch((e) => {
         this.logger.error(`Error when updating post status - ${id}. ${JSON.stringify(e)}`);

@@ -66,12 +66,12 @@ export class AuthController {
     this.secure = this.configService.get<string>('SECURITY_COOKIE') === 'true';
     this.isDev = this.configService.get<string>('NODE_ENV') === 'development';
   }
-  @Post('password-recovery')
+  @Post('password-recovery') // TODO Done
   @HttpCode(204)
-  async passwordRecovery(@Body() body: CheckEmail): Promise<void> {
+  async passwordRecovery(@Body() body: CheckEmail): Promise<any> {
     return this.recoveryService.execute(body.email);
   }
-  @Post('new-password')
+  @Post('new-password') // TODO Done
   @HttpCode(204)
   async createNewPassword(@Body() body: NewPasswordRequest): Promise<void> {
     return this.newPasswordService.execute(body);
@@ -80,22 +80,14 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() req: any, @Res({ passthrough: true }) response: Response, @Body() body: LoginRequest) {
-    const { userId } = req.user;
-    const isBanned = await this.userBannedRepository.checkStatus(userId);
-    if (isBanned) {
-      throw new UnauthorizedException();
-    }
     const devicePrepare = new DeviceDto();
     devicePrepare.ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.socket.remoteAddress || null;
-    devicePrepare.userId = userId;
+    devicePrepare.user = req.user.id;
     devicePrepare.title = 'security Name';
     devicePrepare.userAgent = req.headers['user-agent'];
-    devicePrepare.deviceId = uuidv4();
 
-    await this.securityRepository.insertDevice(devicePrepare).catch((e) => {
-      this.logger.error(`Error when saving device information. Error: ${JSON.stringify(e)}`);
-    });
-    const { accessToken, refreshToken } = await this.loginService.execute(body, devicePrepare.deviceId, userId);
+    const device = await this.securityRepository.insertDevice(devicePrepare);
+    const { accessToken, refreshToken } = await this.loginService.execute(body, device.id, req.user);
 
     response.cookie('refreshToken', refreshToken, { httpOnly: this.httpOnly, secure: this.secure });
     response.status(200).json({ accessToken });
@@ -108,37 +100,40 @@ export class AuthController {
     }
 
     let deviceId;
+    let userId;
     try {
       const jwt = await this.jwtService.verify(token);
 
       deviceId = jwt.deviceId;
+      userId = jwt.id;
     } catch (e) {
       throw new UnauthorizedException();
     }
+
     const checkToken = await this.tokensRepository.checkTokenFromUsers(token);
     if (checkToken) {
       throw new UnauthorizedException();
     }
 
-    const { accessToken, refreshToken } = await this.refreshTokenService.execute(token);
+    const { accessToken, refreshToken } = await this.refreshTokenService.execute(deviceId, userId);
 
     const findDevice = await this.securityRepository.getDevice(deviceId);
     await Promise.all([
-      this.tokensRepository.saveToken(token),
+      this.tokensRepository.saveToken(token, userId),
       findDevice && this.securityRepository.updateDevice(findDevice),
     ]);
     response.cookie('refreshToken', refreshToken, { httpOnly: this.httpOnly, secure: this.secure });
     response.status(200).json({ accessToken });
   }
 
-  @Throttle(5, 10)
+  @Throttle(5, 10) //TODO Done
   @Post('registration-confirmation')
   @HttpCode(204)
   async registrationConfirmation(@Body() body: RegistrationConfirmationRequest) {
     await this.confirmationService.execute(body.code);
   }
 
-  @Throttle(5, 10)
+  @Throttle(5, 10) //TODO Done
   @Post('registration')
   async registration(@Body() body: RegistrationRequest, @Res() res: Response) {
     const detectUser = await this.queryUserRepository.getUserByEmailOrLogin(body.login, body.email);
@@ -152,15 +147,16 @@ export class AuthController {
     }
     res.status(200).json(registration);
   }
-  @Throttle(5, 10)
+  @Throttle(5, 10) //TODO Done
   @Post('registration-email-resending')
   @HttpCode(204)
   async registrationEmailResending(@Body() body: CheckEmail): Promise<void> {
     const detectUser = await this.queryUserRepository.getUserByEmail(body.email);
-    if (!detectUser || detectUser.isConfirm) {
+
+    if (!detectUser || detectUser.is_confirm) {
       throw new BadRequestException([{ message: 'User not found', field: 'email' }]);
     }
-    await this.resendingService.execute(body.email, detectUser._id.toString());
+    await this.resendingService.execute(body.email, detectUser.id);
   }
 
   @Post('logout')
@@ -182,7 +178,7 @@ export class AuthController {
       throw new UnauthorizedException();
     }
     await Promise.all([
-      this.tokensRepository.saveToken(token),
+      this.tokensRepository.saveToken(token, userId),
       this.securityRepository.deleteDeviceForUser(deviceId, userId),
     ]);
     response.clearCookie('refreshToken').sendStatus(204);
@@ -191,13 +187,9 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   async me(@Req() req): Promise<MeResponse> {
-    const user = await this.queryUserRepository.getUserById(req.user.userId);
-    if (!user) {
-      throw new UnauthorizedException();
-    }
     return plainToClass(MeResponse, {
-      ...user.toJSON(),
-      userId: user._id.toString(),
+      ...req.user,
+      userId: req.user.id,
     });
   }
 }

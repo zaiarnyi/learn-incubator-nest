@@ -1,11 +1,15 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { UserRoles } from '../enums/roles.enum';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { QueryUserBannedRepository } from '../../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
+import { UserQueryRepository } from '../../../infrastructure/database/repositories/users/query.repository';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(
+    @Inject(QueryUserBannedRepository) private readonly userBannedRepository: QueryUserBannedRepository,
+    @Inject(UserQueryRepository) private readonly userQueryRepository: UserQueryRepository,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -17,6 +21,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!payload.id) {
       throw new UnauthorizedException();
     }
-    return { userId: payload.id, deviceId: payload.deviceId || null, role: payload.role ?? UserRoles.USER };
+    const user = await this.userQueryRepository.getUserById(payload.id);
+    if (!user || user.is_banned) {
+      throw new UnauthorizedException();
+    }
+    return user;
   }
 }

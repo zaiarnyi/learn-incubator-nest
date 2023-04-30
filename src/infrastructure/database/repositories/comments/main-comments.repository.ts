@@ -8,7 +8,7 @@ import { DeleteResult } from 'mongodb';
 export class MainCommentsRepository {
   constructor(@InjectModel(Comment.name) private commentModel: Model<CommentDocument>) {}
 
-  async deleteAllComments() {
+  async deleteAllComments(): Promise<DeleteResult> {
     return this.commentModel.deleteMany();
   }
 
@@ -28,11 +28,11 @@ export class MainCommentsRepository {
     return this.commentModel.create(body);
   }
 
-  async changeBannedStatus(userId: string, isBanned: boolean) {
+  async changeBannedStatus(userId: string, isBanned: boolean): Promise<any> {
     return this.commentModel.updateMany({ userId }, { isBanned });
   }
 
-  async changeBannedStatusByBlogger(userId: string, blogId: string, isBanned: boolean) {
+  async changeBannedStatusByBlogger(userId: string, blogId: string, isBanned: boolean): Promise<any> {
     return this.commentModel.updateMany({ userId, blogId }, { isBanned });
   }
 }

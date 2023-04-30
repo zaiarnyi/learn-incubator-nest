@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { MainActivateCodeRepository } from '../database/repositories/activate-code/main-activate-code.repository';
 import { MongooseModule } from '@nestjs/mongoose';
 import { MongoCollections } from '../database/mongo.collections';
-import { ActivateCode, ActivateCodeSchema } from '../database/entity/activate-code.entity';
+import { ActivateCode, ActivateCodeSchema } from '../../domain/auth/entity/activate-code.entity';
 
 @Module({
   imports: [

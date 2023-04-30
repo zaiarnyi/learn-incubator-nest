@@ -2,11 +2,12 @@ import { BadRequestException, Inject, Injectable, Logger, UnauthorizedException 
 import { LoginDto } from '../../../domain/auth/dto/login.dto';
 import { validateOrReject } from 'class-validator';
 import { UserQueryRepository } from '../../../infrastructure/database/repositories/users/query.repository';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { MainSecurityRepository } from '../../../infrastructure/database/repositories/security/main-security.repository';
 import { UserRoles } from '../../../domain/auth/enums/roles.enum';
+import { UserEntity } from '../../../domain/users/entities/user.entity';
 
 @Injectable()
 export class LoginAction {
@@ -25,37 +26,25 @@ export class LoginAction {
     }
   }
 
-  private generateTokens(id: string, deviceId = '', role: number) {
+  private generateTokens(id: number, deviceId: number) {
     const expires_refresh = this.configService.get<string>('REFRESH_TOKEN_EXPIRE_TIME');
-    const payload = { id, deviceId, role: role ?? UserRoles.USER };
+    const payload = { id, deviceId };
     const accessToken = this.jwtService.sign(payload);
     const refreshToken = this.jwtService.sign(payload, { expiresIn: expires_refresh });
-    return { accessToken, refreshToken, id };
+    return { accessToken, refreshToken };
   }
 
   public async execute(
     payload: LoginDto,
-    deviceId: string,
-    userId: string,
+    deviceId: number,
+    user: UserEntity,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     await this.validate(payload);
-    const user = await this.queryUserRepository
-      .getUserByEmailOrLogin(payload.loginOrEmail, payload.loginOrEmail)
-      .catch(() => {
-        this.logger.error(`Error when getting a user - ${payload.loginOrEmail}`);
-      });
-    if (!user) {
-      await this.securityRepository.deleteDeviceForUser(deviceId, userId);
-      throw new UnauthorizedException();
-    }
-
-    const checkHashPassword = await bcrypt.compare(payload.password, user.passwordHash);
-
+    const checkHashPassword = await bcrypt.compare(payload.password, user.password_hash);
     if (!checkHashPassword) {
-      await this.securityRepository.deleteDeviceForUser(deviceId, userId);
+      await this.securityRepository.deleteDeviceForUser(deviceId, user.id);
       throw new UnauthorizedException();
     }
-
-    return this.generateTokens(user._id.toString(), deviceId, user.role);
+    return this.generateTokens(user.id, deviceId);
   }
 }

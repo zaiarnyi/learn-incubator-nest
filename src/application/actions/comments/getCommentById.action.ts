@@ -19,10 +19,10 @@ export class GetCommentByIdAction {
 
   private async validateIsUserBanned(userId: string) {
     if (!userId) return;
-    const hasBanned = await this.queryUserBannedRepository.checkStatus(userId);
-    if (hasBanned) {
-      throw new NotFoundException();
-    }
+    // const hasBanned = await this.queryUserBannedRepository.checkStatus(userId);
+    // if (hasBanned) {
+    //   throw new NotFoundException();
+    // }
   }
 
   private async getLikesInfo(commentId: string, userId?: string): Promise<ExtendedLikesInfo> {

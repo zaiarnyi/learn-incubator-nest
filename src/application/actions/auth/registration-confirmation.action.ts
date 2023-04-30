@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
 import { UserMainRepository } from '../../../infrastructure/database/repositories/users/main.repository';
 import { MainActivateCodeRepository } from '../../../infrastructure/database/repositories/activate-code/main-activate-code.repository';
-import { ActivateCodeEnum } from '../../../infrastructure/database/entity/activate-code.entity';
+import { ActivateCodeEnum } from '../../../domain/auth/entity/activate-code.entity';
 
 @Injectable()
 export class RegistrationConfirmationAction {
@@ -23,6 +23,7 @@ export class RegistrationConfirmationAction {
         },
       ]);
     });
+    console.log(userId, 'userId');
     if (!userId) {
       throw new BadRequestException([
         {

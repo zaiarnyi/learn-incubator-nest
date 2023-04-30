@@ -1,0 +1,120 @@
+version: "3.9"
+services:
+  postgres-learning:
+    container_name: postgres-learning
+    image: postgres:15.0-alpine
+#    command:
+#      - "postgres"
+#      - "-c"
+#      - "max_connections=50"
+#      - "-c"
+#      - "shared_buffers=1GB"
+#      - "-c"
+#      - "effective_cache_size=4GB"
+#      - "-c"
+#      - "work_mem=16MB"
+#      - "-c"
+#      - "maintenance_work_mem=512MB"
+#      - "-c"
+#      - "random_page_cost=1.1"
+#      - "-c"
+#      - "temp_file_limit=10GB"
+#      - "-c"
+#      - "log_min_duration_statement=200ms"
+#      - "-c"
+#      - "idle_in_transaction_session_timeout=10s"
+#      - "-c"
+#      - "lock_timeout=1s"
+#      - "-c"
+#      - "statement_timeout=60s"
+#      - "-c"
+#      - "shared_preload_libraries=pg_stat_statements"
+#      - "-c"
+#      - "pg_stat_statements.max=10000"
+#      - "-c"
+#      - "pg_stat_statements.track=all"
+    environment:
+      POSTGRES_DB: incubator-learn-db
+      POSTGRES_USER: testUser
+      POSTGRES_PASSWORD: testPassword
+      PGDATA: "/var/lib/postgresql/data/.docker/pgdata"
+#      POSTGRES_MULTIPLE_DATABASES: "incubator-learn-db"
+    volumes:
+      - ./.docker/postgres:/docker-entrypoint-initdb.d
+      - .:/var/lib/postgresql/data
+    build:
+      context: "./.docker/postgres"
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U testUser -d incubator-learn-db" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
+    networks:
+      - incubator-postgresql
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:7.0
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "testUser@test.com"
+      PGADMIN_DEFAULT_PASSWORD: "testPassword"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - ./.docker/pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+    networks:
+      - incubator-postgresql
+
+  mongo:
+    container_name: mongo
+    image: mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: testUser
+      MONGO_INITDB_ROOT_PASSWORD: testPassword
+      MONGO_INITDB_DATABASE: incubator-nest
+    volumes:
+      - ./.docker/mongo_data:/data/db
+    ports:
+      - "27018:27017"
+    networks:
+      - incubator-mongo
+
+  mongo-express:
+    container_name: mongo-express
+    image: mongo-express
+    depends_on:
+      - mongo
+    ports:
+      - '8081:8081'
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: testUser
+      ME_CONFIG_MONGODB_ADMINPASSWORD: testPassword
+      ME_CONFIG_MONGODB_URL: mongodb://testUser:testPassword@mongo:27017/
+      ME_CONFIG_MONGODB_SERVER: mongo
+    networks:
+      - incubator-mongo
+    restart: unless-stopped
+
+networks:
+  incubator-postgresql:
+    driver: bridge
+
+  incubator-mongo:
+    driver: bridge

@@ -1,4 +1,4 @@
-import { IsIP, IsString, IsUUID } from 'class-validator';
+import { IsIP, IsNumber, IsString } from 'class-validator';
 
 export class DeviceDto {
   @IsIP()
@@ -7,12 +7,9 @@ export class DeviceDto {
   @IsString()
   title: string;
 
-  @IsString()
-  userId: string;
+  @IsNumber()
+  user: number;
 
   @IsString()
   userAgent: string;
-
-  @IsUUID()
-  deviceId: string;
 }
