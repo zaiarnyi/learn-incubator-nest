@@ -141,9 +141,12 @@ export class AuthController {
       const filed = body.login === detectUser.login ? 'login' : 'email';
       throw new BadRequestException([{ message: 'A user already exists', field: filed }]);
     }
-    await this.registrationService.execute(body);
-    res.sendStatus(204);
-    // res.status(200).json(registration);
+    const registration = await this.registrationService.execute(body);
+
+    if (!this.isDev) {
+      return res.sendStatus(204);
+    }
+    res.status(200).json(registration);
   }
   @Throttle(5, 10) //TODO Done
   @Post('registration-email-resending')

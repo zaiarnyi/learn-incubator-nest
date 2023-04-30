@@ -24,15 +24,15 @@ export class RegistrationActions {
     const code = generateCode(6);
 
     try {
-      // const isDev = this.configService.get<string>('NODE_ENV') === 'development';
+      const isDev = this.configService.get<string>('NODE_ENV') === 'development';
       await Promise.all([
         this.activateRepository.saveRegActivation(code, user.id, ActivateCodeEnum.REGISTRATION),
-        this.emailService.registration(payload.email, code),
+        !isDev && this.emailService.registration(payload.email, code),
       ]);
 
-      // if (isDev) {
-      //   return { code };
-      // }
+      if (isDev) {
+        return { code };
+      }
     } catch (e) {
       console.log(e, ' === error');
       await this.mainUserRepository.changeStatusSendEmail(user.id, false);
