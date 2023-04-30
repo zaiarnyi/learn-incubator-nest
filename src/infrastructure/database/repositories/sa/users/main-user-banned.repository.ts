@@ -35,7 +35,7 @@ export class MainUserBannedRepository {
   }
 
   async deleteBan(userId: number) {
-    return this.dataSource.query(`DELETE FROM user_bans WHERE user_id = $1`, [userId]);
+    return this.dataSource.query(`DELETE FROM user_bans WHERE "user" = $1`, [userId]);
   }
 
   async save(body: UserBanned): Promise<UserBannedEntity | any> {
