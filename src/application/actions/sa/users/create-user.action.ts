@@ -28,15 +28,19 @@ export class CreateUserAction {
     }
   }
   async execute(dto: CreateUserDto, isConfirm = false): Promise<UserEntity> {
-    await this.validate(dto);
+    try {
+      await this.validate(dto);
 
-    const user = new CreateUserVo(dto.login, dto.password, dto.email, isConfirm);
-    await user.generateHash();
-    await user.validate();
+      const user = new CreateUserVo(dto.login, dto.password, dto.email, isConfirm);
+      await user.generateHash();
+      await user.validate();
 
-    return this.mainRepository.createUser(user).catch((e) => {
-      this.logger.error(`Login: ${user.login}, Email: ${user.email}. Error create user: ${JSON.stringify(e)}`);
-      throw new BadRequestException();
-    });
+      return this.mainRepository.createUser(user).catch((e) => {
+        this.logger.error(`Login: ${user.login}, Email: ${user.email}. Error create user: ${JSON.stringify(e)}`);
+        throw new BadRequestException();
+      });
+    } catch (e) {
+      this.logger.error(`Error create user: ${JSON.stringify(e)}`);
+    }
   }
 }

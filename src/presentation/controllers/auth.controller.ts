@@ -142,6 +142,7 @@ export class AuthController {
       throw new BadRequestException([{ message: 'A user already exists', field: filed }]);
     }
     const registration = await this.registrationService.execute(body);
+    console.log(this.isDev, 'this.isDev');
     if (!this.isDev) {
       return res.sendStatus(204);
     }
