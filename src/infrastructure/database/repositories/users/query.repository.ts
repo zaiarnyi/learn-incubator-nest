@@ -21,31 +21,22 @@ export class UserQueryRepository {
     direction: string,
     filter: Record<any, any> = {},
   ): Promise<UserEntity[]> {
+    console.log(sortBy);
     if ('isBanned' in filter) {
       return this.dataSource.query(
         `SELECT * FROM users WHERE is_banned = $3 AND "login" LIKE $1 OR "email" LIKE $2
-               ORDER BY (case when $5 = 'ASC' then $4 end) ASC,
-                        (case when $5 = 'DESC' then $4 end) DESC
-               LIMIT $6
-               OFFSET $7`,
-        [
-          `%${searchLogin}%`,
-          `%${searchEmail}%`,
-          filter.isBanned,
-          sortBy.toString(),
-          direction.toUpperCase(),
-          limit,
-          skip,
-        ],
+               ORDER BY "${sortBy}" ${direction.toUpperCase()}
+               LIMIT $4
+               OFFSET $5`,
+        [`%${searchLogin}%`, `%${searchEmail}%`, filter.isBanned, limit, skip],
       );
     }
     return this.dataSource.query(
       `SELECT * FROM users WHERE "login" LIKE $1 OR "email" LIKE $2
-             ORDER BY (case when $3 = 'ASC' then $4 end) ASC,
-                      (case when $3 = 'DESC' then $4 end) DESC
-             LIMIT $5
-             OFFSET $6`,
-      [`%${searchLogin}%`, `%${searchEmail}%`, sortBy, direction, limit, skip],
+             ORDER BY "${sortBy}" ${direction.toUpperCase()}
+             LIMIT $3
+             OFFSET $4`,
+      [`%${searchLogin}%`, `%${searchEmail}%`, limit, skip],
     );
   }
 
