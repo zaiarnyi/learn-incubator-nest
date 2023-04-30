@@ -5,14 +5,6 @@ import { ConfigService } from '@nestjs/config';
 export class PostgresqlConfigDatabase implements TypeOrmOptionsFactory {
   constructor(@Inject(ConfigService) private readonly configService: ConfigService) {}
   createTypeOrmOptions(): TypeOrmModuleOptions {
-    const isDev = this.configService.get<string>('NODE_ENV') === 'development';
-    if (!isDev) {
-      return {
-        type: 'postgres',
-        url: this.configService.get<string>('POSTGRES_CLOUD_URL'),
-        retryAttempts: 3,
-      };
-    }
     return {
       type: 'postgres',
       host: this.configService.get<string>('POSTGRES_HOST'),
