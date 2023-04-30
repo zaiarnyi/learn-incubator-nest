@@ -55,8 +55,8 @@ export class GetAllUsersAction {
     const promises = users.map(async (item) => {
       const banInfo = await this.checkUserBanStatus(item.id, item.is_banned);
       return {
-        id: item.id.toString(),
         ...item,
+        id: item.id.toString(),
         banInfo,
       };
     });

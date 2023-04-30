@@ -21,7 +21,6 @@ export class UserQueryRepository {
     direction: string,
     filter: Record<any, any> = {},
   ): Promise<UserEntity[]> {
-    console.log(sortBy);
     if ('isBanned' in filter) {
       return this.dataSource.query(
         `SELECT * FROM users WHERE is_banned = $3 AND "login" LIKE $1 OR "email" LIKE $2
