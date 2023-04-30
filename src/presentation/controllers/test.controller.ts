@@ -8,7 +8,7 @@ import { MainLikeStatusPostRepository } from '../../infrastructure/database/repo
 import { MainSecurityRepository } from '../../infrastructure/database/repositories/security/main-security.repository';
 import { MainUserBannedRepository } from '../../infrastructure/database/repositories/sa/users/main-user-banned.repository';
 
-@Controller('/testing')
+@Controller('testing')
 export class TestController {
   logger = new Logger(TestController.name);
   constructor(
@@ -21,7 +21,7 @@ export class TestController {
     @Inject(MainSecurityRepository) private readonly securityRepository: MainSecurityRepository,
     @Inject(MainUserBannedRepository) private readonly bannedRepository: MainUserBannedRepository,
   ) {}
-  @Delete('/all-data')
+  @Delete('all-data')
   @HttpCode(204)
   async deleteAllData() {
     await Promise.all([
