@@ -41,7 +41,10 @@ export class SaUserController {
   @Post()
   async createUser(@Body() body: CreateUserRequest): Promise<CreateUserResponse> {
     const createdUser = await this.createUserService.execute(body, true);
-    const payload = Object.assign(createdUser, { banInfo: { isBanned: false, banDate: null, banReason: null } });
+    const payload = Object.assign(createdUser, {
+      id: createdUser.id.toString(),
+      banInfo: { isBanned: false, banDate: null, banReason: null },
+    });
     return plainToClass(CreateUserResponse, payload);
   }
 
