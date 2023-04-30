@@ -48,7 +48,7 @@ export class UserBannedAction {
     if (body.isBanned) {
       const userBanned = new UserBannedEntity();
       userBanned.user = user.id;
-      userBanned.banReason = body.banReason;
+      userBanned.ban_reason = body.banReason;
       await this.repository.setUserBan(userBanned);
     } else {
       await this.repository.deleteBan(user.id);

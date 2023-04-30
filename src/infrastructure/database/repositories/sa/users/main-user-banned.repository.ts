@@ -22,14 +22,14 @@ export class MainUserBannedRepository {
 
     if (hasUserBan && hasUserBan.length) {
       await this.dataSource.query(`UPDATE user_bans SET "ban_reason" = $1 WHERE "user" = $2`, [
-        userBanned.banReason,
+        userBanned.ban_reason,
         userBanned.user,
       ]);
       return;
     }
 
     await this.dataSource.query(`INSERT INTO user_bans ("ban_reason", "user") VALUES ($1, $2)`, [
-      userBanned.banReason,
+      userBanned.ban_reason,
       userBanned.user,
     ]);
   }
