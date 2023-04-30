@@ -1,0 +1,94 @@
+import { Injectable, Post } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Blog, BlogDocument } from '../../../../../domain/blogs/entities/blog.entity';
+import { PostDocument } from '../../../../../domain/posts/entities/post.entity';
+import { BlogSortDirection } from '../../../../../domain/blogs/enums/blog-sort.enum';
+
+@Injectable()
+export class QueryBlogsRepository {
+  constructor(
+    @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
+    @InjectModel(Post.name) private postModel: Model<PostDocument>,
+  ) {}
+
+  async getBlogs(
+    filter: string,
+    skip: number,
+    limit: number,
+    sortBy: string,
+    direction: string,
+    userId?: string,
+    anyFilter?: any,
+    isBanned?: boolean,
+  ): Promise<BlogDocument[]> {
+    let findFilter: Record<string, any> = { name: { $regex: new RegExp(filter, 'gi') } };
+    if (userId) {
+      findFilter.userId = userId;
+    }
+    if (anyFilter) {
+      findFilter = {
+        ...findFilter,
+        ...anyFilter,
+      };
+    }
+    if (typeof isBanned === 'boolean') {
+      findFilter.isBanned = isBanned;
+    }
+    return this.blogModel
+      .find(findFilter)
+      .sort({ [sortBy]: direction as BlogSortDirection })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+  }
+  async getBlogById(id: string): Promise<BlogDocument> {
+    return this.blogModel.findOne({ _id: id, isBanned: false });
+  }
+
+  async getPostsCount(blogId: string): Promise<number> {
+    return this.postModel.count({ blogId, isBanned: false });
+  }
+
+  async getCountBlogs(filter?: string, userId?: string, anyFilter?: any, isBanned?: boolean) {
+    let filterParam: Record<string, any> = {};
+    if (filter) {
+      filterParam.name = { $regex: new RegExp(filter, 'gi') };
+    }
+    if (userId) {
+      filterParam.userId = userId;
+    }
+
+    if (typeof isBanned === 'boolean') {
+      filterParam.isBanned = isBanned;
+    }
+
+    if (anyFilter) {
+      filterParam = {
+        ...filterParam,
+        ...anyFilter,
+      };
+    }
+    return this.blogModel.countDocuments(filterParam);
+  }
+
+  async getPostByBlogId(
+    id: string,
+    skip: number,
+    limit: number,
+    sortBy: string,
+    direction: string,
+  ): Promise<PostDocument[]> {
+    return this.postModel
+      .find({ blogId: id, isBanned: false })
+      .sort({ [sortBy]: direction as BlogSortDirection })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+  }
+
+  async getBlogsByBlogger(userId: string): Promise<string[]> {
+    const blogs = await this.blogModel.find({ userId });
+    return blogs.map((item) => item._id.toString());
+  }
+}
