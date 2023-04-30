@@ -38,7 +38,11 @@ export class GetAllUsersAction {
 
   async execute(dto: GetUsersDTO): Promise<GetUsersResponse> {
     const statusFilter = this.checkStatus(dto.banStatus);
-    const totalCount = await this.queryRepository.getCountUsers(dto.searchLoginTerm, dto.searchEmailTerm, statusFilter);
+    const totalCount = +(await this.queryRepository.getCountUsers(
+      dto.searchLoginTerm,
+      dto.searchEmailTerm,
+      statusFilter,
+    ));
     const skip = (dto.pageNumber - 1) * dto.pageSize;
     const pagesCount = Math.ceil(totalCount / dto.pageSize);
 
