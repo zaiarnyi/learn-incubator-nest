@@ -33,7 +33,7 @@ export const UserBannedSchema = SchemaFactory.createForClass(UserBanned);
 
 export class UserBannedEntity {
   id: number;
-  banReason: string;
+  ban_reason: string;
   user: UserEntity | number;
   blogId: string;
   createdAt: Date;
