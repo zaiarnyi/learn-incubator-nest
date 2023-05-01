@@ -15,7 +15,6 @@ export class DeleteUserAction {
       throw new NotFoundException();
     }
     const user = await this.queryRepository.getUserById(parseInt(id));
-    console.log(user, Number(id));
     if (!user) {
       throw new NotFoundException();
     }
