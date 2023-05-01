@@ -144,9 +144,10 @@ export class AuthController {
     const registration = await this.registrationService.execute(body);
 
     if (!this.isDev) {
-      return res.sendStatus(204);
+      res.sendStatus(204);
+    } else {
+      res.status(200).json(registration);
     }
-    res.status(200).json(registration);
   }
   @Throttle(5, 10) //TODO Done
   @Post('registration-email-resending')

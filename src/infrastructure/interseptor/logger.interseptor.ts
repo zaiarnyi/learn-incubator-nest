@@ -28,16 +28,16 @@ export class LoggerInterceptor implements NestInterceptor {
     return next.handle().pipe(
       tap((data) => {
         console.log(data);
-        // this.logger.log(
-        //   'RESPONSE: ' +
-        //     JSON.stringify({
-        //       userId,
-        //       statusCode,
-        //       data,
-        //       time: Date.now() - now,
-        //       isAuth: /^Bearer/.test(headers?.authorization),
-        //     }),
-        // );
+        this.logger.log(
+          'RESPONSE: ' +
+            JSON.stringify({
+              userId,
+              statusCode,
+              data,
+              time: Date.now() - now,
+              isAuth: /^Bearer/.test(headers?.authorization),
+            }),
+        );
       }),
     );
   }
