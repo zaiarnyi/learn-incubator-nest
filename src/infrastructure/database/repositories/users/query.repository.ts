@@ -52,10 +52,10 @@ export class UserQueryRepository {
       );
       usersCount = count[0].count;
     } else {
-      const count = await this.dataSource.query(`SELECT COUNT(*) FROM users WHERE "login" LIKE $1 OR "email" LIKE $2`, [
-        `%${searchLoginTerm}%`,
-        `%${searchEmailTerm}%`,
-      ]);
+      const count = await this.dataSource.query(
+        `SELECT COUNT(*) FROM users WHERE "login" ILIKE $1 OR "email" ILIKE $2`,
+        [`%${searchLoginTerm}%`, `%${searchEmailTerm}%`],
+      );
       usersCount = count[0].count;
     }
 
