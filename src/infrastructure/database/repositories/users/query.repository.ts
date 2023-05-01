@@ -23,7 +23,7 @@ export class UserQueryRepository {
     if ('isBanned' in filter) {
       return this.dataSource.query(
         `SELECT * FROM users WHERE is_banned = $3 AND "login" ILIKE $1 OR "email" ILIKE $2
-               ORDER BY "${sortBy}" COLLATE "C" ${direction.toUpperCase()}
+               ORDER BY "${sortBy}" ${sortBy === 'createdAt' ? direction : 'COLLATE "C"' + direction.toUpperCase()}
                LIMIT $4
                OFFSET $5`,
         [`%${searchLogin}%`, `%${searchEmail}%`, filter.isBanned, limit, skip],
@@ -31,7 +31,7 @@ export class UserQueryRepository {
     }
     return this.dataSource.query(
       `SELECT * FROM users WHERE "login" ILIKE $1 OR "email" ILIKE $2
-             ORDER BY "${sortBy}" COLLATE "C" ${direction.toUpperCase()}
+             ORDER BY "${sortBy}" ${sortBy === 'createdAt' ? direction : 'COLLATE "C"' + direction.toUpperCase()}
              LIMIT $3
              OFFSET $4`,
       [`%${searchLogin}%`, `%${searchEmail}%`, limit, skip],
