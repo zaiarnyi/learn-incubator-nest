@@ -54,10 +54,10 @@ import { PostgresqlConfigDatabase } from './infrastructure/database/configs/data
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
     },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: LoggerInterceptor,
-    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: LoggerInterceptor,
+    // },
   ],
 })
 export class AppModule {}
