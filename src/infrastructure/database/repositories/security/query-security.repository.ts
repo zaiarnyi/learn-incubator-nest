@@ -10,12 +10,12 @@ export class QuerySecurityRepository {
     @InjectDataSource() private readonly dataSource: DataSource,
   ) {}
 
-  public async getDevicesByUserId(userId: number): Promise<SecurityDocument[]> {
+  public async getDevicesByUserId(userId: number): Promise<SecurityEntity[]> {
     const d = await this.dataSource.query(`SELECT * FROM user_security WHERE "user" = $1 LIMIT 1`, [userId]);
     return d;
   }
 
-  public async getDevicesByUserIdAndDevice(userId: number, deviceId: number): Promise<SecurityDocument> {
+  public async getDevicesByUserIdAndDevice(userId: number, deviceId: number): Promise<SecurityEntity> {
     const d = await this.dataSource.query(`SELECT * FROM user_security WHERE "user" = $1 AND id = $2 LIMIT 1`, [
       userId,
       deviceId,
