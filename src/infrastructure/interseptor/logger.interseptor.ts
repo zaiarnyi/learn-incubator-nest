@@ -27,7 +27,6 @@ export class LoggerInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       tap((data) => {
-        console.log(data);
         this.logger.log(
           'RESPONSE: ' +
             JSON.stringify({

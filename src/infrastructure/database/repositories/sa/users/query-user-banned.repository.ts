@@ -17,7 +17,8 @@ export class QueryUserBannedRepository {
   ) {}
 
   async checkStatus(userId: number): Promise<UserBannedEntity> {
-    return this.dataSource.query(`SELECT * FROM user_bans WHERE user = $1`, [userId]);
+    const d = await this.dataSource.query(`SELECT * FROM user_bans WHERE "user" = $1`, [userId]);
+    return d.length ? d[0] : null;
   }
 
   async checkStatusByUserBlog(userId: string, blogId: string): Promise<UserBannedDocument> {

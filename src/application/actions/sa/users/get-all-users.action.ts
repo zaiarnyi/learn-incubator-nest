@@ -29,10 +29,11 @@ export class GetAllUsersAction {
       return { isBanned: false, banDate: null, banReason: null };
     }
     const checkUserBanned = await this.bannedRepository.checkStatus(userId);
+
     return plainToClass(BanInfo, {
       isBanned: true,
-      banDate: checkUserBanned.createdAt,
-      banReason: checkUserBanned.ban_reason,
+      banDate: checkUserBanned?.createdAt,
+      banReason: checkUserBanned?.ban_reason,
     });
   }
 
