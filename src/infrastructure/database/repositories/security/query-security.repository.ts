@@ -12,7 +12,7 @@ export class QuerySecurityRepository {
 
   public async getDevicesByUserId(userId: number): Promise<SecurityDocument[]> {
     const d = await this.dataSource.query(`SELECT * FROM user_security WHERE "user" = $1 LIMIT 1`, [userId]);
-    return d.length > 0 ? d[0] : null;
+    return d;
   }
 
   public async getDevicesByUserIdAndDevice(userId: number, deviceId: number): Promise<SecurityDocument> {
