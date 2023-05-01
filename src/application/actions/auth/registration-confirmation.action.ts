@@ -23,7 +23,7 @@ export class RegistrationConfirmationAction {
         },
       ]);
     });
-    console.log(userId, 'userId');
+
     if (!userId) {
       throw new BadRequestException([
         {
