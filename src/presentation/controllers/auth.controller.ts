@@ -191,7 +191,7 @@ export class AuthController {
   async me(@Req() req): Promise<MeResponse> {
     return plainToClass(MeResponse, {
       ...req.user,
-      userId: req.user.id,
+      userId: req.user.id.toString(),
     });
   }
 }

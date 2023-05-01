@@ -19,8 +19,6 @@ export class GetDevicesAction {
       throw new UnauthorizedException();
     }
     const devices = await this.queryRepository.getDevicesByUserId(userId);
-    return devices.map((item) =>
-      plainToClass(GetDevicesResponse, { ...item, deviceId: item.id.toString(), userId: item.user.toString() }),
-    );
+    return devices.map((item) => plainToClass(GetDevicesResponse, { ...item, deviceId: item.id.toString() }));
   }
 }
