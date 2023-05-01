@@ -27,16 +27,17 @@ export class LoggerInterceptor implements NestInterceptor {
 
     return next.handle().pipe(
       tap((data) => {
-        this.logger.log(
-          'RESPONSE: ' +
-            JSON.stringify({
-              userId,
-              statusCode,
-              data,
-              time: Date.now() - now,
-              isAuth: /^Bearer/.test(headers?.authorization),
-            }),
-        );
+        console.log(data);
+        // this.logger.log(
+        //   'RESPONSE: ' +
+        //     JSON.stringify({
+        //       userId,
+        //       statusCode,
+        //       data,
+        //       time: Date.now() - now,
+        //       isAuth: /^Bearer/.test(headers?.authorization),
+        //     }),
+        // );
       }),
     );
   }
