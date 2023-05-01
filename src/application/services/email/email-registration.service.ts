@@ -6,7 +6,7 @@ export class EmailRegistrationService {
   constructor(private readonly mailerService: MailerService) {}
 
   public async registration(to: string, code: string) {
-    await this.mailerService.sendMail({
+    return this.mailerService.sendMail({
       from: `Incubator courses`,
       subject: 'Registration User',
       to,
