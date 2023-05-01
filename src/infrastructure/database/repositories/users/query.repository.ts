@@ -22,7 +22,7 @@ export class UserQueryRepository {
   ): Promise<UserEntity[]> {
     if ('isBanned' in filter) {
       return this.dataSource.query(
-        `SELECT * FROM users WHERE "is_banned" = $3 AND "login" ILIKE $1 OR "email" ILIKE $2
+        `SELECT * FROM users WHERE ("login" ILIKE $1 OR "email" ILIKE $2) AND "is_banned" = $3
                ORDER BY "${sortBy}" ${sortBy === 'createdAt' ? direction : 'COLLATE "C"' + direction.toUpperCase()}
                LIMIT $4
                OFFSET $5`,
@@ -46,7 +46,7 @@ export class UserQueryRepository {
     let usersCount = 0;
     if ('isBanned' in filter) {
       const count = await this.dataSource.query(
-        `SELECT COUNT(*) FROM users WHERE "is_banned" = $3 AND "login" ILIKE $1 OR "email" ILIKE $2`,
+        `SELECT COUNT(*) FROM users WHERE ("login" ILIKE $1 OR "email" ILIKE $2) AND "is_banned" = $3`,
         [`%${searchLoginTerm}%`, `%${searchEmailTerm}%`, filter.isBanned],
       );
       usersCount = count[0].count;
