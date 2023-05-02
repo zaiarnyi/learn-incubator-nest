@@ -11,8 +11,7 @@ export class QuerySecurityRepository {
   ) {}
 
   public async getDevicesByUserId(userId: number): Promise<SecurityEntity[]> {
-    const d = await this.dataSource.query(`SELECT * FROM user_security WHERE "user" = $1 LIMIT 1`, [userId]);
-    return d;
+    return this.dataSource.query(`SELECT * FROM user_security WHERE "user" = $1`, [userId]);
   }
 
   public async getDevicesByUserIdAndDevice(userId: number, deviceId: number): Promise<SecurityEntity> {
