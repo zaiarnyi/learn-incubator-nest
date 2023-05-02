@@ -15,12 +15,12 @@ export class GetDevicesAction {
     try {
       const { id } = await this.jwtService.verify(token);
       userId = id;
+      const devices = await this.queryRepository.getDevicesByUserId(userId);
+      return devices.map((item) =>
+        plainToClass(GetDevicesResponse, { ...item, deviceId: item.id.toString(), lastActiveDate: item.updatedAt }),
+      );
     } catch (e) {
       throw new UnauthorizedException();
     }
-    const devices = await this.queryRepository.getDevicesByUserId(userId);
-    return devices.map((item) =>
-      plainToClass(GetDevicesResponse, { ...item, deviceId: item.id.toString(), lastActiveDate: item.updatedAt }),
-    );
   }
 }

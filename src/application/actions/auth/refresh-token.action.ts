@@ -13,7 +13,7 @@ export class RefreshTokenAction {
     @Inject(JwtService) private readonly jwtService: JwtService,
   ) {}
 
-  public async execute(deviceId: number, userId: number): Promise<{ accessToken: string; refreshToken: string }> {
+  public async execute(deviceId: string, userId: number): Promise<{ accessToken: string; refreshToken: string }> {
     try {
       const user = await this.queryUserRepository.getUserById(userId);
       if (!user) {

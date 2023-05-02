@@ -26,7 +26,7 @@ export class LoginAction {
     }
   }
 
-  private generateTokens(id: number, deviceId: number) {
+  private generateTokens(id: number, deviceId: string) {
     const expires_refresh = this.configService.get<string>('REFRESH_TOKEN_EXPIRE_TIME');
     const payload = { id, deviceId };
     const accessToken = this.jwtService.sign(payload);
@@ -36,13 +36,13 @@ export class LoginAction {
 
   public async execute(
     payload: LoginDto,
-    deviceId: number,
+    deviceId: string,
     user: UserEntity,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     await this.validate(payload);
     const checkHashPassword = await bcrypt.compare(payload.password, user.password_hash);
     if (!checkHashPassword) {
-      await this.securityRepository.deleteDeviceForUser(deviceId, user.id);
+      await this.securityRepository.deleteDeviceForUser(+deviceId, user.id);
       throw new UnauthorizedException();
     }
     return this.generateTokens(user.id, deviceId);

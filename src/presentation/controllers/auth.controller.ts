@@ -87,7 +87,7 @@ export class AuthController {
     devicePrepare.userAgent = req.headers['user-agent'];
 
     const device = await this.securityRepository.insertDevice(devicePrepare);
-    const { accessToken, refreshToken } = await this.loginService.execute(body, device.id, req.user);
+    const { accessToken, refreshToken } = await this.loginService.execute(body, device.id.toString(), req.user);
 
     response.cookie('refreshToken', refreshToken, { httpOnly: this.httpOnly, secure: this.secure });
     response.status(200).json({ accessToken });
@@ -104,7 +104,7 @@ export class AuthController {
     try {
       const jwt = await this.jwtService.verify(token);
 
-      deviceId = jwt.deviceId;
+      deviceId = jwt.deviceId.toString();
       userId = jwt.id;
     } catch (e) {
       throw new UnauthorizedException();

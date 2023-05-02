@@ -21,23 +21,22 @@ export class DeleteCurrentDeviceAction {
   ) {}
 
   public async execute(token: string, deviceId: number): Promise<void> {
-    const device = await this.queryRepository.getDeviceById(deviceId);
+    const device = await this.queryRepository.getDeviceById(+deviceId);
     if (!device) {
       throw new NotFoundException();
     }
-    let user;
+
     try {
-      user = await this.jwtService.verify(token);
+      const user = await this.jwtService.verify(token);
+
+      if (device?.user !== user?.id) {
+        throw new ForbiddenException();
+      }
+      await this.mainRepository.deleteCurrent(+deviceId, user.id).catch(() => {
+        this.logger.error(`Error when deleting the current session. DeviceId: ${deviceId}`);
+      });
     } catch (e) {
       throw new UnauthorizedException();
     }
-
-    if (device?.user !== user?.id) {
-      throw new ForbiddenException();
-    }
-
-    await this.mainRepository.deleteCurrent(deviceId, user.id).catch(() => {
-      this.logger.error(`Error when deleting the current session. DeviceId: ${deviceId}`);
-    });
   }
 }
