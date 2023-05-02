@@ -20,7 +20,7 @@ export class GetDevicesAction {
     }
     const devices = await this.queryRepository.getDevicesByUserId(userId);
     return devices.map((item) =>
-      plainToClass(GetDevicesResponse, { ...item, deviceId: item.id.toString(), lastActiveDate: item.updatedAt }),
+      plainToClass(GetDevicesResponse, { ...item, deviceId: item.id, lastActiveDate: item.updatedAt }),
     );
   }
 }
