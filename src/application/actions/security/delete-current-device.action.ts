@@ -36,6 +36,7 @@ export class DeleteCurrentDeviceAction {
         this.logger.error(`Error when deleting the current session. DeviceId: ${deviceId}`);
       });
     } catch (e) {
+      console.log(e, 'eeeeee');
       throw new UnauthorizedException();
     }
   }
