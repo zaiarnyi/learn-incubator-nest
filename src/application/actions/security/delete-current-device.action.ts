@@ -25,19 +25,19 @@ export class DeleteCurrentDeviceAction {
     if (!device) {
       throw new NotFoundException();
     }
-
+    let user;
     try {
-      const user = await this.jwtService.verify(token);
-
-      if (device?.user !== user?.id) {
-        throw new ForbiddenException();
-      }
-      await this.mainRepository.deleteCurrent(+deviceId, user.id).catch(() => {
-        this.logger.error(`Error when deleting the current session. DeviceId: ${deviceId}`);
-      });
+      user = await this.jwtService.verify(token);
     } catch (e) {
       console.log(e, 'eeeeee');
       throw new UnauthorizedException();
     }
+
+    if (device?.user !== user?.id) {
+      throw new ForbiddenException();
+    }
+    await this.mainRepository.deleteCurrent(+deviceId, user.id).catch(() => {
+      this.logger.error(`Error when deleting the current session. DeviceId: ${deviceId}`);
+    });
   }
 }
