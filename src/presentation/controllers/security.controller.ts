@@ -45,13 +45,13 @@ export class SecurityController {
 
   @Delete('/devices/:id')
   @HttpCode(204)
-  async deleteCurrentDevice(@Cookies('refreshToken') token: string, @Param('id', ParseIntPipe) id: number) {
+  async deleteCurrentDevice(@Cookies('refreshToken') token: string, @Param('id') id: string) {
     if (!token) {
       throw new UnauthorizedException();
     }
-    if (!id) {
+    if (!id || isNaN(+id) || typeof +id !== 'number') {
       throw new NotFoundException();
     }
-    return this.deleteCurrentDeviceAction.execute(token, id);
+    return this.deleteCurrentDeviceAction.execute(token, +id);
   }
 }
