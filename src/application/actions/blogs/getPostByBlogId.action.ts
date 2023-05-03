@@ -7,6 +7,7 @@ import {
 } from '../../../presentation/responses/blogger/getPostByBlogId.response';
 import { plainToClass } from 'class-transformer';
 import { GetLikesInfoForPostService } from '../../services/posts/get-likes-info-for-post.service';
+import { BlogEntity } from '../../../domain/blogs/entities/blog.entity';
 
 @Injectable()
 export class GetPostByBlogIdAction {
@@ -15,9 +16,9 @@ export class GetPostByBlogIdAction {
     @Inject(QueryBlogsRepository) private readonly queryRepository: QueryBlogsRepository,
     @Inject(GetLikesInfoForPostService) private readonly likesInfoService: GetLikesInfoForPostService,
   ) {}
-  private async validate(id: string): Promise<void> {
+  private async validate(id: number): Promise<void> {
     const blog = await this.queryRepository.getBlogById(id).catch((e) => {
-      this.logger.warn(`Error when receiving a blog with id - ${id}. ${JSON.stringify(e, null, 2)}`);
+      this.logger.warn(`Error when receiving a blog with id - ${id}. ${JSON.stringify(e)}`);
       throw new NotFoundException();
     });
     if (!blog) {
@@ -26,7 +27,7 @@ export class GetPostByBlogIdAction {
     }
   }
 
-  public async execute(id: string, query: GetPostByBlogIdDto, userId?: string): Promise<GetPostByBlogIdResponse> {
+  public async execute(id: number, query: GetPostByBlogIdDto, userId?: string): Promise<GetPostByBlogIdResponse> {
     await this.validate(id);
 
     const { pageSize, pageNumber, sortBy, sortDirection } = query;
@@ -38,10 +39,16 @@ export class GetPostByBlogIdAction {
     const posts = [];
 
     for (const el of postsRaw) {
+      const blog = el.blog as BlogEntity;
       const item = plainToClass(PostByBlogItem, {
-        ...el,
-        id: el._id.toString(),
-        extendedLikesInfo: await this.likesInfoService.likesInfo(el._id.toString(), userId),
+        id: el.id.toString(),
+        title: el.title,
+        shortDescription: el.short_description,
+        content: el.content,
+        blogId: blog.id.toString(),
+        blogName: blog.name,
+        createdAt: el.createdAt,
+        extendedLikesInfo: await this.likesInfoService.likesInfo(el.id, userId),
       });
       posts.push(item);
     }

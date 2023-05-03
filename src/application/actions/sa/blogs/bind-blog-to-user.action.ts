@@ -13,15 +13,15 @@ export class BindBlogToUserAction {
   ) {}
 
   private async validate(param: BingUserParamDto): Promise<boolean> {
-    const blog = await this.blogRepository.getBlogById(param.id);
+    const blog = await this.blogRepository.getBlogById(+param.id);
     if (!blog) {
       throw new NotFoundException();
     }
 
-    if (blog.userId.length) {
+    if (blog.user) {
       throw new BadGatewayException([{ message: 'any text', field: 'blogId' }]);
     }
-    return blog.userId === param.userId;
+    return blog.user === param.userId;
   }
 
   public async execute(param: BingUserParamDto) {
@@ -32,6 +32,6 @@ export class BindBlogToUserAction {
     if (!user) {
       throw new BadGatewayException([{ message: 'any text', field: 'userId' }]);
     }
-    await this.mainBlogRepository.bindUserToBlog(param.id, param.userId as string, user.login);
+    await this.mainBlogRepository.bindUserToBlog(+param.id, +param.userId);
   }
 }

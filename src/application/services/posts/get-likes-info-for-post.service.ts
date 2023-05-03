@@ -10,12 +10,19 @@ export class GetLikesInfoForPostService {
     @Inject(QueryLikeStatusPostRepository) private readonly statusPostRepository: QueryLikeStatusPostRepository,
   ) {}
 
-  public async likesInfo(postId: string, userId?: string): Promise<LikesInfo | any> {
+  public async likesInfo(postId: string | number, userId?: string): Promise<LikesInfo | any> {
+    return plainToClass(LikesInfo, {
+      likesCount: 0,
+      dislikesCount: 0,
+      myStatus: LikeStatusEnum.None,
+      newestLikes: [],
+    });
+
     const [likesCount, dislikesCount, lastLikes, info] = await Promise.all([
-      this.statusPostRepository.getCountStatuses(postId, LikeStatusEnum.Like),
-      this.statusPostRepository.getCountStatuses(postId, LikeStatusEnum.Dislike),
-      this.statusPostRepository.getLastLikesStatus(postId),
-      userId && this.statusPostRepository.checkUserStatus(postId, userId),
+      this.statusPostRepository.getCountStatuses(postId as string, LikeStatusEnum.Like),
+      this.statusPostRepository.getCountStatuses(postId as string, LikeStatusEnum.Dislike),
+      this.statusPostRepository.getLastLikesStatus(postId as string),
+      userId && this.statusPostRepository.checkUserStatus(postId as string, userId),
     ]);
     const newestLikes = lastLikes?.map((item) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

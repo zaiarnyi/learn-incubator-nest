@@ -4,6 +4,7 @@ import { QueryParamsGetPostsDto } from '../../../domain/posts/dto/query-params-g
 import { plainToClass } from 'class-transformer';
 import { GetPost, GetPostsResponse } from '../../../presentation/responses/posts/get-all-posts.response';
 import { GetLikesInfoForPostService } from '../../services/posts/get-likes-info-for-post.service';
+import { BlogEntity } from '../../../domain/blogs/entities/blog.entity';
 
 @Injectable()
 export class GetPostsAction {
@@ -26,10 +27,16 @@ export class GetPostsAction {
 
     const posts = [];
     for (const p of postsRaw) {
+      const blog = p.blog as BlogEntity;
       const formattedPost = plainToClass(GetPost, {
-        ...p,
-        id: p._id.toString(),
-        extendedLikesInfo: await this.likesInfoService.likesInfo(p._id.toString(), userId),
+        id: p.id.toString(),
+        title: p.title,
+        shortDescription: p.short_description,
+        content: p.content,
+        blogId: blog.id.toString(),
+        blogName: blog.name,
+        createdAt: p.createdAt,
+        extendedLikesInfo: await this.likesInfoService.likesInfo(p.id, userId),
       });
       posts.push(formattedPost);
     }

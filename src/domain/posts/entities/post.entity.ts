@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { UserEntity } from '../../users/entities/user.entity';
+import { BlogEntity } from '../../blogs/entities/blog.entity';
 
 export type PostDocument = HydratedDocument<Post>;
 
@@ -38,3 +40,16 @@ export class Post {
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
+
+export class PostEntity {
+  id: number;
+  title: string;
+  short_description: string;
+  content: string;
+  blog: BlogEntity | number;
+  user: UserEntity | number;
+  is_banned: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date;
+}

@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Blog, BlogDocument } from '../../../../domain/blogs/entities/blog.entity';
+import { Blog, BlogDocument, BlogEntity } from '../../../../domain/blogs/entities/blog.entity';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Post, PostDocument } from '../../../../domain/posts/entities/post.entity';
+import { Post, PostDocument, PostEntity } from '../../../../domain/posts/entities/post.entity';
 import { PostSortDirection } from '../../../../domain/posts/enums/sort.enum';
 import { CommentDocument, Comment } from '../../../../domain/comments/entities/comment.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class QueryPostRepository {
@@ -12,27 +14,46 @@ export class QueryPostRepository {
     @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
     @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
+    @InjectDataSource() private readonly dataSource: DataSource,
   ) {}
   async getCountPosts(): Promise<number> {
-    return this.postModel.find().count({ isBanned: false });
+    const count = await this.dataSource.query(`SELECT COUNT(*) FROM posts WHERE "is_banned" = false`);
+    return +count[0].count;
   }
-  async getPost(limit: number, offset: number, sortBy: string, direction: string): Promise<PostDocument[]> {
-    return this.postModel
-      .find({ isBanned: false })
-      .sort({ [sortBy]: direction as PostSortDirection })
-      .skip(offset)
-      .limit(limit)
-      .lean();
+  async getPost(limit: number, offset: number, sortBy: string, direction: string): Promise<PostEntity[]> {
+    const directionUpper = sortBy === 'createdAt' ? direction : 'COLLATE "C"' + direction.toUpperCase();
+    const query = `SELECT * FROM posts WHERE "is_banned" = false
+                          LEFT JOIN blogs ON posts."blogId" = blogs."id"
+                          ORDER BY "${sortBy}" ${directionUpper}
+                          LIMIT ${limit} OFFSET ${offset}`;
+    return this.dataSource.query(query);
   }
-  async getPostByBlogId(id: string): Promise<BlogDocument> {
-    return this.blogModel.findOne({ _id: id, isBanned: false });
+  async getPostByBlogId(id: number): Promise<BlogEntity> {
+    const blog = await this.dataSource.query(
+      `SELECT * FROM blogs
+                WHERE "id" = $1 AND "is_banned" = false
+                LIMIT = 1`,
+      [id],
+    );
+    return blog.length ? blog[0] : null;
   }
 
-  async getPostById(id: string): Promise<PostDocument> {
-    return this.postModel.findOne({ _id: id, isBanned: false });
+  async getPostById(id: number): Promise<PostEntity> {
+    const post = await this.dataSource.query(
+      `SELECT * FROM posts
+                WHERE "id" = $1 AND "is_banned" = false
+                LIMIT = 1`,
+      [id],
+    );
+    return post.length ? post[0] : null;
   }
 
-  async getAllPostById(id: string): Promise<PostDocument> {
-    return this.postModel.findOne({ _id: id });
+  async getAllPostById(id: number): Promise<PostEntity> {
+    const post = await this.dataSource.query(
+      `SELECT * FROM posts
+                WHERE "id" = $1 AND "is_banned" = false`,
+      [id],
+    );
+    return post;
   }
 }

@@ -47,7 +47,7 @@ export class GetCommentsByBlogsAction {
     );
 
     const promises = comments.map(async (item) => {
-      const post = await this.queryPostRepository.getPostById(item.postId);
+      // const post = await this.queryPostRepository.getPostById(item.post);
       return {
         id: item._id.toString(),
         content: item.content,
@@ -59,9 +59,9 @@ export class GetCommentsByBlogsAction {
         likesInfo: await this.getLikesInfo(item._id.toString()),
         postInfo: {
           id: item.postId,
-          title: post.title,
-          blogId: post.blogId,
-          blogName: post.blogName,
+          // title: post.title,
+          // blogId: post.blogId as string,
+          // blogName: post.blogName as string,
         },
       };
     });

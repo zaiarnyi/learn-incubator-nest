@@ -5,7 +5,7 @@ import { MainBlogsRepository } from '../../../../infrastructure/database/reposit
 export class UpdateStatusBannedByBlogAction {
   constructor(@Inject(MainBlogsRepository) private readonly blogMainRepository: MainBlogsRepository) {}
 
-  public async execute(blogId: string, isBanned: boolean) {
+  public async execute(blogId: number, isBanned: boolean) {
     await this.blogMainRepository.changeBannedStatusByBlogId(blogId, isBanned);
   }
 }

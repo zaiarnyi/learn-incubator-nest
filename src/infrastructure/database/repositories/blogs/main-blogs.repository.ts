@@ -4,10 +4,15 @@ import { Model } from 'mongoose';
 import { Blog, BlogDocument } from '../../../../domain/blogs/entities/blog.entity';
 import { Injectable } from '@nestjs/common';
 import { DeleteResult } from 'mongodb';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class MainBlogsRepository {
-  constructor(@InjectModel(Blog.name) private blogModel: Model<BlogDocument>) {}
+  constructor(
+    @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
+    @InjectDataSource() private readonly dataSource: DataSource,
+  ) {}
   async createBlog(dto: CreateBlogDto): Promise<BlogDocument> {
     return this.blogModel.create(dto);
   }
@@ -24,8 +29,9 @@ export class MainBlogsRepository {
     return this.blogModel.deleteMany();
   }
 
-  async bindUserToBlog(id: string, userId: string, userLogin: string): Promise<any> {
-    return this.blogModel.findByIdAndUpdate(id, { userId, userLogin });
+  async bindUserToBlog(id: number, userId: number): Promise<any> {
+    const query = `UPDATE blogs SET user = $1 WHERE id = $2`;
+    return this.dataSource.query(query, [userId, id]);
   }
 
   async changeBannedStatus(userId: string, isBanned: boolean): Promise<any> {
@@ -36,7 +42,9 @@ export class MainBlogsRepository {
     return this.blogModel.updateMany({ userId, _id: blogId }, { isBanned });
   }
 
-  async changeBannedStatusByBlogId(blogId: string, isBanned: boolean): Promise<any> {
-    return this.blogModel.updateOne({ _id: blogId }, { isBanned, banDate: isBanned ? new Date().toISOString() : null });
+  async changeBannedStatusByBlogId(blogId: number, isBanned: boolean): Promise<any> {
+    const banDate = isBanned ? new Date().toISOString() : null;
+    const query = `UPDATE blogs SET is_banned = $1, ban_date = $2 WHERE id = $3`;
+    return this.dataSource.query(query, [isBanned, banDate, blogId]);
   }
 }

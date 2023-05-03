@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query, Req, UseGuards } from '@nestjs/common';
 import { GetBlogsRequest, GetBlogsRequestWithSearch } from '../requests/blogs/get-blogs.request';
 import { CreateBlogResponse } from '../responses/blogger/create-blog.response';
 import { GetBlogByIdAction } from '../../application/actions/blogs/getBlogById.action';
@@ -24,7 +24,7 @@ export class BlogsController {
   @UseGuards(JwtAuthOptionalGuard)
   @Get('/:id/posts')
   async getPostByBlogId(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Query() query: GetBlogsRequest,
     @Req() req: any,
   ): Promise<GetPostByBlogIdResponse> {
@@ -32,7 +32,7 @@ export class BlogsController {
   }
 
   @Get('/:id')
-  async getBlogById(@Param('id') id: string): Promise<CreateBlogResponse> {
+  async getBlogById(@Param('id', ParseIntPipe) id: number): Promise<CreateBlogResponse> {
     return this.getByIdService.execute(id);
   }
 }

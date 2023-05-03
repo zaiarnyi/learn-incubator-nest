@@ -3,6 +3,7 @@ import { GetBlogsWithOwnerResponse } from '../../../../presentation/responses/sa
 import { QueryBlogsRepository } from '../../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 import { plainToClass } from 'class-transformer';
 import { QueryUserBannedRepository } from '../../../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
+import { UserEntity } from '../../../../domain/users/entities/user.entity';
 
 @Injectable()
 export class GetBlogsActions {
@@ -14,8 +15,7 @@ export class GetBlogsActions {
   ) {}
 
   public async execute(query: any): Promise<GetBlogsWithOwnerResponse> {
-    const filter = { userId: { $ne: null } };
-    const totalCount = await this.blogRepository.getCountBlogs(query.searchNameTerm, '', filter);
+    const totalCount = await this.blogRepository.getCountBlogs(query.searchNameTerm, null, true);
     const skip = (query.pageNumber - 1) * query.pageSize;
     const pagesCount = Math.ceil(totalCount / query.pageSize);
     const blogs = await this.blogRepository.getBlogs(
@@ -24,17 +24,20 @@ export class GetBlogsActions {
       query.pageSize,
       query.sortBy,
       query.sortDirection,
-      '',
-      filter,
+      null,
+      true,
+      null,
+      true,
     );
 
-    const promises = blogs.map(async (item) => {
+    const promises = blogs.map((item) => {
+      const user = item.user as UserEntity;
       return Object.assign(item, {
-        id: item._id.toString(),
-        blogOwnerInfo: { userId: item.userId, userLogin: item.userLogin },
+        id: item.id.toString(),
+        blogOwnerInfo: { userId: user.id, userLogin: user.login },
         banInfo: {
-          isBanned: item?.isBanned ?? false,
-          banDate: item?.banDate || null,
+          isBanned: item?.is_banned ?? false,
+          banDate: item?.ban_date || null,
         },
       });
     });

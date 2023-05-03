@@ -10,7 +10,7 @@ export class GetBlogByIdAction {
     @Inject(QueryBlogsRepository)
     private readonly queryRepository: QueryBlogsRepository,
   ) {}
-  async execute(id: string): Promise<CreateBlogResponse> {
+  async execute(id: number): Promise<CreateBlogResponse> {
     const findBlog = await this.queryRepository.getBlogById(id).catch(() => {
       this.logger.error(`I can't find the blog. ID: ${id}`);
       throw new NotFoundException();
@@ -19,8 +19,12 @@ export class GetBlogByIdAction {
       throw new NotFoundException();
     }
     return plainToClass(CreateBlogResponse, {
-      ...findBlog.toObject(),
-      id,
+      id: findBlog.id.toString(),
+      name: findBlog.name,
+      description: findBlog.description,
+      websiteUrl: findBlog.website_url,
+      createdAt: findBlog.createdAt,
+      isMembership: findBlog.is_membership,
     });
   }
 }

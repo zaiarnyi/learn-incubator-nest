@@ -16,31 +16,34 @@ export class GetPostByIdAction {
     @Inject(QueryUserBannedRepository) private readonly queryUserBannedRepository: QueryUserBannedRepository,
   ) {}
 
-  private async validateIsUserBanned(userId: string) {
-    if (!userId) return;
-    // const hasBanned = await this.queryUserBannedRepository.checkStatus(userId);
-    // if (hasBanned) {
-    //   throw new NotFoundException();
-    // }
-  }
+  // private async validateIsUserBanned(userId: string) {
+  //   if (!userId) return;
+  //   const hasBanned = await this.queryUserBannedRepository.checkStatus(userId);
+  //   if (hasBanned) {
+  //     throw new NotFoundException();
+  //   }
+  // }
 
-  public async execute(id: string, userId?: string): Promise<GetPost> {
-    await this.validateIsUserBanned(userId);
-    const postById = await this.queryRepository.getPostById(id).then((result) => {
-      if (!result) {
-        this.logger.log(`The post with id - ${id} was not found`);
-        throw new NotFoundException();
-      }
-      return result;
-    });
-    const blog = await this.queryBlogRepository.getBlogById(postById.blogId);
+  public async execute(id: number, userId?: string): Promise<GetPost> {
+    // await this.validateIsUserBanned(userId);
+    const postById = await this.queryRepository.getPostById(id);
+    if (!postById) {
+      throw new NotFoundException();
+    }
+
+    const blog = await this.queryBlogRepository.getBlogById(postById.blog as number);
     if (!blog) {
       throw new NotFoundException();
     }
 
     return plainToClass(GetPost, {
-      ...postById.toObject(),
-      id,
+      id: id.toString(),
+      title: postById.title,
+      shortDescription: postById.short_description,
+      content: postById.content,
+      blog: blog.id,
+      blogName: blog.name,
+      createdAt: postById.createdAt,
       extendedLikesInfo: await this.likesInfoService.likesInfo(id, userId),
     });
   }

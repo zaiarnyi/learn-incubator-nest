@@ -1,4 +1,4 @@
-import { Inject, Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 import { GetBlogsDto } from '../../../domain/blogs/dto/get-blogs.dto';
 import { GetAllBlogsResponse } from '../../../presentation/responses/blogger/get-all-blogs.response';
@@ -7,7 +7,6 @@ import { CreateBlogResponse } from '../../../presentation/responses/blogger/crea
 
 @Injectable()
 export class GetAllBlogsAction {
-  logger = new Logger(GetAllBlogsAction.name);
   constructor(
     @Inject(QueryBlogsRepository)
     private readonly queryRepository: QueryBlogsRepository,
@@ -33,7 +32,16 @@ export class GetAllBlogsAction {
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount,
-      items: blogs.map((item) => plainToClass(CreateBlogResponse, { ...item, id: item._id.toString() })),
+      items: blogs.map((item) =>
+        plainToClass(CreateBlogResponse, {
+          id: item.id.toString(),
+          name: item.name,
+          description: item.description,
+          websiteUrl: item.website_url,
+          createdAt: item.createdAt,
+          isMembership: item.is_membership,
+        }),
+      ),
     };
   }
 }

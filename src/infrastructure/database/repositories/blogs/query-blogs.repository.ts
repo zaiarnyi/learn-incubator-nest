@@ -1,15 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument } from '../../../../domain/blogs/entities/blog.entity';
+import { Blog, BlogDocument, BlogEntity } from '../../../../domain/blogs/entities/blog.entity';
 import { Model } from 'mongoose';
-import { BlogSortDirection } from '../../../../domain/blogs/enums/blog-sort.enum';
-import { Post, PostDocument } from '../../../../domain/posts/entities/post.entity';
+import { Post, PostDocument, PostEntity } from '../../../../domain/posts/entities/post.entity';
+import { InjectDataSource } from '@nestjs/typeorm';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class QueryBlogsRepository {
   constructor(
     @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
     @InjectModel(Post.name) private postModel: Model<PostDocument>,
+    @InjectDataSource() private readonly dataSource: DataSource,
   ) {}
 
   async getBlogs(
@@ -19,72 +21,97 @@ export class QueryBlogsRepository {
     sortBy: string,
     direction: string,
     userId?: string,
-    anyFilter?: any,
+    userIsNotNull?: boolean,
     isBanned?: boolean,
-  ): Promise<BlogDocument[]> {
-    let findFilter: Record<string, any> = { name: { $regex: new RegExp(filter, 'gi') } };
-    if (userId) {
-      findFilter.userId = userId;
+    isJoinUser?: boolean,
+  ): Promise<BlogEntity[]> {
+    const directionUpper = sortBy === 'createdAt' ? direction : 'COLLATE "C"' + direction.toUpperCase();
+    let query = `SELECT * FROM blogs`;
+
+    if (isJoinUser) {
+      query += ` Left JOIN users ON blogs."user" = users.id`;
     }
-    if (anyFilter) {
-      findFilter = {
-        ...findFilter,
-        ...anyFilter,
-      };
+
+    if (userId && !isJoinUser) {
+      query += ` WHERE "user" = ${userId}`;
     }
+
+    if (userId && isJoinUser) {
+      query += ` WHERE users."id" = ${userId}`;
+    }
+
     if (typeof isBanned === 'boolean') {
-      findFilter.isBanned = isBanned;
+      query += ` AND "is_banned" = ${isBanned}`;
     }
-    return this.blogModel
-      .find(findFilter)
-      .sort({ [sortBy]: direction as BlogSortDirection })
-      .skip(skip)
-      .limit(limit)
-      .lean();
-  }
-  async getBlogById(id: string): Promise<BlogDocument> {
-    return this.blogModel.findOne({ _id: id, isBanned: false });
-  }
 
-  async getPostsCount(blogId: string): Promise<number> {
-    return this.postModel.count({ blogId, isBanned: false });
-  }
-
-  async getCountBlogs(filter?: string, userId?: string, anyFilter?: any, isBanned?: boolean) {
-    let filterParam: Record<string, any> = {};
     if (filter) {
-      filterParam.name = { $regex: new RegExp(filter, 'gi') };
+      query += ` AND "name" ILIKE '%${filter}%'`;
     }
+
+    if (userIsNotNull) {
+      query += ` AND "user" is not null`;
+    }
+
+    query += ` ORDER BY "${sortBy}" ${directionUpper}
+               LIMIT $1
+               OFFSET $2`;
+
+    return this.dataSource.query(query, [limit, skip]);
+  }
+  async getBlogById(id: number): Promise<BlogEntity> {
+    const blog = await this.dataSource.query(
+      `SELECT * FROM blogs
+             WHERE id = $1 AND "is_banned" = FALSE`,
+      [id],
+    );
+    return blog.length ? blog[0] : null;
+  }
+
+  async getPostsCount(blogId: number): Promise<number> {
+    const count = await this.dataSource.query(`SELECT COUNT(*) FROM posts WHERE "id" = $1 AND "is_banned" = FALSE`, [
+      blogId,
+    ]);
+    return +count[0].count;
+  }
+
+  async getCountBlogs(filter?: string, userId?: string, userIsNotNull?: boolean, isBanned?: boolean): Promise<number> {
+    let query = `SELECT COUNT(*) FROM blogs`;
+
     if (userId) {
-      filterParam.userId = userId;
+      query += ` WHERE "user" = ${userId}`;
     }
 
     if (typeof isBanned === 'boolean') {
-      filterParam.isBanned = isBanned;
+      query += ` AND "is_banned" = ${isBanned}`;
     }
 
-    if (anyFilter) {
-      filterParam = {
-        ...filterParam,
-        ...anyFilter,
-      };
+    if (filter) {
+      query += ` AND "name" ILIKE '%${filter}%'`;
     }
-    return this.blogModel.countDocuments(filterParam);
+
+    if (userIsNotNull) {
+      query += ` AND "user" is not null`;
+    }
+
+    const count = await this.dataSource.query(query);
+    return +count[0].count;
   }
 
   async getPostByBlogId(
-    id: string,
+    id: number,
     skip: number,
     limit: number,
     sortBy: string,
     direction: string,
-  ): Promise<PostDocument[]> {
-    return this.postModel
-      .find({ blogId: id, isBanned: false })
-      .sort({ [sortBy]: direction as BlogSortDirection })
-      .skip(skip)
-      .limit(limit)
-      .lean();
+  ): Promise<PostEntity[]> {
+    const directionUpper = sortBy === 'createdAt' ? direction : 'COLLATE "C"' + direction.toUpperCase();
+    const query = `SELECT * FROM posts WHERE "id" = $1 AND "is_banned" = FALSE
+                        LEFT JOIN blogs ON posts."blogs" = blogs."id"
+                        ORDER BY "${sortBy}" ${directionUpper}
+                        LIMIT $2
+                        OFFSET $3`;
+
+    return this.dataSource.query(query, [id, limit, skip]);
   }
 
   async getBlogsByBlogger(userId: string): Promise<string[]> {

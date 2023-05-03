@@ -36,6 +36,6 @@ export class SaBlogsControllers {
     @Param() param: UpdateParamBannedByBlogRequest,
     @Body() body: UpdateBannedByBlogRequest,
   ) {
-    await this.updateStatusBannedByBlogAction.execute(param.id, body.isBanned);
+    await this.updateStatusBannedByBlogAction.execute(+param.id, body.isBanned);
   }
 }
