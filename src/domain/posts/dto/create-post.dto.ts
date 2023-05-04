@@ -14,5 +14,5 @@ export class CreatePostDto {
   content: string;
 
   @IsString()
-  blogId: string;
+  blogId: number;
 }

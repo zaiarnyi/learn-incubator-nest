@@ -23,7 +23,7 @@ export class DeletePostByBlogIdAction {
     }
   }
 
-  public async execute(blogId: string, postId: string, userId: string) {
+  public async execute(blogId: number, postId: string, userId: string) {
     await this.validate(blogId, postId, userId);
 
     await this.repository.deletePost(postId);

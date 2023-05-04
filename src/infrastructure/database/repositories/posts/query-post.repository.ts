@@ -28,14 +28,16 @@ export class QueryPostRepository {
                           LIMIT ${limit} OFFSET ${offset}`;
     return this.dataSource.query(query);
   }
-  async getPostByBlogId(id: number): Promise<BlogEntity> {
-    const blog = await this.dataSource.query(
-      `SELECT * FROM blogs
-                WHERE "id" = $1 AND "is_banned" = false
+  async getPostByBlogId(id: number): Promise<PostEntity> {
+    const post = await this.dataSource.query(
+      `SELECT * FROM posts
+                LEFT JOIN users ON posts."user" = user."id"
+                LEFT JOIN blogs ON posts."blog" = blogs."id"
+                WHERE blog = $1 AND "is_banned" = false
                 LIMIT = 1`,
       [id],
     );
-    return blog.length ? blog[0] : null;
+    return post.length ? post[0] : null;
   }
 
   async getPostById(id: number): Promise<PostEntity> {

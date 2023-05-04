@@ -76,12 +76,16 @@ export class BloggerController {
     return this.createBlogService.execute(body, req?.user?.userId);
   }
 
-  // Продолжать с этого метода
   @Post('blogs/:blogId/posts')
-  async createPostByBlog(@Body() body: CreatePostByBlogIdRequest, @Param('blogId') id: string, @Req() req: any) {
+  async createPostByBlog(
+    @Body() body: CreatePostByBlogIdRequest,
+    @Param('blogId', ParseIntPipe) id: number,
+    @Req() req: any,
+  ) {
     return this.createPostService.execute({ ...body, blogId: id }, req?.user?.userId);
   }
 
+  // Продолжать с этого метода
   @Put('blogs/:id')
   @HttpCode(204)
   async updateBlog(@Param() param: CheckBlogIdRequest, @Body() body: CreateBlogRequest, @Req() req: any) {
