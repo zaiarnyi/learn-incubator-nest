@@ -114,8 +114,7 @@ export class QueryBlogsRepository {
     return this.dataSource.query(query, [id, limit, skip]);
   }
 
-  async getBlogsByBlogger(userId: string): Promise<string[]> {
-    const blogs = await this.blogModel.find({ userId });
-    return blogs.map((item) => item._id.toString());
+  async getBlogsByBlogger(userId: number): Promise<number[]> {
+    return this.dataSource.query(`SELECT id FROM blogs WHERE "user" = $1`, [userId]);
   }
 }

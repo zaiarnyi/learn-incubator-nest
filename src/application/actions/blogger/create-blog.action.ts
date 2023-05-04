@@ -1,5 +1,5 @@
 import { CreateBlogDto } from '../../../domain/blogs/dto/create-blog.dto';
-import { Blog } from '../../../domain/blogs/entities/blog.entity';
+import { Blog, BlogEntity } from '../../../domain/blogs/entities/blog.entity';
 import { MainBlogsRepository } from '../../../infrastructure/database/repositories/blogs/main-blogs.repository';
 import { Inject } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
@@ -15,20 +15,26 @@ export class CreateBlogAction {
     @Inject(UserQueryRepository) private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
-  async execute(payload: CreateBlogDto, userId?: string | number): Promise<CreateBlogResponse> {
-    const user = await this.userQueryRepository.getUserById(userId as number);
-    const blog = new Blog();
+  async execute(payload: CreateBlogDto, userId?: number): Promise<CreateBlogResponse> {
+    const user = await this.userQueryRepository.getUserById(userId);
+    const blog = new BlogEntity();
     blog.name = payload.name;
     blog.description = payload.description;
-    blog.websiteUrl = payload.websiteUrl;
+    blog.website_url = payload.websiteUrl;
 
     if (user) {
-      blog.userId = userId as string;
-      blog.userLogin = user.login;
+      blog.user = user;
     }
 
     const createdBlog = await this.mainRepository.createBlog(blog);
 
-    return plainToClass(CreateBlogResponse, Object.assign(createdBlog, {}));
+    return plainToClass(CreateBlogResponse, {
+      id: createdBlog.id.toString(),
+      name: createdBlog.name,
+      description: createdBlog.description,
+      websiteUrl: createdBlog.website_url,
+      createdAt: createdBlog.createdAt,
+      isMembership: createdBlog.is_membership,
+    });
   }
 }

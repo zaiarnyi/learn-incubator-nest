@@ -1,7 +1,7 @@
 import { CreateBlogDto } from '../../../../domain/blogs/dto/create-blog.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Blog, BlogDocument } from '../../../../domain/blogs/entities/blog.entity';
+import { Blog, BlogDocument, BlogEntity } from '../../../../domain/blogs/entities/blog.entity';
 import { Injectable } from '@nestjs/common';
 import { DeleteResult } from 'mongodb';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -13,8 +13,12 @@ export class MainBlogsRepository {
     @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
     @InjectDataSource() private readonly dataSource: DataSource,
   ) {}
-  async createBlog(dto: CreateBlogDto): Promise<BlogDocument> {
-    return this.blogModel.create(dto);
+  async createBlog(dto: BlogEntity): Promise<BlogEntity> {
+    return this.dataSource.query(
+      `INSERT INTO blogs (name, description, website_url, user)
+             VALUES ($1, $2, $3, $4) RETURNING *`,
+      [dto.name, dto.description, dto.website_url, dto.user],
+    );
   }
 
   async updateBlog(id: string, userId: string, dto: CreateBlogDto): Promise<BlogDocument> {

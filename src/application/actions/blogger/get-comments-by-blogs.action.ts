@@ -20,6 +20,8 @@ export class GetCommentsByBlogsAction {
   ) {}
 
   private async getLikesInfo(commentId: string): Promise<ExtendedLikesInfo> {
+    return new ExtendedLikesInfo();
+
     const [likesCount, dislikesCount] = await Promise.all([
       this.queryLikeStatusRepository.getCountLikesByCommentId(commentId, 'like'),
       this.queryLikeStatusRepository.getCountLikesByCommentId(commentId, 'dislike'),
@@ -31,7 +33,7 @@ export class GetCommentsByBlogsAction {
     });
   }
 
-  public async execute(query: GetPostByBlogIdDto, userId: string): Promise<GetCommentsByBlogResponse | any> {
+  public async execute(query: GetPostByBlogIdDto, userId: number): Promise<GetCommentsByBlogResponse | any> {
     const blogIds = await this.queryRepository.getBlogsByBlogger(userId);
 
     const totalCount = await this.commentMainRepository.getCountCommentsForAllBlogs(blogIds);
@@ -46,32 +48,31 @@ export class GetCommentsByBlogsAction {
       query.sortDirection,
     );
 
-    const promises = comments.map(async (item) => {
-      // const post = await this.queryPostRepository.getPostById(item.post);
-      return {
-        id: item._id.toString(),
-        content: item.content,
-        createdAt: item.createdAt,
-        commentatorInfo: {
-          userId: item.userId,
-          userLogin: item.userLogin,
-        },
-        likesInfo: await this.getLikesInfo(item._id.toString()),
-        postInfo: {
-          id: item.postId,
-          // title: post.title,
-          // blogId: post.blogId as string,
-          // blogName: post.blogName as string,
-        },
-      };
-    });
+    // const promises = comments.map(async (item) => {
+    //   return {
+    //     id: item._id.toString(),
+    //     content: item.content,
+    //     createdAt: item.createdAt,
+    //     commentatorInfo: {
+    //       userId: item.userId,
+    //       userLogin: item.userLogin,
+    //     },
+    //     likesInfo: await this.getLikesInfo(item._id.toString()),
+    //     postInfo: {
+    //       id: item.postId,
+    //       // title: post.title,
+    //       // blogId: post.blogId as string,
+    //       // blogName: post.blogName as string,
+    //     },
+    //   };
+    // });
 
     return plainToClass(GetCommentsByBlogResponse, {
       pagesCount,
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount,
-      items: await Promise.all(promises),
+      items: [],
     });
   }
 }

@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { UserEntity } from '../../../users/entities/user.entity';
+import { BlogEntity } from '../../../blogs/entities/blog.entity';
 
 export type UserBannedDocument = HydratedDocument<UserBanned & { banDate: Date }>;
 
@@ -35,7 +36,7 @@ export class UserBannedEntity {
   id: number;
   ban_reason: string;
   user: UserEntity | number;
-  blogId: string;
+  blog: BlogEntity | number;
   createdAt: Date;
   updatedAt: Date;
   deletedAt: Date;

@@ -28,25 +28,33 @@ export class QueryUserBannedRepository {
     return this.model.findOne({ blogId });
   }
 
-  async getCountByBlog(searchLogin: string, blogId: string): Promise<number> {
-    return this.model.count({ blogId, userLogin: { $regex: new RegExp(searchLogin, 'gi') } });
+  async getCountByBlog(searchLogin: string, blogId: number): Promise<number> {
+    const query = `SELECT COUNT(*) FROM user_bans
+            LEFT JOIN users ON users."id" = user_bans."user"
+            WHERE blog = $1 AND user."login" ILIKE $2`;
+
+    const count = await this.dataSource.query(query, [blogId, `%${searchLogin}%`]);
+    return count.length ? +count[0].count : 0;
   }
 
   async getUserBannedByBlog(
-    blogId: string,
+    blogId: number,
     searchLogin: string,
     skip: number,
     limit: number,
     sortBy: string,
     sortDir: string,
-  ): Promise<UserBannedDocument[]> {
+  ): Promise<UserBannedEntity[]> {
     if (sortBy === 'login') {
       sortBy = 'userLogin';
     }
-    return this.model
-      .find({ blogId, userLogin: { $regex: new RegExp(searchLogin, 'gi') } })
-      .sort({ [sortBy]: sortDir as 'asc' | 'desc' })
-      .skip(skip)
-      .limit(limit);
+    const directionUpper = sortBy === 'createdAt' ? sortDir : 'COLLATE "C"' + sortDir.toUpperCase();
+    const query = `SELECT * FROM user_bans
+        LEFT JOIN users ON users."id" = user_bans."user"
+        WHERE blog = $1 AND user."login" ILIKE $2
+        ORDER BY "${sortBy}" ${directionUpper}
+        LIMIT $3
+    `;
+    return this.dataSource.query(query, [blogId, `%${searchLogin}%`, limit]);
   }
 }

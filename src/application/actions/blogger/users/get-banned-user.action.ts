@@ -4,6 +4,7 @@ import { QueryGetBannedUsersDto } from '../../../../domain/blogger/dto/query-get
 import { QueryUserBannedRepository } from '../../../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
 import { plainToClass } from 'class-transformer';
 import { QueryBlogsRepository } from '../../../../infrastructure/database/repositories/blogs/query-blogs.repository';
+import { UserEntity } from '../../../../domain/users/entities/user.entity';
 
 @Injectable()
 export class GetBannedUserAction {
@@ -12,21 +13,21 @@ export class GetBannedUserAction {
     @Inject(QueryBlogsRepository) private readonly blogRepository: QueryBlogsRepository,
   ) {}
 
-  private async validateBlogId(blogId: string, bloggerId: string) {
+  private async validateBlogId(blogId: number, bloggerId: number) {
     const blog = await this.blogRepository.getBlogById(blogId);
     if (!blog) {
       throw new NotFoundException();
     }
 
-    if (blog.userId !== bloggerId) {
+    if (blog.user !== bloggerId) {
       throw new ForbiddenException();
     }
   }
 
   public async execute(
-    blogId: string,
+    blogId: number,
     query: QueryGetBannedUsersDto,
-    bloggerId: string,
+    bloggerId: number,
   ): Promise<GetUserBannedByBlogResponse | any> {
     await this.validateBlogId(blogId, bloggerId);
     const totalCount = await this.userBannedRepository.getCountByBlog(query.searchLoginTerm, blogId);
@@ -42,15 +43,18 @@ export class GetBannedUserAction {
       query.sortDirection,
     );
 
-    const items = users.map((item) => ({
-      id: item.userId,
-      login: item.userLogin,
-      banInfo: {
-        isBanned: true,
-        banDate: item.banDate,
-        banReason: item.banReason,
-      },
-    }));
+    const items = users.map((item) => {
+      const user = item.user as UserEntity;
+      return {
+        id: item.id.toString(),
+        login: user.login,
+        banInfo: {
+          isBanned: true,
+          banDate: item.createdAt,
+          banReason: item.ban_reason,
+        },
+      };
+    });
 
     return plainToClass(GetUserBannedByBlogResponse, {
       pagesCount,

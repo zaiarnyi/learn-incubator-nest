@@ -6,6 +6,7 @@ import {
   HttpCode,
   Inject,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -26,8 +27,6 @@ import { GetAllBlogsResponse } from '../responses/blogger/get-all-blogs.response
 import { UserQueryRepository } from '../../infrastructure/database/repositories/users/query.repository';
 import { DeletePostByBlogIdAction } from '../../application/actions/blogger/delete-post-by-blogId.action';
 import { UpdatePostByBlogAction } from '../../application/actions/blogger/update-post-by-blog.action';
-import { JwtAuthOptionalGuard } from '../../domain/auth/guards/optional-jwt-auth.guard';
-import { ValidateBlogById } from '../../infrastructure/validators/validateBlogById.validator';
 import { CheckBlogIdRequest } from '../requests/blogger/check-blog-id.request';
 import { UserBannedByBlogRequest } from '../requests/blogger/user-banned-by-blog.request';
 import { GetUserBannedByBlogResponse } from '../responses/blogger/get-user-banned-by-blog.response';
@@ -66,7 +65,7 @@ export class BloggerController {
   @Get('users/blog/:id')
   async getBannedUsersByBlog(
     @Query() query: GetBannedUserByBloggerRequest,
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Req() req: any,
   ): Promise<GetUserBannedByBlogResponse> {
     return this.getBannedUserAction.execute(id, query, req.user.userId);
@@ -77,6 +76,7 @@ export class BloggerController {
     return this.createBlogService.execute(body, req?.user?.userId);
   }
 
+  // Продолжать с этого метода
   @Post('blogs/:blogId/posts')
   async createPostByBlog(@Body() body: CreatePostByBlogIdRequest, @Param('blogId') id: string, @Req() req: any) {
     return this.createPostService.execute({ ...body, blogId: id }, req?.user?.userId);
