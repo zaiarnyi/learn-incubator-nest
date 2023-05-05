@@ -38,12 +38,15 @@ export class MainUserBannedRepository {
     return this.dataSource.query(`DELETE FROM user_bans WHERE "user" = $1`, [userId]);
   }
 
-  async save(body: UserBanned): Promise<UserBannedEntity | any> {
-    // const hasUserBan = await this.model.findOne({ userId: body.userId, blogId: body.blogId });
-    // if (hasUserBan) {
-    //   return this.model.findOneAndUpdate({ userId: body.userId, blogId: body.blogId }, body);
-    // }
-    // return this.model.create(body);
+  async save(body: UserBannedEntity): Promise<UserBannedEntity> {
+    const findQuery = `SELECT * FROM user_bans WHERE "user" = $1`;
+    const hasUserBan = await this.dataSource.query(findQuery, [body.user]);
+    if (hasUserBan) {
+      const updateQuery = `UPDATE user_bans SET "ban_reason" = $1, "blog" = $2 WHERE "user" = $3 RETURNING *`;
+      return this.dataSource.query(updateQuery, [body.ban_reason, body.blog, body.user]);
+    }
+    const insertQuery = `INSERT INTO user_bans ("ban_reason", "user", "blog") VALUES ($1, $2, $3) RETURNING *`;
+    return this.dataSource.query(insertQuery, [body.ban_reason, body.user, body.blog]);
   }
 
   async deleteAll(): Promise<DeleteResult> {

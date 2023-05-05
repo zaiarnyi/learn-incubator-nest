@@ -1,8 +1,10 @@
 import { UserBannedRequest } from '../sa/users/user-banned.request';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class UserBannedByBlogRequest extends UserBannedRequest {
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  blogId: string;
+  @Transform(({ value }) => value && parseInt(value.trim()))
+  blogId: number;
 }

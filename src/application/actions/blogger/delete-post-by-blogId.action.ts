@@ -12,18 +12,18 @@ export class DeletePostByBlogIdAction {
     @Inject(MainPostRepository) private readonly repository: MainPostRepository,
   ) {}
 
-  private async validate(blogId: string, postId: string, userId: string) {
+  private async validate(blogId: number, postId: number, userId: number) {
     const findPost = await this.queryPostRepository.getAllPostById(postId);
     if (!findPost) {
       throw new NotFoundException();
     }
 
-    if (findPost.userId !== userId || findPost.blogId !== blogId) {
+    if (findPost.user !== userId || findPost.blog !== blogId) {
       throw new ForbiddenException();
     }
   }
 
-  public async execute(blogId: number, postId: string, userId: string) {
+  public async execute(blogId: number, postId: number, userId: number) {
     await this.validate(blogId, postId, userId);
 
     await this.repository.deletePost(postId);

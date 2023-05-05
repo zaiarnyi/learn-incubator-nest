@@ -85,7 +85,6 @@ export class BloggerController {
     return this.createPostService.execute({ ...body, blogId: id }, req?.user?.userId);
   }
 
-  // Продолжать с этого метода
   @Put('blogs/:id')
   @HttpCode(204)
   async updateBlog(@Param() param: CheckBlogIdRequest, @Body() body: CreateBlogRequest, @Req() req: any) {
@@ -104,7 +103,11 @@ export class BloggerController {
 
   @Put('users/:id/ban')
   @HttpCode(204)
-  async setBanToUser(@Param('id') id: string, @Body() body: UserBannedByBlogRequest, @Req() req: any): Promise<void> {
+  async setBanToUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UserBannedByBlogRequest,
+    @Req() req: any,
+  ): Promise<void> {
     await this.changeBannedStatusUserAction.execute(id, body, req.user.userId);
   }
 

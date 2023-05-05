@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Blog, BlogDocument, BlogEntity } from '../../../../domain/blogs/entities/blog.entity';
 import { Injectable } from '@nestjs/common';
-import { DeleteResult } from 'mongodb';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
@@ -21,16 +20,17 @@ export class MainBlogsRepository {
     );
   }
 
-  async updateBlog(id: string, userId: string, dto: CreateBlogDto): Promise<BlogDocument> {
-    return this.blogModel.findByIdAndUpdate(id, dto);
+  async updateBlog(id: number, userId: number, dto: CreateBlogDto): Promise<BlogEntity> {
+    const query = `UPDATE blogs SET name = $1, description = $2, website_url = $3 WHERE id = $4 AND "user" = $5 RETURNING *`;
+    return this.dataSource.query(query, [dto.name, dto.description, dto.websiteUrl, id, userId]);
   }
 
-  async deleteBlogById(id: string): Promise<BlogDocument> {
-    return this.blogModel.findByIdAndDelete(id);
+  async deleteBlogById(id: number) {
+    return this.dataSource.query(`DELETE FROM blogs WHERE id = $1`, [id]);
   }
 
-  async deleteAllBlogs(): Promise<DeleteResult> {
-    return this.blogModel.deleteMany();
+  async deleteAllBlogs() {
+    return this.dataSource.query(`DELETE FROM blogs`);
   }
 
   async bindUserToBlog(id: number, userId: number): Promise<any> {
@@ -42,8 +42,9 @@ export class MainBlogsRepository {
     return this.blogModel.updateMany({ userId }, { isBanned });
   }
 
-  async changeBannedStatusByBlogger(userId: string, blogId: string, isBanned: boolean): Promise<any> {
-    return this.blogModel.updateMany({ userId, _id: blogId }, { isBanned });
+  async changeBannedStatusByBlogger(userId: number, blogId: number, isBanned: boolean): Promise<any> {
+    const query = `UPDATE blogs SET "is_banned" = $1 WHERE user = $2 AND id = $3`;
+    return this.dataSource.query(query, [isBanned, userId, blogId]);
   }
 
   async changeBannedStatusByBlogId(blogId: number, isBanned: boolean): Promise<any> {

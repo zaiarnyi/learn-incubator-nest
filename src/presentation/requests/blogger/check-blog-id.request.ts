@@ -1,11 +1,13 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsInt, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { Trim } from 'class-sanitizer';
 import { ValidateBlogById } from '../../../infrastructure/validators/validateBlogById.validator';
+import { Transform } from 'class-transformer';
 
 export class CheckBlogIdRequest {
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
   @Trim()
   @ValidateBlogById()
-  id: string;
+  @Transform(({ value }) => value && parseInt(value))
+  id: number;
 }

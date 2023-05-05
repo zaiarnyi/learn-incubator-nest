@@ -1,11 +1,4 @@
-import {
-  ForbiddenException,
-  Inject,
-  Injectable,
-  Logger,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { MainBlogsRepository } from '../../../infrastructure/database/repositories/blogs/main-blogs.repository';
 import { CreateBlogDto } from '../../../domain/blogs/dto/create-blog.dto';
 import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
@@ -19,22 +12,18 @@ export class UpdateBlogAction {
     @Inject(QueryBlogsRepository) private readonly queryRepository: QueryBlogsRepository,
   ) {}
 
-  private async validateBlog(id: string, userId: string) {
+  private async validateBlog(id: number, userId: number) {
     const findBlog = await this.queryRepository.getBlogById(id);
     if (!findBlog) {
       throw new NotFoundException();
     }
 
-    // if (!userId) {
-    //   throw new UnauthorizedException();
-    // }
-
-    if (findBlog.userId !== userId) {
+    if (findBlog.user !== userId) {
       throw new ForbiddenException();
     }
   }
 
-  async execute(id: string, dto: CreateBlogDto, userId: string) {
+  async execute(id: number, dto: CreateBlogDto, userId: number) {
     await this.validateBlog(id, userId);
 
     await this.mainRepository.updateBlog(id, userId, dto).catch((e) => {

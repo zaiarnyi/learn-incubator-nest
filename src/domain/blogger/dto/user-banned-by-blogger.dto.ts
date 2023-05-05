@@ -1,10 +1,10 @@
-import { IsBoolean, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsNumber, IsString, MinLength } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 export class UserBannedByBloggerDto {
-  @IsString()
+  @IsNumber()
   @IsNotEmpty()
-  blogId: string;
+  blogId: number;
 
   @IsBoolean()
   @IsNotEmpty()

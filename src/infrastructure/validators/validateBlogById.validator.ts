@@ -13,7 +13,10 @@ export class ValidateBlogByIdValidator implements ValidatorConstraintInterface {
   constructor(private readonly queryRepository: QueryBlogsRepository) {}
 
   public async validate(val: any): Promise<boolean> {
-    return this.queryRepository.getBlogById(val).then((res) => {
+    if (isNaN(parseInt(val)) && typeof parseInt(val) !== 'number') {
+      throw new NotFoundException();
+    }
+    return this.queryRepository.getBlogById(parseInt(val)).then((res) => {
       if (!res) {
         throw new NotFoundException();
       }

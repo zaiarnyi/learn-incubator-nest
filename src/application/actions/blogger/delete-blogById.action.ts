@@ -19,7 +19,7 @@ export class DeleteBlogByIdAction {
     @Inject(QueryBlogsRepository) private readonly queryRepository: QueryBlogsRepository,
   ) {}
 
-  private async validate(id: string, userId: string) {
+  private async validate(id: number, userId: number) {
     const findBlog = await this.queryRepository.getBlogById(id);
 
     if (!findBlog) {
@@ -30,12 +30,12 @@ export class DeleteBlogByIdAction {
       throw new UnauthorizedException();
     }
 
-    if (findBlog.userId !== userId) {
+    if (findBlog.user !== userId) {
       throw new ForbiddenException();
     }
   }
 
-  async execute(id: string, userId: string) {
+  async execute(id: number, userId: number) {
     await this.validate(id, userId);
 
     await this.mainRepository.deleteBlogById(id).catch(() => {

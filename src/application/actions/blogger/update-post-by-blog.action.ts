@@ -23,7 +23,7 @@ export class UpdatePostByBlogAction {
     @Inject(MainPostRepository) private readonly repository: MainPostRepository,
   ) {}
 
-  private async validate(blogId: string, postId: string, userId?: string) {
+  private async validate(blogId: number, postId: number, userId?: number) {
     const [findPost, findBlog] = await Promise.all([
       this.queryPostRepository.getPostById(postId),
       this.queryBlogRepository.getBlogById(blogId),
@@ -35,12 +35,12 @@ export class UpdatePostByBlogAction {
     if (!userId) {
       throw new UnauthorizedException();
     }
-    if ((findPost.userId && findPost.userId !== userId) || (findBlog.userId && findBlog.userId !== userId)) {
+    if ((findPost.user && findPost.user !== userId) || (findBlog.user && findBlog.user !== userId)) {
       throw new ForbiddenException();
     }
   }
 
-  public async execute(body: CreatePostDto, postId: string, userId?: string) {
+  public async execute(body: CreatePostDto, postId: number, userId?: number) {
     await this.validate(body.blogId, postId, userId);
 
     await this.repository.updatePost(postId, body);
