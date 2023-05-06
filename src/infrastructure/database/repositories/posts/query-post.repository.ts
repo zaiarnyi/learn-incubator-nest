@@ -33,7 +33,7 @@ export class QueryPostRepository {
       `SELECT * FROM posts
              LEFT JOIN users ON posts."user" = users.id
              LEFT JOIN blogs ON posts."blog" = blogs.id
-             WHERE users.id = $1 AND posts."is_banned" = FALSE LIMIT 1`,
+             WHERE posts.id = $1 AND posts."is_banned" = FALSE LIMIT 1`,
       [id],
     );
     return post.length ? post[0] : null;

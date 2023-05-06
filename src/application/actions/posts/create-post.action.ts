@@ -56,11 +56,12 @@ export class CreatePostAction {
   private async validate(blogId: number, userId: number) {
     const blog = await this.queryBlogRepository.getBlogsByBloggerWithUser(blogId).catch((e) => {
       this.logger.error(`Error when getting a post by blog id ${blogId}. ${JSON.stringify(e)}`);
-      return e;
     });
 
-    const user = blog.user as UserEntity;
-    if (user.id !== userId || blog.is_banned) {
+    if (!blog) {
+      throw new NotFoundException();
+    }
+    if (blog.user !== userId || blog.is_banned) {
       throw new ForbiddenException();
     }
     return blog;
@@ -68,19 +69,17 @@ export class CreatePostAction {
   public async execute(payload: CreatePostDto, userId?: number): Promise<GetPost | any> {
     const blog = await this.validate(payload.blogId, userId);
     const newPost = new PostEntity();
-    const user = blog.user as UserEntity;
 
     newPost.title = payload.title;
     newPost.content = payload.content;
     newPost.short_description = payload.shortDescription;
-    newPost.blog = blog;
-    newPost.user = user.id;
+    newPost.blog = blog.id;
+    newPost.user = blog.user as number;
 
     const createdPost = await this.mainRepository.createPost(newPost);
     // await this.createDefaultStatus(createdPost.id, userId).catch((e) => {
     //   this.logger.error(`Error in post status creation. ${JSON.stringify(e)}`);
     // });
-
     return {
       ...plainToClass(GetPost, {
         id: createdPost.id.toString(),
