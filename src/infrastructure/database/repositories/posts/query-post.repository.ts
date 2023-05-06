@@ -55,6 +55,6 @@ export class QueryPostRepository {
                 WHERE "id" = $1 AND "is_banned" = FALSE`,
       [id],
     );
-    return post;
+    return post.length ? post[0] : null;
   }
 }
