@@ -66,10 +66,13 @@ export class BloggerController {
   @Get('users/blog/:id')
   async getBannedUsersByBlog(
     @Query() query: GetBannedUserByBloggerRequest,
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Req() req: any,
   ): Promise<GetUserBannedByBlogResponse> {
-    return this.getBannedUserAction.execute(id, query, req.user.id);
+    if (isNaN(Number(id))) {
+      throw new NotFoundException();
+    }
+    return this.getBannedUserAction.execute(Number(id), query, req.user.id);
   }
 
   @Post('blogs')
