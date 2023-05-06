@@ -25,10 +25,10 @@ export class TestController {
   @HttpCode(204)
   async deleteAllData() {
     await Promise.all([
+      this.userRepository.deleteAllUsers(),
       this.blogRepository.deleteAllBlogs(),
       this.commentRepository.deleteAllComments(),
       this.postRepository.deleteAllPosts(),
-      this.userRepository.deleteAllUsers(),
       this.likeStatusCommentRepository.deleteAll(),
       this.likeStatusPostRepository.deleteAll(),
       this.securityRepository.deleteAll(),
