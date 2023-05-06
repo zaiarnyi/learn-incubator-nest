@@ -99,7 +99,9 @@ export class BloggerController {
     @Param() params: ParamPostByBlogRequest,
     @Req() req: any,
   ) {
-    return this.updatePostByBlogAction.execute({ ...body, blogId: params.blogId }, params.postId, req?.user?.id);
+    console.log(params);
+    return {};
+    // return this.updatePostByBlogAction.execute({ ...body, blogId: params.blogId }, params.postId, req?.user?.id);
   }
 
   @Put('users/:id/ban')
