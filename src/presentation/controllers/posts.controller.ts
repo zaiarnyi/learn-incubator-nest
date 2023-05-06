@@ -1,18 +1,12 @@
-import { Body, Controller, Get, HttpCode, Param, ParseIntPipe, Post, Put, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, ParseIntPipe, Query, Req, UseGuards } from '@nestjs/common';
 import { GetPostsRequest } from '../requests/posts/get-posts.request';
 import { GetPost, GetPostsResponse } from '../responses/posts/get-all-posts.response';
-import { GetCommentsByPostIdResponse, PostCommentInfo } from '../responses/posts/get-comments-by-postId.response';
 import { CreatePostAction } from '../../application/actions/posts/create-post.action';
 import { GetPostByIdAction } from '../../application/actions/posts/get-post-by-id.action';
-import { UpdatePostAction } from '../../application/actions/posts/update-post.action';
-import { DeletePostAction } from '../../application/actions/posts/delete-post.action';
 import { GetPostsAction } from '../../application/actions/posts/get-posts.action';
 import { GetCommentsByPostIdAction } from '../../application/actions/posts/get-comments-by-postId.action';
-import { JwtAuthGuard } from '../../domain/auth/guards/jwt-auth.guard';
-import { ChangeLikeStatusPostByIdRequest } from '../../application/actions/posts/change-like-status-post-by-id.request';
 import { JwtAuthOptionalGuard } from '../../domain/auth/guards/optional-jwt-auth.guard';
 import { ChangeLikeStatusPostAction } from '../../application/actions/posts/change-like-status.action';
-import { CreateCommentForPostRequest } from '../requests/posts/create-comment-for-post.request';
 import { CreateCommentForPostAction } from '../../application/actions/posts/create-comment-for-post.action';
 
 @Controller('posts')
@@ -21,8 +15,6 @@ export class PostsController {
     private readonly getPostsService: GetPostsAction,
     private readonly createService: CreatePostAction,
     private readonly getPostByIdService: GetPostByIdAction,
-    private readonly updatePostService: UpdatePostAction,
-    private readonly deletePostService: DeletePostAction,
     private readonly commentsByPostIdService: GetCommentsByPostIdAction,
     private readonly changeLikeStatusByPostIdService: ChangeLikeStatusPostAction,
     private readonly createCommentForPostAction: CreateCommentForPostAction,

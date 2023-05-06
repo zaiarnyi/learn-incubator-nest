@@ -23,13 +23,14 @@ export class GetCommentsByPostIdAction {
   ) {}
 
   private async validate(postId: string, userId?: string) {
-    const post = await this.queryPostsRepository.getPostById(postId).catch((e) => {
-      this.logger.error(e);
-    });
-
-    if (!post) {
-      throw new NotFoundException();
-    }
+    // const post = await this.queryPostsRepository.getPostById(postId).catch((e) => {
+    //   this.logger.error(e);
+    // });
+    //
+    // if (!post) {
+    //   throw new NotFoundException();
+    // }
+    throw new NotFoundException();
   }
 
   private async getLikesInfo(commentId: string, userId?: string): Promise<ExtendedLikesInfo> {

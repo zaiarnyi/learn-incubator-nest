@@ -7,7 +7,7 @@ export class DeletePostAction {
 
   constructor(@Inject(MainPostRepository) private readonly repository: MainPostRepository) {}
 
-  public async execute(id: string): Promise<void> {
+  public async execute(id: number): Promise<void> {
     await this.repository
       .deletePost(id)
       .then((result) => {

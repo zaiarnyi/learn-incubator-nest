@@ -38,30 +38,31 @@ export class CreateCommentForPostAction {
   }
 
   private async getPost(postId: string, body: CreateCommentForPostDto, userId: string): Promise<PostDocument> {
-    try {
-      await validateOrReject(body);
-    } catch (e) {
-      throw new BadRequestException(e);
-    }
-
-    const post = await this.queryPostRepository.getPostById(postId).catch((e) => {
-      this.logger.error(`Error when checking for the presence of a post - ${postId}. ${JSON.stringify(e)}`);
-    });
-    if (!post) {
-      throw new NotFoundException();
-    }
-
-    const blog = await this.queryBlogsRepository.getBlogById(post.blogId);
-    if (blog.isBanned) {
-      throw new ForbiddenException();
-    }
-
-    const userIsBanned = await this.queryUserBannedRepository.checkStatusByUserBlog(userId, post.blogId);
-    if (userIsBanned) {
-      throw new ForbiddenException();
-    }
-
-    return post;
+    // try {
+    //   await validateOrReject(body);
+    // } catch (e) {
+    //   throw new BadRequestException(e);
+    // }
+    //
+    // const post = await this.queryPostRepository.getPostById(postId).catch((e) => {
+    //   this.logger.error(`Error when checking for the presence of a post - ${postId}. ${JSON.stringify(e)}`);
+    // });
+    // if (!post) {
+    //   throw new NotFoundException();
+    // }
+    //
+    // const blog = await this.queryBlogsRepository.getBlogById(post.blogId);
+    // if (blog.isBanned) {
+    //   throw new ForbiddenException();
+    // }
+    //
+    // const userIsBanned = await this.queryUserBannedRepository.checkStatusByUserBlog(userId, post.blogId);
+    // if (userIsBanned) {
+    //   throw new ForbiddenException();
+    // }
+    //
+    // return post;
+    throw new NotFoundException();
   }
 
   public async execute(

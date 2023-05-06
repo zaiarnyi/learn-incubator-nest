@@ -33,10 +33,10 @@ export class ChangeLikeStatusPostAction {
       throw new BadRequestException(e);
     }
 
-    const checkPost = await this.queryRepository.getPostById(id);
-    if (!checkPost) {
-      throw new NotFoundException();
-    }
+    // const checkPost = await this.queryRepository.getPostById(id);
+    // if (!checkPost) {
+    //   throw new NotFoundException();
+    // }
   }
 
   public async execute(id: string, body: ChangeLikeStatusPostDto, userId: string | number) {

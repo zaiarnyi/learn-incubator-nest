@@ -10,7 +10,7 @@ export class UpdatePostAction {
 
   constructor(private readonly queryRepository: QueryPostRepository, private readonly repository: MainPostRepository) {}
 
-  public async execute(id: string, payload: CreatePostDto): Promise<void> {
+  public async execute(id: number, payload: CreatePostDto): Promise<void> {
     await validateOrReject(payload);
     await Promise.all([
       this.queryRepository
