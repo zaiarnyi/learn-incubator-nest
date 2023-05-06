@@ -4,7 +4,7 @@ import { ValidateBlogById } from '../../../infrastructure/validators/validateBlo
 export class ParamPostByBlogRequest {
   @IsNumber()
   @IsNotEmpty()
-  @ValidateBlogById()
+  // @ValidateBlogById()
   blogId: number;
 
   @IsNumber()

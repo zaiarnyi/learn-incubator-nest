@@ -1,6 +1,7 @@
 import { ForbiddenException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { QueryPostRepository } from '../../../infrastructure/database/repositories/posts/query-post.repository';
 import { MainPostRepository } from '../../../infrastructure/database/repositories/posts/main-post.repository';
+import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 
 @Injectable()
 export class DeletePostByBlogIdAction {
@@ -10,15 +11,19 @@ export class DeletePostByBlogIdAction {
     @Inject(QueryPostRepository)
     private readonly queryPostRepository: QueryPostRepository,
     @Inject(MainPostRepository) private readonly repository: MainPostRepository,
+    @Inject(QueryBlogsRepository) private readonly queryBlogRepository: QueryBlogsRepository,
   ) {}
 
   private async validate(blogId: number, postId: number, userId: number) {
+    const findBlog = await this.queryBlogRepository.getBlogById(blogId);
+    if (findBlog) {
+      throw new NotFoundException();
+    }
     const findPost = await this.queryPostRepository.getAllPostById(postId);
     if (!findPost) {
       throw new NotFoundException();
     }
     if (findPost.user !== userId || findPost.blog !== blogId) {
-      this.logger.log({ blogId, postId, userId, findPost });
       throw new ForbiddenException();
     }
   }
