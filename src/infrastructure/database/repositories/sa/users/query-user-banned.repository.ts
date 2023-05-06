@@ -31,7 +31,7 @@ export class QueryUserBannedRepository {
   async getCountByBlog(searchLogin: string, blogId: number): Promise<number> {
     const query = `SELECT COUNT(*) FROM user_bans
             LEFT JOIN users ON user_bans."user" = users."id"
-            WHERE user_bans."blog" = $1 AND user."login" ILIKE $2`;
+            WHERE user_bans."blog" = $1 AND users."login" ILIKE $2`;
 
     const count = await this.dataSource.query(query, [blogId, `%${searchLogin}%`]);
     return count.length ? +count[0].count : 0;
