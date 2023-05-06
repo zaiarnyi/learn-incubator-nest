@@ -73,22 +73,22 @@ export class QueryBlogsRepository {
   }
 
   async getCountBlogs(filter?: string, userId?: string, userIsNotNull?: boolean, isBanned?: boolean): Promise<number> {
-    let query = `SELECT COUNT(*) FROM blogs WHERE`;
-
+    let query = `SELECT COUNT(*) FROM blogs`;
+    query += ' WHERE deletedAt is NULL';
     if (userId) {
-      query += ` "user" = ${userId}`;
+      query += ` AND "user" = ${userId}`;
     }
 
     if (typeof isBanned === 'boolean') {
-      query += ` ${userId ? 'AND' : ''} "is_banned" = ${isBanned}`;
+      query += ` AND "is_banned" = ${isBanned}`;
     }
 
     if (filter) {
-      query += ` ${userId ? 'AND' : ''} "name" ILIKE '%${filter}%'`;
+      query += ` AND "name" ILIKE '%${filter}%'`;
     }
 
     if (userIsNotNull) {
-      query += ` ${userId ? 'AND' : ''} "user" is not null`;
+      query += ` AND "user" is not null`;
     }
     const count = await this.dataSource.query(query);
     return +count[0].count;
