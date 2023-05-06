@@ -47,4 +47,15 @@ export class UserMainRepository {
   async changeStatusBan(userId: number, isBanned: boolean) {
     return this.dataSource.query(`UPDATE users SET "is_banned" = $1 WHERE id = $2`, [isBanned, userId]);
   }
+
+  async deleteAllData() {
+    await Promise.all([
+      this.dataSource
+        .query(`TRUNCATE TABLE users, posts, blogs, user_bans, user_invalid_tokens, activate_emails_code, user_security
+RESTART IDENTITY;`),
+      this.dataSource
+        .query(`TRUNCATE TABLE users, posts, blogs, user_bans, user_invalid_tokens, activate_emails_code, user_security
+CASCADE;`),
+    ]);
+  }
 }
