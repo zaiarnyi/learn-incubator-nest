@@ -28,7 +28,7 @@ export class BlogsController {
     @Query() query: GetBlogsRequest,
     @Req() req: any,
   ): Promise<GetPostByBlogIdResponse> {
-    return this.getPostByBlogIdService.execute(id, query, req?.user?.userId);
+    return this.getPostByBlogIdService.execute(id, query, req?.user?.id);
   }
 
   @Get('/:id')

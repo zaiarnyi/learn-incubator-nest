@@ -43,10 +43,12 @@ export class MainUserBannedRepository {
     const hasUserBan = await this.dataSource.query(findQuery, [body.user]);
     if (hasUserBan) {
       const updateQuery = `UPDATE user_bans SET "ban_reason" = $1, "blog" = $2 WHERE "user" = $3 RETURNING *`;
-      return this.dataSource.query(updateQuery, [body.ban_reason, body.blog, body.user]);
+      const updated = await this.dataSource.query(updateQuery, [body.ban_reason, body.blog, body.user]);
+      return updated.length ? updated[0] : null;
     }
     const insertQuery = `INSERT INTO user_bans ("ban_reason", "user", "blog") VALUES ($1, $2, $3) RETURNING *`;
-    return this.dataSource.query(insertQuery, [body.ban_reason, body.user, body.blog]);
+    const created = await this.dataSource.query(insertQuery, [body.ban_reason, body.user, body.blog]);
+    return created[0];
   }
 
   async deleteAll(): Promise<DeleteResult> {

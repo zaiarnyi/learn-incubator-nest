@@ -54,12 +54,12 @@ export class BloggerController {
   ) {}
   @Get('blogs')
   async getBlogs(@Query() query: GetBlogsRequestWithSearch, @Req() req: any): Promise<GetAllBlogsResponse> {
-    return this.getBlogsService.execute(query, req?.user?.userId);
+    return this.getBlogsService.execute(query, req?.user?.id);
   }
 
   @Get('blogs/comments')
   async getCommentsByBlog(@Query() query: GetBlogsRequest, @Req() req: any): Promise<GetCommentsByBlogResponse> {
-    return this.getCommentsAction.execute(query, req.user.userId);
+    return this.getCommentsAction.execute(query, req.user.id);
   }
 
   @Get('users/blog/:id')
@@ -68,12 +68,12 @@ export class BloggerController {
     @Param('id', ParseIntPipe) id: number,
     @Req() req: any,
   ): Promise<GetUserBannedByBlogResponse> {
-    return this.getBannedUserAction.execute(id, query, req.user.userId);
+    return this.getBannedUserAction.execute(id, query, req.user.id);
   }
 
   @Post('blogs')
   async createBlog(@Body() body: CreateBlogRequest, @Req() req: any) {
-    return this.createBlogService.execute(body, req?.user?.userId);
+    return this.createBlogService.execute(body, req.user);
   }
 
   @Post('blogs/:blogId/posts')
@@ -82,13 +82,13 @@ export class BloggerController {
     @Param('blogId', ParseIntPipe) id: number,
     @Req() req: any,
   ) {
-    return this.createPostService.execute({ ...body, blogId: id }, req?.user?.userId);
+    return this.createPostService.execute({ ...body, blogId: id }, req?.user?.id);
   }
 
   @Put('blogs/:id')
   @HttpCode(204)
   async updateBlog(@Param() param: CheckBlogIdRequest, @Body() body: CreateBlogRequest, @Req() req: any) {
-    return this.updateService.execute(param.id, body, req?.user?.userId);
+    return this.updateService.execute(param.id, body, req?.user?.id);
   }
 
   @Put('blogs/:blogId/posts/:postId')
@@ -98,7 +98,7 @@ export class BloggerController {
     @Param() params: ParamPostByBlogRequest,
     @Req() req: any,
   ) {
-    return this.updatePostByBlogAction.execute({ ...body, blogId: params.blogId }, params.postId, req?.user?.userId);
+    return this.updatePostByBlogAction.execute({ ...body, blogId: params.blogId }, params.postId, req?.user?.id);
   }
 
   @Put('users/:id/ban')
@@ -108,18 +108,18 @@ export class BloggerController {
     @Body() body: UserBannedByBlogRequest,
     @Req() req: any,
   ): Promise<void> {
-    await this.changeBannedStatusUserAction.execute(id, body, req.user.userId);
+    await this.changeBannedStatusUserAction.execute(id, body, req.user.id);
   }
 
   @Delete('blogs/:id')
   @HttpCode(204)
   async deleteBlog(@Param() param: CheckBlogIdRequest, @Req() req: any) {
-    return this.deleteService.execute(param.id, req?.user?.userId);
+    return this.deleteService.execute(param.id, req?.user?.id);
   }
 
   @Delete('blogs/:blogId/posts/:postId')
   @HttpCode(204)
   async deletePostByBlog(@Param() params: ParamPostByBlogRequest, @Req() req: any) {
-    return this.deletePostAction.execute(params.blogId, params.postId, req?.user?.userId);
+    return this.deletePostAction.execute(params.blogId, params.postId, req?.user?.id);
   }
 }

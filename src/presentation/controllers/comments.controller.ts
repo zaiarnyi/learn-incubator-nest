@@ -22,14 +22,14 @@ export class CommentsController {
   @UseGuards(JwtAuthOptionalGuard)
   @Get('/:id')
   async getCommentById(@Param('id') id: string, @Req() req: any): Promise<CommentResponse> {
-    return this.commentByIdService.execute(id, req?.user?.userId);
+    return this.commentByIdService.execute(id, req?.user?.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Put('/:id')
   @HttpCode(204)
   async changeCommentById(@Param('id') id: string, @Body() body: ChangeCommentByIdRequest, @Req() req: any) {
-    return this.changeCommentByIdService.execute(id, body, req.user.userId);
+    return this.changeCommentByIdService.execute(id, body, req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)

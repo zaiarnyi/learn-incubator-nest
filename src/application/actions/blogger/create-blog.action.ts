@@ -6,6 +6,7 @@ import { plainToClass } from 'class-transformer';
 import { CreateBlogResponse } from '../../../presentation/responses/blogger/create-blog.response';
 import { UserMainRepository } from '../../../infrastructure/database/repositories/users/main.repository';
 import { UserQueryRepository } from '../../../infrastructure/database/repositories/users/query.repository';
+import { UserEntity } from '../../../domain/users/entities/user.entity';
 
 export class CreateBlogAction {
   constructor(
@@ -15,16 +16,12 @@ export class CreateBlogAction {
     @Inject(UserQueryRepository) private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
-  async execute(payload: CreateBlogDto, userId?: number): Promise<CreateBlogResponse> {
-    const user = await this.userQueryRepository.getUserById(userId);
+  async execute(payload: CreateBlogDto, user: UserEntity): Promise<CreateBlogResponse> {
     const blog = new BlogEntity();
     blog.name = payload.name;
     blog.description = payload.description;
     blog.website_url = payload.websiteUrl;
-
-    if (user) {
-      blog.user = user;
-    }
+    blog.user = user.id;
 
     const createdBlog = await this.mainRepository.createBlog(blog);
 

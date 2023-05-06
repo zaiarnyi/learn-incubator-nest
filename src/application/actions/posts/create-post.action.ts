@@ -73,7 +73,7 @@ export class CreatePostAction {
     newPost.content = payload.content;
     newPost.short_description = payload.shortDescription;
     newPost.blog = blog;
-    newPost.user = user;
+    newPost.user = user.id;
 
     const createdPost = await this.mainRepository.createPost(newPost);
     // await this.createDefaultStatus(createdPost.id, userId).catch((e) => {

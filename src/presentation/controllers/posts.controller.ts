@@ -22,12 +22,12 @@ export class PostsController {
   @UseGuards(JwtAuthOptionalGuard)
   @Get()
   async getAllPosts(@Query() query: GetPostsRequest, @Req() req: any): Promise<GetPostsResponse> {
-    return this.getPostsService.execute(query, req?.user?.userId);
+    return this.getPostsService.execute(query, req?.user?.id);
   }
   @UseGuards(JwtAuthOptionalGuard)
   @Get(':id')
   async getPostById(@Param('id', ParseIntPipe) id: number, @Req() req: any): Promise<GetPost> {
-    return this.getPostByIdService.execute(id, req?.user?.userId);
+    return this.getPostByIdService.execute(id, req?.user?.id);
   }
   // @UseGuards(JwtAuthOptionalGuard)
   // @Get(':id/comments')

@@ -69,7 +69,7 @@ export class BannedUserByBloggerAction {
       return this.banRepository.deleteBan(userId);
     }
     const bannedUserByBlog = new UserBannedEntity();
-    bannedUserByBlog.user = user;
+    bannedUserByBlog.user = user.id;
     bannedUserByBlog.ban_reason = body.banReason;
     bannedUserByBlog.blog = blog;
 

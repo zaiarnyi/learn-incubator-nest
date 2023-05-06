@@ -13,16 +13,18 @@ export class MainBlogsRepository {
     @InjectDataSource() private readonly dataSource: DataSource,
   ) {}
   async createBlog(dto: BlogEntity): Promise<BlogEntity> {
-    return this.dataSource.query(
-      `INSERT INTO blogs (name, description, website_url, user)
+    const blog = await this.dataSource.query(
+      `INSERT INTO blogs ("name", "description", "website_url", "user")
              VALUES ($1, $2, $3, $4) RETURNING *`,
       [dto.name, dto.description, dto.website_url, dto.user],
     );
+    return blog[0];
   }
 
   async updateBlog(id: number, userId: number, dto: CreateBlogDto): Promise<BlogEntity> {
     const query = `UPDATE blogs SET name = $1, description = $2, website_url = $3 WHERE id = $4 AND "user" = $5 RETURNING *`;
-    return this.dataSource.query(query, [dto.name, dto.description, dto.websiteUrl, id, userId]);
+    const updatedBlog = await this.dataSource.query(query, [dto.name, dto.description, dto.websiteUrl, id, userId]);
+    return updatedBlog[0];
   }
 
   async deleteBlogById(id: number) {

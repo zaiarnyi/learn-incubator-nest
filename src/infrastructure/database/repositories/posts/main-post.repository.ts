@@ -19,7 +19,14 @@ export class MainPostRepository {
     const query = `INSERT INTO posts ("title", "content", "user", "blog", "short_description")
               VALUES ($1, $2, $3, $4, $5) RETURNING *`;
 
-    return this.dataSource.query(query, [post.title, post.content, post.user, post.blog, post.short_description]);
+    const postCreated = await this.dataSource.query(query, [
+      post.title,
+      post.content,
+      post.user,
+      post.blog,
+      post.short_description,
+    ]);
+    return postCreated[0];
   }
   async updatePost(id: number, payload: CreatePostDto): Promise<PostEntity> {
     const query = `UPDATE posts SET "title" = $1, "content" = $2, "short_description" = $3
