@@ -25,7 +25,6 @@ export class TestController {
   @HttpCode(204)
   async deleteAllData() {
     await Promise.all([
-      this.userRepository.deleteAllUsers(),
       this.blogRepository.deleteAllBlogs(),
       this.commentRepository.deleteAllComments(),
       this.postRepository.deleteAllPosts(),
@@ -35,6 +34,10 @@ export class TestController {
       this.bannedRepository.deleteAll(),
     ]).catch((e) => {
       this.logger.error(`Error when deleting all test data. ${JSON.stringify(e, null, 2)}`);
+    });
+
+    await this.userRepository.deleteAllUsers().catch((e) => {
+      this.logger.error(`Error when deleting users test data. ${JSON.stringify(e, null, 2)}`);
     });
   }
 }

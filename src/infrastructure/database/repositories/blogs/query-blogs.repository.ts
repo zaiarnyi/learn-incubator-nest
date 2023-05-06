@@ -26,7 +26,7 @@ export class QueryBlogsRepository {
     isJoinUser?: boolean,
   ): Promise<BlogEntity[]> {
     const directionUpper = sortBy === 'createdAt' ? direction : 'COLLATE "C"' + direction.toUpperCase();
-    let query = `SELECT * FROM blogs`;
+    let query = `SELECT *${isJoinUser ? ', users."login"' : ''} FROM blogs`;
 
     if (isJoinUser) {
       query += ` Left JOIN users ON blogs."user" = users.id`;
