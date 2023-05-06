@@ -30,9 +30,13 @@ export class GetBlogsActions {
       true,
     );
 
-    const promises = blogs.map((item: BlogEntity & { login: string }) => {
+    const promises = blogs.map((item: BlogEntity & { login: string; blogId: string }) => {
       return Object.assign(item, {
-        id: item.id.toString(),
+        id: item.blogId.toString(),
+        websiteUrl: item.website_url,
+        createdAt: item.createdAt,
+        description: item.description,
+        isMembership: item.is_membership,
         blogOwnerInfo: { userId: item.user, userLogin: item.login },
         banInfo: {
           isBanned: item?.is_banned ?? false,
