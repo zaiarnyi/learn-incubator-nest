@@ -16,7 +16,6 @@ export class MainPostRepository {
   ) {}
 
   async createPost(post: PostEntity): Promise<PostEntity> {
-    console.log(post, 'post');
     const query = `INSERT INTO posts ("title", "content", "user", "blog", "short_description")
               VALUES ($1, $2, $3, $4, $5) RETURNING *`;
 

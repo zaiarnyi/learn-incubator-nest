@@ -8,6 +8,6 @@ export class UserBannedRequest {
 
   @IsNotEmpty()
   @MinLength(20)
-  @Transform(({ value }) => value.trim())
+  @Transform(({ value }) => value && value.trim())
   banReason: string;
 }
