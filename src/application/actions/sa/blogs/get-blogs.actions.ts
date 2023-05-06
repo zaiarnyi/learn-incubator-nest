@@ -37,7 +37,7 @@ export class GetBlogsActions {
         createdAt: item.createdAt,
         description: item.description,
         isMembership: item.is_membership,
-        blogOwnerInfo: { userId: item.user, userLogin: item.login },
+        blogOwnerInfo: { userId: item.user.toString(), userLogin: item.login },
         banInfo: {
           isBanned: item?.is_banned ?? false,
           banDate: item?.ban_date || null,
