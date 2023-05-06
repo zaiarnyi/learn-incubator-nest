@@ -5,6 +5,6 @@ import { Transform } from 'class-transformer';
 export class UserBannedByBlogRequest extends UserBannedRequest {
   @IsNumber()
   @IsNotEmpty()
-  @Transform(({ value }) => value && parseInt(value.trim()))
+  @Transform(({ value }) => value && parseInt(value))
   blogId: number;
 }
