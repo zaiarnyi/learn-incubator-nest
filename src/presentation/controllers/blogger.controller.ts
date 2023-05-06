@@ -78,12 +78,11 @@ export class BloggerController {
   }
 
   @Post('blogs/:blogId/posts')
-  async createPostByBlog(
-    @Body() body: CreatePostByBlogIdRequest,
-    @Param('blogId', ParseIntPipe) id: number,
-    @Req() req: any,
-  ) {
-    return this.createPostService.execute({ ...body, blogId: id }, req?.user?.id);
+  async createPostByBlog(@Body() body: CreatePostByBlogIdRequest, @Param('blogId') id: string, @Req() req: any) {
+    if (isNaN(Number(id))) {
+      throw new NotFoundException();
+    }
+    return this.createPostService.execute({ ...body, blogId: Number(id) }, req?.user?.id);
   }
 
   @Put('blogs/:id')
