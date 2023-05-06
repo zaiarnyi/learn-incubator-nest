@@ -53,6 +53,7 @@ export class CreatePostAction {
   }
 
   private async validate(blogId: number, userId: number) {
+    console.log(blogId, userId);
     const post = await this.queryPostRepository.getPostByBlogId(blogId).catch((e) => {
       this.logger.error(`Error when getting a post by blog id ${blogId}. ${JSON.stringify(e)}`);
     });
@@ -66,34 +67,34 @@ export class CreatePostAction {
     }
     return post;
   }
-  public async execute(payload: CreatePostDto, userId?: number): Promise<GetPost> {
+  public async execute(payload: CreatePostDto, userId?: number): Promise<GetPost | any> {
     const post = await this.validate(payload.blogId, userId);
-    const newPost = new PostEntity();
-    const blog = post.blog as BlogEntity;
-    const user = post.user as UserEntity;
-
-    newPost.title = payload.title;
-    newPost.content = payload.content;
-    newPost.short_description = payload.shortDescription;
-    newPost.blog = blog;
-    newPost.user = user.id;
-
-    const createdPost = await this.mainRepository.createPost(newPost);
-    // await this.createDefaultStatus(createdPost.id, userId).catch((e) => {
-    //   this.logger.error(`Error in post status creation. ${JSON.stringify(e)}`);
-    // });
-
-    return {
-      ...plainToClass(GetPost, {
-        id: createdPost.id.toString(),
-        title: createdPost.title,
-        shortDescription: createdPost.short_description,
-        content: createdPost.content,
-        createdAt: createdPost.createdAt,
-        blogId: blog.id.toString(),
-        blogName: blog.name,
-      }),
-      extendedLikesInfo: this.getLikesInfo(),
-    };
+    // const newPost = new PostEntity();
+    // const blog = post.blog as BlogEntity;
+    // const user = post.user as UserEntity;
+    //
+    // newPost.title = payload.title;
+    // newPost.content = payload.content;
+    // newPost.short_description = payload.shortDescription;
+    // newPost.blog = blog;
+    // newPost.user = user.id;
+    //
+    // const createdPost = await this.mainRepository.createPost(newPost);
+    // // await this.createDefaultStatus(createdPost.id, userId).catch((e) => {
+    // //   this.logger.error(`Error in post status creation. ${JSON.stringify(e)}`);
+    // // });
+    //
+    // return {
+    //   ...plainToClass(GetPost, {
+    //     id: createdPost.id.toString(),
+    //     title: createdPost.title,
+    //     shortDescription: createdPost.short_description,
+    //     content: createdPost.content,
+    //     createdAt: createdPost.createdAt,
+    //     blogId: blog.id.toString(),
+    //     blogName: blog.name,
+    //   }),
+    //   extendedLikesInfo: this.getLikesInfo(),
+    // };
   }
 }

@@ -23,7 +23,7 @@ export class QueryPostRepository {
   async getPost(limit: number, offset: number, sortBy: string, direction: string): Promise<PostEntity[]> {
     const directionUpper = sortBy === 'createdAt' ? direction : 'COLLATE "C"' + direction.toUpperCase();
     const query = `SELECT * FROM posts WHERE "is_banned" = false
-                          LEFT JOIN blogs ON posts."blogId" = blogs."id"
+                          LEFT JOIN blogs ON posts."blog" = blogs."id"
                           ORDER BY "${sortBy}" ${directionUpper}
                           LIMIT ${limit} OFFSET ${offset}`;
     return this.dataSource.query(query);
@@ -31,10 +31,9 @@ export class QueryPostRepository {
   async getPostByBlogId(id: number): Promise<PostEntity> {
     const post = await this.dataSource.query(
       `SELECT * FROM posts
-                LEFT JOIN users ON posts."user" = users."id"
-                LEFT JOIN blogs ON posts."blog" = blogs."id"
-                WHERE blogs."id" = $1 AND posts."is_banned" = FALSE
-                LIMIT = 1`,
+             LEFT JOIN users ON posts."user" = users.id
+             LEFT JOIN blogs ON posts."blog" = blogs.id
+             WHERE users.id = $1 AND posts."is_banned" = FALSE LIMIT 1`,
       [id],
     );
     return post.length ? post[0] : null;
@@ -43,8 +42,8 @@ export class QueryPostRepository {
   async getPostById(id: number): Promise<PostEntity> {
     const post = await this.dataSource.query(
       `SELECT * FROM posts
-                WHERE "id" = $1 AND "is_banned" = FALSE
-                LIMIT = 1`,
+                WHERE id = $1 AND "is_banned" = FALSE
+                LIMIT 1`,
       [id],
     );
     return post.length ? post[0] : null;
