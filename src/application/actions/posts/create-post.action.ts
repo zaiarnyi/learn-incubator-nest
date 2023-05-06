@@ -54,13 +54,10 @@ export class CreatePostAction {
   }
 
   private async validate(blogId: number, userId: number) {
-    console.log(blogId, userId);
     const blog = await this.queryBlogRepository.getBlogsByBloggerWithUser(blogId).catch((e) => {
       this.logger.error(`Error when getting a post by blog id ${blogId}. ${JSON.stringify(e)}`);
+      return e;
     });
-    if (!blog) {
-      throw new NotFoundException();
-    }
 
     const user = blog.user as UserEntity;
     if (user.id !== userId || blog.is_banned) {
