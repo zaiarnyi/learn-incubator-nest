@@ -99,7 +99,14 @@ export class BloggerController {
     @Param() params: ParamPostByBlogRequest,
     @Req() req: any,
   ) {
-    return this.updatePostByBlogAction.execute({ ...body, blogId: params.blogId }, params.postId, req?.user?.id);
+    if (isNaN(Number(params.postId))) {
+      throw new NotFoundException();
+    }
+    return this.updatePostByBlogAction.execute(
+      { ...body, blogId: params.blogId },
+      Number(params.postId),
+      req?.user?.id,
+    );
   }
 
   @Put('users/:id/ban')
@@ -117,6 +124,9 @@ export class BloggerController {
   @Delete('blogs/:blogId/posts/:postId')
   @HttpCode(204)
   async deletePostByBlog(@Param() params: ParamPostByBlogRequest, @Req() req: any) {
-    return this.deletePostAction.execute(params.blogId, params.postId, req?.user?.id);
+    if (isNaN(Number(params.postId))) {
+      throw new NotFoundException();
+    }
+    return this.deletePostAction.execute(params.blogId, Number(params.postId), req?.user?.id);
   }
 }

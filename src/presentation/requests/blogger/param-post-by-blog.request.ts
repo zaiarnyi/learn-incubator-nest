@@ -1,13 +1,13 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { ValidateBlogById } from '../../../infrastructure/validators/validateBlogById.validator';
 
 export class ParamPostByBlogRequest {
   @IsNumber()
   @IsNotEmpty()
-  // @ValidateBlogById()
+  @ValidateBlogById()
   blogId: number;
 
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  postId: number;
+  postId: string;
 }
