@@ -33,7 +33,7 @@ export class QueryPostRepository {
       `SELECT * FROM posts
                 LEFT JOIN users ON posts."user" = users."id"
                 LEFT JOIN blogs ON posts."blog" = blogs."id"
-                WHERE blog = $1 AND "is_banned" = false
+                WHERE blogs."id" = $1 AND posts."is_banned" = FALSE
                 LIMIT = 1`,
       [id],
     );
@@ -43,7 +43,7 @@ export class QueryPostRepository {
   async getPostById(id: number): Promise<PostEntity> {
     const post = await this.dataSource.query(
       `SELECT * FROM posts
-                WHERE "id" = $1 AND "is_banned" = false
+                WHERE "id" = $1 AND "is_banned" = FALSE
                 LIMIT = 1`,
       [id],
     );
@@ -53,7 +53,7 @@ export class QueryPostRepository {
   async getAllPostById(id: number): Promise<PostEntity> {
     const post = await this.dataSource.query(
       `SELECT * FROM posts
-                WHERE "id" = $1 AND "is_banned" = false`,
+                WHERE "id" = $1 AND "is_banned" = FALSE`,
       [id],
     );
     return post;
