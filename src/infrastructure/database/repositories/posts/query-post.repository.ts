@@ -31,7 +31,7 @@ export class QueryPostRepository {
   async getPostByBlogId(id: number): Promise<PostEntity> {
     const post = await this.dataSource.query(
       `SELECT * FROM posts
-                LEFT JOIN users ON posts."user" = user."id"
+                LEFT JOIN users ON posts."user" = users."id"
                 LEFT JOIN blogs ON posts."blog" = blogs."id"
                 WHERE blog = $1 AND "is_banned" = false
                 LIMIT = 1`,

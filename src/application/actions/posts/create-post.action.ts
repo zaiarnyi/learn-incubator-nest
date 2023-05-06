@@ -57,6 +57,7 @@ export class CreatePostAction {
     if (!post) {
       throw new NotFoundException();
     }
+    console.log(post, 'post');
     const user = post.user as UserEntity;
     if (user.id !== userId || post.is_banned) {
       throw new ForbiddenException();

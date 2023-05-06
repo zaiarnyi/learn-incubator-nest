@@ -20,6 +20,9 @@ export class DeleteBlogByIdAction {
   ) {}
 
   private async validate(id: number, userId: number) {
+    if (isNaN(id)) {
+      throw new NotFoundException();
+    }
     const findBlog = await this.queryRepository.getBlogById(id);
 
     if (!findBlog) {
