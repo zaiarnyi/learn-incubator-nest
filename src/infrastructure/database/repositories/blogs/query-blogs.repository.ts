@@ -20,7 +20,7 @@ export class QueryBlogsRepository {
     limit: number,
     sortBy: string,
     direction: string,
-    userId?: string,
+    userId?: number,
     userIsNotNull?: boolean,
     isBanned?: boolean,
     isJoinUser?: boolean,
@@ -35,7 +35,7 @@ export class QueryBlogsRepository {
     if (userId) {
       query += ` WHERE blogs."user" = ${userId}`;
     } else {
-      query += ` WHERE blogs."user" is NULL`;
+      query += ' WHERE "deletedAt" is NULL';
     }
 
     if (typeof isBanned === 'boolean') {
@@ -53,6 +53,8 @@ export class QueryBlogsRepository {
     query += ` ORDER BY blogs."${sortBy}" ${directionUpper}
                LIMIT $1
                OFFSET $2`;
+
+    console.log(query, 'query');
 
     return this.dataSource.query(query, [limit, skip]);
   }
@@ -72,13 +74,13 @@ export class QueryBlogsRepository {
     return +count[0].count;
   }
 
-  async getCountBlogs(filter?: string, userId?: string, userIsNotNull?: boolean, isBanned?: boolean): Promise<number> {
+  async getCountBlogs(filter?: string, userId?: number, userIsNotNull?: boolean, isBanned?: boolean): Promise<number> {
     let query = `SELECT COUNT(*) FROM blogs`;
 
     if (userId) {
       query += ` WHERE "user" = ${userId}`;
     } else {
-      query += ' WHERE "user" is NULL';
+      query += ' WHERE "deletedAt" is NULL';
     }
 
     if (typeof isBanned === 'boolean') {

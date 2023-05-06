@@ -3,7 +3,7 @@ import { GetBlogsWithOwnerResponse } from '../../../../presentation/responses/sa
 import { QueryBlogsRepository } from '../../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 import { plainToClass } from 'class-transformer';
 import { QueryUserBannedRepository } from '../../../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
-import { UserEntity } from '../../../../domain/users/entities/user.entity';
+import { BlogEntity } from '../../../../domain/blogs/entities/blog.entity';
 
 @Injectable()
 export class GetBlogsActions {
@@ -30,11 +30,10 @@ export class GetBlogsActions {
       true,
     );
 
-    const promises = blogs.map((item) => {
-      const user = item.user as UserEntity;
+    const promises = blogs.map((item: BlogEntity & { login: string }) => {
       return Object.assign(item, {
         id: item.id.toString(),
-        blogOwnerInfo: { userId: user.id, userLogin: user.login },
+        blogOwnerInfo: { userId: item.user, userLogin: item.login },
         banInfo: {
           isBanned: item?.is_banned ?? false,
           banDate: item?.ban_date || null,

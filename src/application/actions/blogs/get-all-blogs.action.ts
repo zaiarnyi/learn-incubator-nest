@@ -12,7 +12,7 @@ export class GetAllBlogsAction {
     private readonly queryRepository: QueryBlogsRepository,
   ) {}
 
-  public async execute(query: GetBlogsDto, userId?: string): Promise<GetAllBlogsResponse> {
+  public async execute(query: GetBlogsDto, userId?: number): Promise<GetAllBlogsResponse> {
     const totalCount = await this.queryRepository.getCountBlogs(query.searchNameTerm, userId, null, false);
     const skip = (query.pageNumber - 1) * query.pageSize;
     const pagesCount = Math.ceil(totalCount / query.pageSize);
