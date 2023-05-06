@@ -41,7 +41,7 @@ export class GetPostByIdAction {
       title: postById.title,
       shortDescription: postById.short_description,
       content: postById.content,
-      blog: blog.id,
+      blogId: blog.id.toString(),
       blogName: blog.name,
       createdAt: postById.createdAt,
       extendedLikesInfo: await this.likesInfoService.likesInfo(id, userId),

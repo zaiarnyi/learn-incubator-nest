@@ -119,9 +119,8 @@ export class QueryBlogsRepository {
   }
 
   async getBlogsByBloggerWithUser(blogId: number): Promise<BlogEntity> {
-    const query = `SELECT b.*, u.login FROM blogs b
-          LEFT JOIN "users" "u" ON b."user" = u.id
-          WHERE b."id" = $1 AND b."is_banned" = FALSE
+    const query = `SELECT * FROM blogs
+          WHERE id = $1 AND "is_banned" = FALSE
           LIMIT 1`;
     const blog = await this.dataSource.query(query, [blogId]);
     return blog.length ? blog[0] : null;
