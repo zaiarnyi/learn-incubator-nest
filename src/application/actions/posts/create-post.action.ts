@@ -11,13 +11,14 @@ import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
 import { UserQueryRepository } from '../../../infrastructure/database/repositories/users/query.repository';
 import { UserEntity } from '../../../domain/users/entities/user.entity';
 import { BlogEntity } from '../../../domain/blogs/entities/blog.entity';
+import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 
 export class CreatePostAction {
   logger = new Logger(CreatePostAction.name);
 
   constructor(
-    @Inject(QueryPostRepository)
-    private readonly queryPostRepository: QueryPostRepository,
+    @Inject(QueryBlogsRepository)
+    private readonly queryBlogRepository: QueryBlogsRepository,
 
     @Inject(MainPostRepository)
     private readonly mainRepository: MainPostRepository,
@@ -54,47 +55,46 @@ export class CreatePostAction {
 
   private async validate(blogId: number, userId: number) {
     console.log(blogId, userId);
-    const post = await this.queryPostRepository.getPostByBlogId(blogId).catch((e) => {
+    const blog = await this.queryBlogRepository.getBlogsByBloggerWithUser(blogId).catch((e) => {
       this.logger.error(`Error when getting a post by blog id ${blogId}. ${JSON.stringify(e)}`);
     });
-    if (!post) {
+    if (!blog) {
       throw new NotFoundException();
     }
 
-    const user = post.user as UserEntity;
-    if (user.id !== userId || post.is_banned) {
+    const user = blog.user as UserEntity;
+    if (user.id !== userId || blog.is_banned) {
       throw new ForbiddenException();
     }
-    return post;
+    return blog;
   }
   public async execute(payload: CreatePostDto, userId?: number): Promise<GetPost | any> {
-    const post = await this.validate(payload.blogId, userId);
-    // const newPost = new PostEntity();
-    // const blog = post.blog as BlogEntity;
-    // const user = post.user as UserEntity;
-    //
-    // newPost.title = payload.title;
-    // newPost.content = payload.content;
-    // newPost.short_description = payload.shortDescription;
-    // newPost.blog = blog;
-    // newPost.user = user.id;
-    //
-    // const createdPost = await this.mainRepository.createPost(newPost);
-    // // await this.createDefaultStatus(createdPost.id, userId).catch((e) => {
-    // //   this.logger.error(`Error in post status creation. ${JSON.stringify(e)}`);
-    // // });
-    //
-    // return {
-    //   ...plainToClass(GetPost, {
-    //     id: createdPost.id.toString(),
-    //     title: createdPost.title,
-    //     shortDescription: createdPost.short_description,
-    //     content: createdPost.content,
-    //     createdAt: createdPost.createdAt,
-    //     blogId: blog.id.toString(),
-    //     blogName: blog.name,
-    //   }),
-    //   extendedLikesInfo: this.getLikesInfo(),
-    // };
+    const blog = await this.validate(payload.blogId, userId);
+    const newPost = new PostEntity();
+    const user = blog.user as UserEntity;
+
+    newPost.title = payload.title;
+    newPost.content = payload.content;
+    newPost.short_description = payload.shortDescription;
+    newPost.blog = blog;
+    newPost.user = user.id;
+
+    const createdPost = await this.mainRepository.createPost(newPost);
+    // await this.createDefaultStatus(createdPost.id, userId).catch((e) => {
+    //   this.logger.error(`Error in post status creation. ${JSON.stringify(e)}`);
+    // });
+
+    return {
+      ...plainToClass(GetPost, {
+        id: createdPost.id.toString(),
+        title: createdPost.title,
+        shortDescription: createdPost.short_description,
+        content: createdPost.content,
+        createdAt: createdPost.createdAt,
+        blogId: blog.id.toString(),
+        blogName: blog.name,
+      }),
+      extendedLikesInfo: this.getLikesInfo(),
+    };
   }
 }

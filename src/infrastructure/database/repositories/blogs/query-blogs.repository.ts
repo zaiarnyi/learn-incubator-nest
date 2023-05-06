@@ -106,7 +106,7 @@ export class QueryBlogsRepository {
   ): Promise<PostEntity[]> {
     const directionUpper = sortBy === 'createdAt' ? direction : 'COLLATE "C"' + direction.toUpperCase();
     const query = `SELECT * FROM posts WHERE "id" = $1 AND "is_banned" = FALSE
-                        LEFT JOIN blogs ON posts."blogs" = blogs."id"
+                        LEFT JOIN blogs ON posts."blog" = blogs."id"
                         ORDER BY "${sortBy}" ${directionUpper}
                         LIMIT $2
                         OFFSET $3`;
@@ -116,5 +116,13 @@ export class QueryBlogsRepository {
 
   async getBlogsByBlogger(userId: number): Promise<number[]> {
     return this.dataSource.query(`SELECT id FROM blogs WHERE "user" = $1`, [userId]);
+  }
+
+  async getBlogsByBloggerWithUser(blogId: number): Promise<BlogEntity> {
+    const query = `SELECT * FROM blogs
+                                            LEFT JOIN users ON blogs."user" = users."id"
+                                            WHERE blogs."id" = $1 AND "is_banned" = FALSE`;
+    const blog = await this.dataSource.query(query, [blogId]);
+    return blog.length ? blog[0] : null;
   }
 }
