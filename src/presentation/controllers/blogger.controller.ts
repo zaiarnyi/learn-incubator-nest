@@ -111,6 +111,9 @@ export class BloggerController {
   @Put('users/:id/ban')
   @HttpCode(204)
   async setBanToUser(@Param('id') id: string, @Body() body: UserBannedByBlogRequest, @Req() req: any): Promise<void> {
+    if (isNaN(Number(id))) {
+      throw new NotFoundException();
+    }
     await this.changeBannedStatusUserAction.execute(Number(id), body, req.user.id);
   }
 
