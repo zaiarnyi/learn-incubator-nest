@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber } from 'class-validator';
 import { Trim } from 'class-sanitizer';
 import { ValidateBlogById } from '../../../infrastructure/validators/validateBlogById.validator';
 import { Transform } from 'class-transformer';
@@ -8,6 +8,6 @@ export class CheckBlogIdRequest {
   @IsNotEmpty()
   @Trim()
   @ValidateBlogById()
-  @Transform(({ value }) => value && parseInt(value))
+  @Transform(({ value }) => value && Number(value))
   id: number;
 }

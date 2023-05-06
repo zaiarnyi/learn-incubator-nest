@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   Inject,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
@@ -103,17 +104,19 @@ export class BloggerController {
 
   @Put('users/:id/ban')
   @HttpCode(204)
-  async setBanToUser(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() body: UserBannedByBlogRequest,
-    @Req() req: any,
-  ): Promise<void> {
-    await this.changeBannedStatusUserAction.execute(id, body, req.user.id);
+  async setBanToUser(@Param('id') id: string, @Body() body: UserBannedByBlogRequest, @Req() req: any): Promise<void> {
+    if (isNaN(Number(id))) {
+      throw new NotFoundException();
+    }
+    await this.changeBannedStatusUserAction.execute(Number(id), body, req.user.id);
   }
 
   @Delete('blogs/:id')
   @HttpCode(204)
   async deleteBlog(@Param() param: CheckBlogIdRequest, @Req() req: any) {
+    if (isNaN(param.id)) {
+      throw new NotFoundException();
+    }
     return this.deleteService.execute(param.id, req?.user?.id);
   }
 

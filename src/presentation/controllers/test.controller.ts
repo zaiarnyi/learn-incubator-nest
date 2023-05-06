@@ -1,4 +1,4 @@
-import { BadRequestException, Controller, Delete, HttpCode, Inject, Logger } from '@nestjs/common';
+import { Controller, Delete, HttpCode, Inject, Logger } from '@nestjs/common';
 import { UserMainRepository } from '../../infrastructure/database/repositories/users/main.repository';
 import { MainPostRepository } from '../../infrastructure/database/repositories/posts/main-post.repository';
 import { MainBlogsRepository } from '../../infrastructure/database/repositories/blogs/main-blogs.repository';
@@ -35,7 +35,6 @@ export class TestController {
       this.bannedRepository.deleteAll(),
     ]).catch((e) => {
       this.logger.error(`Error when deleting all test data. ${JSON.stringify(e, null, 2)}`);
-      throw new BadRequestException();
     });
   }
 }
