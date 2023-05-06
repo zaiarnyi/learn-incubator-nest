@@ -32,10 +32,10 @@ export class QueryBlogsRepository {
       query += ` Left JOIN users ON blogs."user" = users.id`;
     }
 
-    query += ' WHERE blogs."deletedAt" is NULL';
-
     if (userId) {
-      query += ` AND blogs."user" = ${userId}`;
+      query += ` WHERE blogs."user" = ${userId}`;
+    } else {
+      query += ` WHERE blogs."user" is NULL`;
     }
 
     if (typeof isBanned === 'boolean') {
@@ -50,7 +50,7 @@ export class QueryBlogsRepository {
       query += ` AND blogs."user" is not null`;
     }
 
-    query += ` ORDER BY "${sortBy}" ${directionUpper}
+    query += ` ORDER BY blogs."${sortBy}" ${directionUpper}
                LIMIT $1
                OFFSET $2`;
 
@@ -74,9 +74,11 @@ export class QueryBlogsRepository {
 
   async getCountBlogs(filter?: string, userId?: string, userIsNotNull?: boolean, isBanned?: boolean): Promise<number> {
     let query = `SELECT COUNT(*) FROM blogs`;
-    query += ' WHERE "deletedAt" is NULL';
+
     if (userId) {
-      query += ` AND "user" = ${userId}`;
+      query += ` WHERE "user" = ${userId}`;
+    } else {
+      query += ' WHERE "user" is NULL';
     }
 
     if (typeof isBanned === 'boolean') {

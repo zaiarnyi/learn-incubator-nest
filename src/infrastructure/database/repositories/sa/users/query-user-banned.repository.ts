@@ -45,9 +45,6 @@ export class QueryUserBannedRepository {
     sortBy: string,
     sortDir: string,
   ): Promise<UserBannedEntity[]> {
-    if (sortBy === 'login') {
-      sortBy = 'userLogin';
-    }
     const directionUpper = sortBy === 'createdAt' ? sortDir : 'COLLATE "C"' + sortDir.toUpperCase();
     const query = `SELECT ub.*, u."login" FROM user_bans ub
         LEFT JOIN users u ON ub."user" = u."id"
