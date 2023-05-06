@@ -5,6 +5,7 @@ import { QueryUserBannedRepository } from '../../../../infrastructure/database/r
 import { plainToClass } from 'class-transformer';
 import { QueryBlogsRepository } from '../../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 import { UserEntity } from '../../../../domain/users/entities/user.entity';
+import { UserBannedEntity } from '../../../../domain/sa/users/entities/user-bans.entity';
 
 @Injectable()
 export class GetBannedUserAction {
@@ -43,11 +44,10 @@ export class GetBannedUserAction {
       query.sortDirection,
     );
 
-    const items = users.map((item) => {
-      const user = item.user as UserEntity;
+    const items = users.map((item: UserBannedEntity & { login: string }) => {
       return {
         id: item.id.toString(),
-        login: user.login,
+        login: item.login,
         banInfo: {
           isBanned: true,
           banDate: item.createdAt,

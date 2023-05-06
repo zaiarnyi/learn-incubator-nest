@@ -49,9 +49,9 @@ export class QueryUserBannedRepository {
       sortBy = 'userLogin';
     }
     const directionUpper = sortBy === 'createdAt' ? sortDir : 'COLLATE "C"' + sortDir.toUpperCase();
-    const query = `SELECT * FROM user_bans
-        LEFT JOIN users ON user_bans."user" = users."id"
-        WHERE user_bans."blog" = $1 AND user."login" ILIKE $2
+    const query = `SELECT ub.*, u."login" FROM user_bans ub
+        LEFT JOIN users u ON ub."user" = u."id"
+        WHERE ub."blog" = $1 AND u."login" ILIKE $2
         ORDER BY "${sortBy}" ${directionUpper}
         LIMIT $3
     `;
