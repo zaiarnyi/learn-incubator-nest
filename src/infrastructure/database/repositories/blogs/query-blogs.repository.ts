@@ -32,7 +32,7 @@ export class QueryBlogsRepository {
       query += ` Left JOIN users ON blogs."user" = users.id`;
     }
 
-    query += ' WHERE deletedAt is NULL';
+    query += ' WHERE blogs."deletedAt" is NULL';
 
     if (userId) {
       query += ` AND blogs."user" = ${userId}`;
@@ -74,7 +74,7 @@ export class QueryBlogsRepository {
 
   async getCountBlogs(filter?: string, userId?: string, userIsNotNull?: boolean, isBanned?: boolean): Promise<number> {
     let query = `SELECT COUNT(*) FROM blogs`;
-    query += ' WHERE deletedAt is NULL';
+    query += ' WHERE "deletedAt" is NULL';
     if (userId) {
       query += ` AND "user" = ${userId}`;
     }
