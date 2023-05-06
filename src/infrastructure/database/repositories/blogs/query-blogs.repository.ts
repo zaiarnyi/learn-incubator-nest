@@ -32,24 +32,22 @@ export class QueryBlogsRepository {
       query += ` Left JOIN users ON blogs."user" = users.id`;
     }
 
-    if (userId && !isJoinUser) {
-      query += ` WHERE "user" = ${userId}`;
-    }
+    query += ' WHERE deletedAt is NULL';
 
-    if (userId && isJoinUser) {
-      query += ` WHERE users."id" = ${userId}`;
+    if (userId) {
+      query += ` AND blogs."user" = ${userId}`;
     }
 
     if (typeof isBanned === 'boolean') {
-      query += ` AND "is_banned" = ${isBanned}`;
+      query += ` AND blogs."is_banned" = ${isBanned}`;
     }
 
     if (filter) {
-      query += ` AND "name" ILIKE '%${filter}%'`;
+      query += ` AND blogs."name" ILIKE '%${filter}%'`;
     }
 
     if (userIsNotNull) {
-      query += ` AND "user" is not null`;
+      query += ` AND blogs."user" is not null`;
     }
 
     query += ` ORDER BY "${sortBy}" ${directionUpper}
@@ -75,24 +73,23 @@ export class QueryBlogsRepository {
   }
 
   async getCountBlogs(filter?: string, userId?: string, userIsNotNull?: boolean, isBanned?: boolean): Promise<number> {
-    let query = `SELECT COUNT(*) FROM blogs`;
+    let query = `SELECT COUNT(*) FROM blogs WHERE`;
 
     if (userId) {
-      query += ` WHERE "user" = ${userId}`;
+      query += ` "user" = ${userId}`;
     }
 
     if (typeof isBanned === 'boolean') {
-      query += ` AND "is_banned" = ${isBanned}`;
+      query += ` ${userId ? 'AND' : ''} "is_banned" = ${isBanned}`;
     }
 
     if (filter) {
-      query += ` AND "name" ILIKE '%${filter}%'`;
+      query += ` ${userId ? 'AND' : ''} "name" ILIKE '%${filter}%'`;
     }
 
     if (userIsNotNull) {
-      query += ` AND "user" is not null`;
+      query += ` ${userId ? 'AND' : ''} "user" is not null`;
     }
-
     const count = await this.dataSource.query(query);
     return +count[0].count;
   }
