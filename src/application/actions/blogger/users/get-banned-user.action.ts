@@ -46,7 +46,7 @@ export class GetBannedUserAction {
 
     const items = users.map((item: UserBannedEntity & { login: string }) => {
       return {
-        id: item.id.toString(),
+        id: item.user.toString(),
         login: item.login,
         banInfo: {
           isBanned: true,
