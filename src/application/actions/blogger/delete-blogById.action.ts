@@ -20,6 +20,7 @@ export class DeleteBlogByIdAction {
   ) {}
 
   private async validate(id: number, userId: number) {
+    console.log(userId, id, '=====================');
     const findBlog = await this.queryRepository.getBlogById(id);
 
     if (!findBlog) {
