@@ -17,7 +17,7 @@ export class DeletePostByBlogIdAction {
     if (!findPost) {
       throw new NotFoundException();
     }
-
+    this.logger.log({ blogId, postId, userId, findPost });
     if (findPost.user !== userId || findPost.blog !== blogId) {
       throw new ForbiddenException();
     }
