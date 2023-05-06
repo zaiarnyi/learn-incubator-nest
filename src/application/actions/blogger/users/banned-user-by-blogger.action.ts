@@ -71,7 +71,7 @@ export class BannedUserByBloggerAction {
     const bannedUserByBlog = new UserBannedEntity();
     bannedUserByBlog.user = user.id;
     bannedUserByBlog.ban_reason = body.banReason;
-    bannedUserByBlog.blog = blog;
+    bannedUserByBlog.blog = blog.id;
 
     return this.banRepository.save(bannedUserByBlog).catch((e) => {
       this.logger.error(`Error when save blog banner. MEssage: ${JSON.stringify(e)}`);

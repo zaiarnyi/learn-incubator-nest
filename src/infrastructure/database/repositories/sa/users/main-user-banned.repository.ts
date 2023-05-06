@@ -41,7 +41,7 @@ export class MainUserBannedRepository {
   async save(body: UserBannedEntity): Promise<UserBannedEntity> {
     const findQuery = `SELECT * FROM user_bans WHERE "user" = $1`;
     const hasUserBan = await this.dataSource.query(findQuery, [body.user]);
-    if (hasUserBan) {
+    if (hasUserBan.length) {
       const updateQuery = `UPDATE user_bans SET "ban_reason" = $1, "blog" = $2 WHERE "user" = $3 RETURNING *`;
       const updated = await this.dataSource.query(updateQuery, [body.ban_reason, body.blog, body.user]);
       return updated.length ? updated[0] : null;
