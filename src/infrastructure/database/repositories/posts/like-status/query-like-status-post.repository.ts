@@ -37,10 +37,10 @@ export class QueryLikeStatusPostRepository {
   }
 
   async getLastLikesStatus(postId: number): Promise<PostLikesEntity[]> {
-    const query = `SELECT *, u."login" FROM post_likes
-            LEFT JOIN user u ON post_likes."user" = users.id
-            WHERE "post" = $1 AND "is_banned" = $2 AND "${LikeStatusEnum.Like.toLowerCase()}" = TRUE
-            ORDER BY "createdAt" DESC
+    const query = `SELECT post_likes.*, u."login" FROM post_likes
+            LEFT JOIN users u ON post_likes."user" = u.id
+            WHERE post_likes."post" = $1 AND post_likes."is_banned" = TRUE AND post_likes."${LikeStatusEnum.Like.toLowerCase()}" = TRUE
+            ORDER BY post_likes."createdAt" DESC
             LIMIT 3`;
     return this.dataSource.query(query, [postId]);
   }
