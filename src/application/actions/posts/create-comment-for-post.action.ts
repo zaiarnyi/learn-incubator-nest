@@ -74,9 +74,9 @@ export class CreateCommentForPostAction {
 
     return plainToClass(PostCommentInfo, {
       ...createdComment,
-      id: commentId,
+      id: commentId.toString(),
       commentatorInfo: {
-        userId: createdComment.user,
+        userId: createdComment.user.toString(),
         userLogin: user.login,
       },
       likesInfo: {

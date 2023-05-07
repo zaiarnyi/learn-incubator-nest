@@ -42,9 +42,9 @@ export class QueryCommentsRepository {
 
   async getCommentById(id: number): Promise<CommentsEntity> {
     const comments = await this.dataSource.query(
-      `SELECT *, comments.id as "commentId" FROM comments
-    LEFT JOIN users u ON comments."user" = users.id
-    WHERE comments."commentId" = $1`,
+      `SELECT *, comments."id" as "commentId", users."login" FROM comments
+    LEFT JOIN users ON comments."user" = users.id
+    WHERE comments."id" = $1`,
       [id],
     );
     return comments.length ? comments[0] : null;

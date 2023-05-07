@@ -51,7 +51,7 @@ export class GetCommentByIdAction {
     }
     return plainToClass(CommentResponse, {
       ...comment,
-      id: comment.id.toString(),
+      id: comment.commentId.toString(),
       commentatorInfo: {
         userId: comment.user,
         userLogin: comment.login,
