@@ -13,8 +13,8 @@ export class DeleteCommentByIdAction {
   public async execute(id: number, userId: number): Promise<void> {
     const comment = await this.queryRepository.getCommentById(id).catch((e) => {
       this.logger.error(`Error in getting a comment - ${id}. ${JSON.stringify(e)}`);
-      throw new NotFoundException();
     });
+
     if (!comment) {
       throw new NotFoundException();
     }

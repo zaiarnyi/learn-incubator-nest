@@ -61,7 +61,7 @@ export class CommentsController {
     if (isNaN(Number(id))) {
       throw new NotFoundException();
     }
-    return this.changeLikeStatusService.execute(Number(id), req.user.userId, body);
+    return this.changeLikeStatusService.execute(Number(id), req.user.id, body);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -71,6 +71,6 @@ export class CommentsController {
     if (isNaN(Number(id))) {
       throw new NotFoundException();
     }
-    return this.deleteCommentByIdService.execute(Number(id), req.user.userId);
+    return this.deleteCommentByIdService.execute(Number(id), req.user.id);
   }
 }
