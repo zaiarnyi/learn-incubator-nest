@@ -7,7 +7,7 @@ import {
 } from '../../../presentation/responses/blogger/getPostByBlogId.response';
 import { plainToClass } from 'class-transformer';
 import { GetLikesInfoForPostService } from '../../services/posts/get-likes-info-for-post.service';
-import { BlogEntity } from '../../../domain/blogs/entities/blog.entity';
+import { PostEntity } from '../../../domain/posts/entities/post.entity';
 
 @Injectable()
 export class GetPostByBlogIdAction {
@@ -36,29 +36,26 @@ export class GetPostByBlogIdAction {
     const pagesCount = Math.ceil(totalCount / pageSize);
 
     const postsRaw = await this.queryRepository.getPostByBlogId(id, skip, pageSize, sortBy, sortDirection);
-    const posts = [];
 
-    for (const el of postsRaw) {
-      const blog = el.blog as BlogEntity;
-      const item = plainToClass(PostByBlogItem, {
+    const promises = postsRaw.map(async (el: PostEntity & { name: string }) => {
+      return plainToClass(PostByBlogItem, {
         id: el.id.toString(),
         title: el.title,
         shortDescription: el.short_description,
         content: el.content,
-        blogId: blog.id.toString(),
-        blogName: blog.name,
+        blogId: el.blog.toString(),
+        blogName: el.name,
         createdAt: el.createdAt,
         extendedLikesInfo: await this.likesInfoService.likesInfo(el.id, userId),
       });
-      posts.push(item);
-    }
+    });
 
     return {
       pagesCount,
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount,
-      items: posts,
+      items: await Promise.all(promises),
     };
   }
 }

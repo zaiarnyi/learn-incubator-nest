@@ -106,9 +106,10 @@ export class QueryBlogsRepository {
     direction: string,
   ): Promise<PostEntity[]> {
     const directionUpper = sortBy === 'createdAt' ? direction : 'COLLATE "C"' + direction.toUpperCase();
-    const query = `SELECT * FROM posts WHERE "id" = $1 AND "is_banned" = FALSE
+    const query = `SELECT posts.*, posts.id as "postId", blogs."name" FROM posts
                         LEFT JOIN blogs ON posts."blog" = blogs."id"
-                        ORDER BY "${sortBy}" ${directionUpper}
+                        WHERE posts."id" = $1 AND posts."is_banned" = FALSE
+                        ORDER BY posts."${sortBy}" ${directionUpper}
                         LIMIT $2
                         OFFSET $3`;
 
