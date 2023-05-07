@@ -26,7 +26,7 @@ export class MainLikeStatusPostRepository {
   }
 
   async createDefaultStatusForPost(body: PostLikesEntity): Promise<PostLikesEntity> {
-    const query = `INSERT INTO ("like", "dislike", "my_status", "user", "post")
+    const query = `INSERT INTO post_likes ("like", "dislike", "my_status", "user", "post")
             VALUES ($1, $2, $3, $4, $5)`;
     const insert = await this.dataSource.query(query, [body.like, body.dislike, body.my_status, body.user, body.post]);
     return insert.length ? insert[0] : null;

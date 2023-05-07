@@ -29,7 +29,7 @@ export class MainLikeStatusRepository {
       ]);
       return updated.length ? updated[0] : null;
     }
-    const insertQuery = `INSERT INTO ("like", "dislike", "my_status", "user", "comment")
+    const insertQuery = `INSERT INTO comment_likes ("like", "dislike", "my_status", "user", "comment")
         VALUES ($1, $2, $3, $4, $5)`;
     const insert = await this.dataSource.query(insertQuery, [
       body.like,
