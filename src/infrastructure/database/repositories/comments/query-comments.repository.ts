@@ -30,7 +30,7 @@ export class QueryCommentsRepository {
     direction: string,
   ): Promise<CommentsEntity[]> {
     const directionUpper = sortBy === 'createdAt' ? direction : 'COLLATE "C"' + direction.toUpperCase();
-    const query = `SELECT *, comments.id as "commentId" FROM comments
+    const query = `SELECT comments.*, comments.id as "commentId" FROM comments
                LEFT JOIN users u ON comments."user" = u.id
                WHERE comments."post" = $3 AND comments."is_banned" = FALSE
                ORDER BY comments."${sortBy}" ${directionUpper}
@@ -42,7 +42,7 @@ export class QueryCommentsRepository {
 
   async getCommentById(id: number): Promise<CommentsEntity> {
     const comments = await this.dataSource.query(
-      `SELECT *, comments."id" as "commentId", users."login" FROM comments
+      `SELECT comments.*, comments."id" as "commentId", users."login" FROM comments
     LEFT JOIN users ON comments."user" = users.id
     WHERE comments."id" = $1`,
       [id],
@@ -62,7 +62,7 @@ export class QueryCommentsRepository {
     sortDir: string,
   ): Promise<CommentsEntity[]> {
     const directionUpper = sortBy === 'createdAt' ? sortDir : 'COLLATE "C"' + sortDir.toUpperCase();
-    const query = `SELECT *, u."login", comments.id as "commentId", p.*, b.* FROM comments
+    const query = `SELECT comments.*, u."login", comments.id as "commentId", p.*, b.* FROM comments
             LEFT JOIN user u ON comments."user" = users.id
             LEFT JOIN post p ON comments."post" = posts.id
             LEFT JOIN blogs b ON comments."blog" = blogs.id

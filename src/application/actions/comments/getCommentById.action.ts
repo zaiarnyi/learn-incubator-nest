@@ -49,6 +49,7 @@ export class GetCommentByIdAction {
     if (!comment || comment.is_banned) {
       throw new NotFoundException();
     }
+    console.log(comment, 'comment');
     return plainToClass(CommentResponse, {
       ...comment,
       id: comment.commentId.toString(),
