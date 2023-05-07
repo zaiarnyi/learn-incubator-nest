@@ -17,7 +17,7 @@ export class QueryLikeStatusRepository {
   async getMyStatusByCommentId(id: number, userId: number): Promise<CommentLikesEntity> {
     const find = await this.dataSource.query(
       `SELECT * FROM comment_likes
-            WHERE "comment" = $1 AND "user" = $2 AND "is_banned" = $3`,
+            WHERE "comment" = $1 AND "user" = $2 AND "is_banned" = false`,
       [id, userId],
     );
 
