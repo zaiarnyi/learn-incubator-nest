@@ -47,7 +47,7 @@ export class PostsController {
     return this.getPostByIdService.execute(id, req?.user?.id);
   }
   @UseGuards(JwtAuthOptionalGuard)
-  @Get(':id/comments')
+  @Get('/:id/comments')
   async getCommentsByPostId(
     @Param('id') id: string,
     @Query() query: GetPostsRequest,
@@ -56,7 +56,7 @@ export class PostsController {
     if (isNaN(Number(id))) {
       throw new NotFoundException();
     }
-    return this.commentsByPostIdService.execute(Number(id), query, req?.user?.userId);
+    return this.commentsByPostIdService.execute(Number(id), query, req?.user?.id);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -69,7 +69,7 @@ export class PostsController {
     if (isNaN(Number(id))) {
       throw new NotFoundException();
     }
-    return this.createCommentForPostAction.execute(Number(id), body, req.user.userId);
+    return this.createCommentForPostAction.execute(Number(id), body, req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -83,6 +83,6 @@ export class PostsController {
     if (isNaN(Number(id))) {
       throw new NotFoundException();
     }
-    return this.changeLikeStatusByPostIdService.execute(Number(id), body, req.user.userId);
+    return this.changeLikeStatusByPostIdService.execute(Number(id), body, req.user.id);
   }
 }
