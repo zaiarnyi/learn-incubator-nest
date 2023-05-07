@@ -68,7 +68,7 @@ export class QueryBlogsRepository {
   }
 
   async getPostsCount(blogId: number): Promise<number> {
-    const count = await this.dataSource.query(`SELECT COUNT(*) FROM posts WHERE "id" = $1 AND "is_banned" = FALSE`, [
+    const count = await this.dataSource.query(`SELECT COUNT(*) FROM posts WHERE "blog" = $1 AND "is_banned" = FALSE`, [
       blogId,
     ]);
     return +count[0].count;
@@ -108,7 +108,7 @@ export class QueryBlogsRepository {
     const directionUpper = sortBy === 'createdAt' ? direction : 'COLLATE "C"' + direction.toUpperCase();
     const query = `SELECT posts.*, posts.id as "postId", blogs."name" FROM posts
                         LEFT JOIN blogs ON posts."blog" = blogs."id"
-                        WHERE posts."id" = $1 AND posts."is_banned" = FALSE
+                        WHERE posts."blog" = $1 AND posts."is_banned" = FALSE
                         ORDER BY posts."${sortBy}" ${directionUpper}
                         LIMIT $2
                         OFFSET $3`;

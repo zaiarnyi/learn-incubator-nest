@@ -16,7 +16,16 @@ export class GetPostByIdAction {
     @Inject(QueryUserBannedRepository) private readonly queryUserBannedRepository: QueryUserBannedRepository,
   ) {}
 
+  private async validateIsUserBanned(userId: number) {
+    if (!userId) return;
+    const hasBanned = await this.queryUserBannedRepository.checkStatus(userId);
+    if (hasBanned) {
+      throw new NotFoundException();
+    }
+  }
+
   public async execute(id: number, userId?: number): Promise<GetPost> {
+    await this.validateIsUserBanned(userId);
     const postById = await this.queryRepository.getPostById(id);
     if (!postById) {
       throw new NotFoundException();

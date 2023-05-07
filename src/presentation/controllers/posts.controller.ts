@@ -69,7 +69,7 @@ export class PostsController {
     @Body() body: CreateCommentForPostRequest,
     @Req() req: any,
   ): Promise<PostCommentInfo> {
-    if (isNaN(Number(id))) {
+    if (isNaN(Number(id)) || req?.user?.is_banned) {
       throw new NotFoundException();
     }
     return this.createCommentForPostAction.execute(Number(id), body, req.user.id);
@@ -83,7 +83,7 @@ export class PostsController {
     @Body() body: ChangeLikeStatusPostByIdRequest,
     @Req() req: any,
   ) {
-    if (isNaN(Number(id))) {
+    if (isNaN(Number(id)) || req?.user?.is_banned) {
       throw new NotFoundException();
     }
     return this.changeLikeStatusByPostIdService.execute(Number(id), body, req.user.id);
