@@ -44,6 +44,9 @@ export class PostsController {
   @UseGuards(JwtAuthOptionalGuard)
   @Get(':id')
   async getPostById(@Param('id', ParseIntPipe) id: number, @Req() req: any): Promise<GetPost> {
+    if (req?.user?.is_banned) {
+      throw new NotFoundException();
+    }
     return this.getPostByIdService.execute(id, req?.user?.id);
   }
   @UseGuards(JwtAuthOptionalGuard)
