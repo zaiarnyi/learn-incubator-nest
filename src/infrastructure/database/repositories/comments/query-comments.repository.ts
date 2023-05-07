@@ -32,8 +32,8 @@ export class QueryCommentsRepository {
     const directionUpper = sortBy === 'createdAt' ? direction : 'COLLATE "C"' + direction.toUpperCase();
     const query = `SELECT *, comments.id as "commentId" FROM comments
                LEFT JOIN users u ON comments."user" = u.id
-               WHERE "post" = $3 AND "is_banned" = FALSE
-               ORDER BY blogs."${sortBy}" ${directionUpper}
+               WHERE comments."post" = $3 AND comments."is_banned" = FALSE
+               ORDER BY comments."${sortBy}" ${directionUpper}
                LIMIT $1
                OFFSET $2`;
 

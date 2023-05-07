@@ -22,11 +22,9 @@ export class GetCommentsByPostIdAction {
   ) {}
 
   private async validate(postId: number) {
-    console.log(postId, '====');
     const post = await this.queryPostsRepository.getPostById(postId).catch((e) => {
       this.logger.error(e);
     });
-    console.log(post, 'post');
     if (!post) {
       throw new NotFoundException();
     }
