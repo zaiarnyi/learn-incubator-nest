@@ -23,8 +23,6 @@ export class GetCommentsByBlogsAction {
   ) {}
 
   private async getLikesInfo(commentId: number): Promise<ExtendedLikesInfo> {
-    return new ExtendedLikesInfo();
-
     const [likesCount, dislikesCount] = await Promise.all([
       this.queryLikeStatusRepository.getCountLikesByCommentId(commentId, 'like'),
       this.queryLikeStatusRepository.getCountLikesByCommentId(commentId, 'dislike'),
