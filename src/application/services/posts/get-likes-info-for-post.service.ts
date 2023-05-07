@@ -21,7 +21,7 @@ export class GetLikesInfoForPostService {
     const newestLikes = lastLikes?.map((item: PostLikesEntity & { login: string }) => {
       return plainToClass(NewestLikes, {
         addedAt: item.createdAt,
-        userId: item.user,
+        userId: item.user.toString(),
         login: item.login,
       });
     });
