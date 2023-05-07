@@ -11,7 +11,7 @@ export class ChangeCommentByIdAction {
     @Inject(QueryCommentsRepository) private readonly queryRepository: QueryCommentsRepository,
   ) {}
 
-  private async validate(id: string, userId: string, body: ChangeCommentByIdDto) {
+  private async validate(id: number, userId: number, body: ChangeCommentByIdDto) {
     try {
       await validateOrReject(body);
     } catch (e) {
@@ -25,12 +25,12 @@ export class ChangeCommentByIdAction {
     if (!comment) {
       throw new NotFoundException();
     }
-    if (comment.userId !== userId) {
+    if (comment.user !== userId) {
       throw new ForbiddenException();
     }
   }
 
-  public async execute(id: string, body: ChangeCommentByIdDto, userId: string): Promise<void> {
+  public async execute(id: number, body: ChangeCommentByIdDto, userId: number): Promise<void> {
     await this.validate(id, userId, body);
 
     await this.repository.changeCommentById(id, body).catch(() => {

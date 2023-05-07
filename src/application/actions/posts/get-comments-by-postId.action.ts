@@ -1,4 +1,4 @@
-import { ForbiddenException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { GetCommentsByPostIdDto } from '../../../domain/posts/dto/get-comments-by-postId.dto';
 import { QueryCommentsRepository } from '../../../infrastructure/database/repositories/comments/query-comments.repository';
 import {
@@ -7,11 +7,10 @@ import {
 } from '../../../presentation/responses/posts/get-comments-by-postId.response';
 import { plainToClass } from 'class-transformer';
 import { QueryLikeStatusRepository } from '../../../infrastructure/database/repositories/comments/like-status/query-like-status.repository';
+import { QueryPostRepository } from '../../../infrastructure/database/repositories/posts/query-post.repository';
+import { CommentsEntity } from '../../../domain/comments/entities/comment.entity';
 import { ExtendedLikesInfo } from '../../../presentation/responses/extendedLikesInfo.response';
 import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
-import { QueryPostRepository } from '../../../infrastructure/database/repositories/posts/query-post.repository';
-import { QueryUserBannedRepository } from '../../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
-import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 
 @Injectable()
 export class GetCommentsByPostIdAction {
@@ -22,18 +21,17 @@ export class GetCommentsByPostIdAction {
     @Inject(QueryLikeStatusRepository) private readonly likeStatusCommentRepository: QueryLikeStatusRepository,
   ) {}
 
-  private async validate(postId: string, userId?: string) {
-    // const post = await this.queryPostsRepository.getPostById(postId).catch((e) => {
-    //   this.logger.error(e);
-    // });
-    //
-    // if (!post) {
-    //   throw new NotFoundException();
-    // }
-    throw new NotFoundException();
+  private async validate(postId: number) {
+    const post = await this.queryPostsRepository.getPostById(postId).catch((e) => {
+      this.logger.error(e);
+    });
+
+    if (!post) {
+      throw new NotFoundException();
+    }
   }
 
-  private async getLikesInfo(commentId: string, userId?: string): Promise<ExtendedLikesInfo> {
+  private async getLikesInfo(commentId: number, userId?: number): Promise<ExtendedLikesInfo> {
     const [likesCount, dislikesCount, info] = await Promise.all([
       this.likeStatusCommentRepository.getCountLikesByCommentId(commentId, 'like'),
       this.likeStatusCommentRepository.getCountLikesByCommentId(commentId, 'dislike'),
@@ -42,16 +40,16 @@ export class GetCommentsByPostIdAction {
     return {
       likesCount,
       dislikesCount,
-      myStatus: info?.myStatus ?? LikeStatusEnum.None,
+      myStatus: info?.my_status ?? LikeStatusEnum.None,
     };
   }
 
   public async execute(
-    postId: string,
+    postId: number,
     query: GetCommentsByPostIdDto,
-    userId?: string,
+    userId?: number,
   ): Promise<GetCommentsByPostIdResponse> {
-    await this.validate(postId, userId);
+    await this.validate(postId);
 
     const { pageSize, pageNumber, sortDirection, sortBy } = query;
     const totalCount = await this.queryRepository.getCountComments(postId);
@@ -59,27 +57,24 @@ export class GetCommentsByPostIdAction {
     const pagesCount = Math.ceil(totalCount / pageSize);
 
     const commentsRaw = await this.queryRepository.getCommentByPostId(postId, skip, pageSize, sortBy, sortDirection);
-    const comments = [];
-
-    for (const comment of commentsRaw) {
-      const c = plainToClass(PostCommentInfo, {
-        ...comment.toObject(),
-        id: comment._id.toString(),
+    const promises = commentsRaw.map(async (comment: CommentsEntity & { commentId: number; login: string }) => {
+      return plainToClass(PostCommentInfo, {
+        ...comment,
+        id: comment.commentId.toString(),
         commentatorInfo: {
-          userId: comment.userId,
-          userLogin: comment.userLogin,
+          userId: comment.user,
+          userLogin: comment.login,
         },
-        likesInfo: await this.getLikesInfo(comment._id.toString(), userId),
+        likesInfo: await this.getLikesInfo(comment.commentId, userId),
       });
-      comments.push(c);
-    }
+    });
 
     return {
       pagesCount,
       page: pageNumber,
       pageSize,
       totalCount,
-      items: comments,
+      items: await Promise.all(promises),
     };
   }
 }

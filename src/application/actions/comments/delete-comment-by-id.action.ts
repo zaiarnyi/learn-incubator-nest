@@ -10,7 +10,7 @@ export class DeleteCommentByIdAction {
     @Inject(QueryCommentsRepository) private readonly queryRepository: QueryCommentsRepository,
   ) {}
 
-  public async execute(id: string, userId: string): Promise<void> {
+  public async execute(id: number, userId: number): Promise<void> {
     const comment = await this.queryRepository.getCommentById(id).catch((e) => {
       this.logger.error(`Error in getting a comment - ${id}. ${JSON.stringify(e)}`);
       throw new NotFoundException();
@@ -18,13 +18,12 @@ export class DeleteCommentByIdAction {
     if (!comment) {
       throw new NotFoundException();
     }
-    if (comment.userId !== userId) {
+    if (comment.user !== userId) {
       throw new ForbiddenException();
     }
 
-    const res = await this.repository.removeCommentById(id).catch((e) => {
+    await this.repository.removeCommentById(id).catch((e) => {
       this.logger.error(`Error when deleting a comment - ${id}. ${JSON.stringify(e)}`);
     });
-    this.logger.warn(res);
   }
 }

@@ -21,8 +21,12 @@ export class QueryUserBannedRepository {
     return d.length ? d[0] : null;
   }
 
-  async checkStatusByUserBlog(userId: string, blogId: string): Promise<UserBannedDocument> {
-    return this.model.findOne({ userId, blogId });
+  async checkStatusByUserBlog(userId: number, blogId: number): Promise<UserBannedEntity> {
+    const ub = await this.dataSource.query('SELECT * FROM user_bans WHERE "user" = $1 AND "blog" = $2 LIMIT 1', [
+      userId,
+      blogId,
+    ]);
+    return ub.length ? ub[0] : null;
   }
   async checkStatusByBlog(blogId: string): Promise<UserBannedDocument> {
     return this.model.findOne({ blogId });

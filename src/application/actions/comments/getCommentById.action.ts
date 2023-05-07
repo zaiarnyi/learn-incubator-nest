@@ -17,15 +17,15 @@ export class GetCommentByIdAction {
     @Inject(QueryUserBannedRepository) private readonly queryUserBannedRepository: QueryUserBannedRepository,
   ) {}
 
-  private async validateIsUserBanned(userId: string) {
+  private async validateIsUserBanned(userId: number) {
     if (!userId) return;
-    // const hasBanned = await this.queryUserBannedRepository.checkStatus(userId);
-    // if (hasBanned) {
-    //   throw new NotFoundException();
-    // }
+    const hasBanned = await this.queryUserBannedRepository.checkStatus(userId);
+    if (hasBanned) {
+      throw new NotFoundException();
+    }
   }
 
-  private async getLikesInfo(commentId: string, userId?: string): Promise<ExtendedLikesInfo> {
+  private async getLikesInfo(commentId: number, userId?: number): Promise<ExtendedLikesInfo> {
     const [likesCount, dislikesCount, info] = await Promise.all([
       this.queryLikeStatusRepository.getCountLikesByCommentId(commentId, 'like'),
       this.queryLikeStatusRepository.getCountLikesByCommentId(commentId, 'dislike'),
@@ -34,26 +34,27 @@ export class GetCommentByIdAction {
     return plainToClass(ExtendedLikesInfo, {
       likesCount,
       dislikesCount,
-      myStatus: info?.myStatus ?? LikeStatusEnum.None,
+      myStatus: info?.my_status ?? LikeStatusEnum.None,
     });
   }
 
-  public async execute(id: string, userId?: string): Promise<CommentResponse> {
+  public async execute(id: number, userId?: number): Promise<CommentResponse> {
     await this.validateIsUserBanned(userId);
     const comment = await this.queryRepository.getCommentById(id).catch((e) => {
       this.logger.error(`An error occurred when receiving comments with id - ${id}. ${JSON.stringify(e, null, 2)}`);
       throw new NotFoundException();
+      return e;
     });
 
-    if (!comment || comment.isBanned) {
+    if (!comment || comment.is_banned) {
       throw new NotFoundException();
     }
     return plainToClass(CommentResponse, {
-      ...comment.toObject(),
-      id: comment._id.toString(),
+      ...comment,
+      id: comment.id.toString(),
       commentatorInfo: {
-        userId: comment.userId,
-        userLogin: comment.userLogin,
+        userId: comment.user,
+        userLogin: comment.login,
       },
       likesInfo: await this.getLikesInfo(id, userId),
     });

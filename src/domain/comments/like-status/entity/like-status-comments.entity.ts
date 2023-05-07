@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { LikeStatusEnum } from '../../../../infrastructure/enums/like-status.enum';
+import { UserEntity } from '../../../users/entities/user.entity';
+import { CommentsEntity } from '../../entities/comment.entity';
 
 export type LikeStatusCommentDocument = HydratedDocument<LikeStatusComment>;
 
@@ -36,3 +38,16 @@ export class LikeStatusComment {
 }
 
 export const LikeStatusCommentSchema = SchemaFactory.createForClass(LikeStatusComment);
+
+export class CommentLikesEntity {
+  id: number;
+  user: UserEntity | number;
+  comment: CommentsEntity | number;
+  like: boolean;
+  dislike: boolean;
+  my_status: LikeStatusEnum;
+  is_banned: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date;
+}

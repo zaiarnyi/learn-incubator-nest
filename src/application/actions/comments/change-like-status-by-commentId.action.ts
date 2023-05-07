@@ -3,7 +3,7 @@ import { ChangeLikeStatusDto } from '../../../domain/comments/like-status/dto/ch
 import { validateOrReject } from 'class-validator';
 import { QueryCommentsRepository } from '../../../infrastructure/database/repositories/comments/query-comments.repository';
 import { MainLikeStatusRepository } from '../../../infrastructure/database/repositories/comments/like-status/main-like-status.repository';
-import { LikeStatusComment } from '../../../domain/comments/like-status/entity/like-status-comments.entity';
+import { CommentLikesEntity } from '../../../domain/comments/like-status/entity/like-status-comments.entity';
 import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
 
 export class ChangeLikeStatusByCommentIdAction {
@@ -13,7 +13,7 @@ export class ChangeLikeStatusByCommentIdAction {
     @Inject(QueryCommentsRepository) private readonly queryRepository: QueryCommentsRepository,
     @Inject(MainLikeStatusRepository) private readonly likeStatusRepository: MainLikeStatusRepository,
   ) {}
-  private async validate(id: string, body: ChangeLikeStatusDto) {
+  private async validate(id: number, body: ChangeLikeStatusDto) {
     try {
       await validateOrReject(body);
     } catch (e) {
@@ -24,15 +24,15 @@ export class ChangeLikeStatusByCommentIdAction {
       throw new NotFoundException();
     }
   }
-  public async execute(id: string, userId: string, body: ChangeLikeStatusDto): Promise<void> {
+  public async execute(id: number, userId: number, body: ChangeLikeStatusDto): Promise<void> {
     await this.validate(id, body);
 
-    const status = new LikeStatusComment();
-    status.commentId = id;
-    status.myStatus = body.likeStatus;
-    status.like = body.likeStatus === LikeStatusEnum.Like;
+    const status = new CommentLikesEntity();
+    status.comment = id;
+    status.my_status = body.likeStatus;
     status.dislike = body.likeStatus === LikeStatusEnum.Dislike;
-    status.userId = userId;
+    status.like = body.likeStatus === LikeStatusEnum.Like;
+    status.user = userId;
 
     await this.likeStatusRepository.changeLikeStatusByCommentId(status);
   }

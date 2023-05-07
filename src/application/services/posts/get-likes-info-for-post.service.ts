@@ -3,6 +3,7 @@ import { QueryLikeStatusPostRepository } from '../../../infrastructure/database/
 import { LikesInfo, NewestLikes } from '../../../presentation/responses/posts/get-all-posts.response';
 import { plainToClass } from 'class-transformer';
 import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
+import { PostLikesEntity } from '../../../domain/posts/like-status/entity/like-status-posts.entity';
 
 @Injectable()
 export class GetLikesInfoForPostService {
@@ -10,7 +11,7 @@ export class GetLikesInfoForPostService {
     @Inject(QueryLikeStatusPostRepository) private readonly statusPostRepository: QueryLikeStatusPostRepository,
   ) {}
 
-  public async likesInfo(postId: string | number, userId?: string): Promise<LikesInfo | any> {
+  public async likesInfo(postId: number, userId?: number): Promise<LikesInfo | any> {
     return plainToClass(LikesInfo, {
       likesCount: 0,
       dislikesCount: 0,
@@ -19,18 +20,15 @@ export class GetLikesInfoForPostService {
     });
 
     const [likesCount, dislikesCount, lastLikes, info] = await Promise.all([
-      this.statusPostRepository.getCountStatuses(postId as string, LikeStatusEnum.Like),
-      this.statusPostRepository.getCountStatuses(postId as string, LikeStatusEnum.Dislike),
-      this.statusPostRepository.getLastLikesStatus(postId as string),
-      userId && this.statusPostRepository.checkUserStatus(postId as string, userId),
+      this.statusPostRepository.getCountStatuses(postId, LikeStatusEnum.Like),
+      this.statusPostRepository.getCountStatuses(postId, LikeStatusEnum.Dislike),
+      this.statusPostRepository.getLastLikesStatus(postId),
+      userId && this.statusPostRepository.checkUserStatus(postId, userId),
     ]);
-    const newestLikes = lastLikes?.map((item) => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const addedAt = item.createdAt;
+    const newestLikes = lastLikes?.map((item: PostLikesEntity & { login: string }) => {
       return plainToClass(NewestLikes, {
-        addedAt,
-        userId: item.userId,
+        addedAt: item.createdAt,
+        userId: item.user,
         login: item.login,
       });
     });
@@ -38,7 +36,7 @@ export class GetLikesInfoForPostService {
     return plainToClass(LikesInfo, {
       likesCount,
       dislikesCount,
-      myStatus: info?.myStatus ?? LikeStatusEnum.None,
+      myStatus: info?.my_status ?? LikeStatusEnum.None,
       newestLikes,
     });
   }

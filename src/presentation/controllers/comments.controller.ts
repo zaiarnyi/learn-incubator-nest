@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, HttpCode, Inject, Param, Put, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Inject,
+  NotFoundException,
+  Param,
+  Put,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { GetCommentByIdAction } from '../../application/actions/comments/getCommentById.action';
 import { CommentResponse } from '../responses/commentById.response';
 import { JwtAuthGuard } from '../../domain/auth/guards/jwt-auth.guard';
@@ -22,14 +34,20 @@ export class CommentsController {
   @UseGuards(JwtAuthOptionalGuard)
   @Get('/:id')
   async getCommentById(@Param('id') id: string, @Req() req: any): Promise<CommentResponse> {
-    return this.commentByIdService.execute(id, req?.user?.id);
+    if (isNaN(Number(id))) {
+      throw new NotFoundException();
+    }
+    return this.commentByIdService.execute(Number(id), req?.user?.id);
   }
 
   @UseGuards(JwtAuthGuard)
   @Put('/:id')
   @HttpCode(204)
   async changeCommentById(@Param('id') id: string, @Body() body: ChangeCommentByIdRequest, @Req() req: any) {
-    return this.changeCommentByIdService.execute(id, body, req.user.id);
+    if (isNaN(Number(id))) {
+      throw new NotFoundException();
+    }
+    return this.changeCommentByIdService.execute(Number(id), body, req.user.id);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -40,13 +58,19 @@ export class CommentsController {
     @Body() body: ChangeLikeStatusCommentByIdRequest,
     @Req() req: any,
   ) {
-    return this.changeLikeStatusService.execute(id, req.user.userId, body);
+    if (isNaN(Number(id))) {
+      throw new NotFoundException();
+    }
+    return this.changeLikeStatusService.execute(Number(id), req.user.userId, body);
   }
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @Delete('/:id')
   async removeCommentById(@Param('id') id: string, @Req() req: any) {
-    return this.deleteCommentByIdService.execute(id, req.user.userId);
+    if (isNaN(Number(id))) {
+      throw new NotFoundException();
+    }
+    return this.deleteCommentByIdService.execute(Number(id), req.user.userId);
   }
 }

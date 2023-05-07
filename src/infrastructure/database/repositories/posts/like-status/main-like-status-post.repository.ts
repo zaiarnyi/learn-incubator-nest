@@ -3,27 +3,40 @@ import { InjectModel } from '@nestjs/mongoose';
 import {
   LikeStatusPosts,
   LikeStatusPostsDocument,
+  PostLikesEntity,
 } from '../../../../../domain/posts/like-status/entity/like-status-posts.entity';
 import { Model } from 'mongoose';
 import { DeleteResult } from 'mongodb';
+import { DataSource } from 'typeorm';
+import { InjectDataSource } from '@nestjs/typeorm';
 
 @Injectable()
 export class MainLikeStatusPostRepository {
-  constructor(@InjectModel(LikeStatusPosts.name) private readonly repository: Model<LikeStatusPostsDocument>) {}
+  constructor(
+    @InjectModel(LikeStatusPosts.name) private readonly repository: Model<LikeStatusPostsDocument>,
+    @InjectDataSource() private readonly dataSource: DataSource,
+  ) {}
 
-  async changePostMyStatus(id: string, body: LikeStatusPosts): Promise<LikeStatusPostsDocument> {
-    return this.repository.findOneAndUpdate({ postId: id, userId: body.userId }, body);
+  async changePostMyStatus(id: number, body: PostLikesEntity): Promise<PostLikesEntity> {
+    const query = `UPDATE post_likes
+           SET "like" = $1, "dislike" = $2, "my_status" = $3
+           WHERE "post" = $4 AND "user" = $5 RETURNING *`;
+    const find = await this.dataSource.query(query, [body.like, body.dislike, body.my_status, body.post, body.user]);
+    return find.length ? find[0] : null;
   }
 
-  async createDefaultStatusForPost(body: LikeStatusPosts): Promise<LikeStatusPostsDocument> {
-    return this.repository.create(body);
+  async createDefaultStatusForPost(body: PostLikesEntity): Promise<PostLikesEntity> {
+    const query = `INSERT INTO ("like", "dislike", "my_status", "user", "post")
+            VALUES ($1, $2, $3, $4, $5)`;
+    const insert = await this.dataSource.query(query, [body.like, body.dislike, body.my_status, body.user, body.post]);
+    return insert.length ? insert[0] : null;
   }
 
   async deleteAll(): Promise<DeleteResult> {
-    return this.repository.deleteMany();
+    return this.dataSource.query('DELETE FROM post_likes');
   }
 
-  async changeStatusBan(userId: string, isBanned: boolean): Promise<any> {
-    return this.repository.updateMany({ userId }, { isBanned });
+  async changeStatusBan(userId: number, isBanned: boolean): Promise<any> {
+    await this.dataSource.query(`UPDATE post_likes SET "is_banned" = $1 WHERE "user" = $2`, [isBanned, userId]);
   }
 }

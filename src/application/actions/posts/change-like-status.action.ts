@@ -11,7 +11,7 @@ import { QueryPostRepository } from '../../../infrastructure/database/repositori
 import { validateOrReject } from 'class-validator';
 import { MainLikeStatusPostRepository } from '../../../infrastructure/database/repositories/posts/like-status/main-like-status-post.repository';
 import { QueryLikeStatusPostRepository } from '../../../infrastructure/database/repositories/posts/like-status/query-like-status-post.repository';
-import { LikeStatusPosts } from '../../../domain/posts/like-status/entity/like-status-posts.entity';
+import { LikeStatusPosts, PostLikesEntity } from '../../../domain/posts/like-status/entity/like-status-posts.entity';
 import { UserQueryRepository } from '../../../infrastructure/database/repositories/users/query.repository';
 import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
 
@@ -26,23 +26,23 @@ export class ChangeLikeStatusPostAction {
     @Inject(UserQueryRepository) private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
-  private async validate(id: string, body: ChangeLikeStatusPostDto) {
+  private async validate(id: number, body: ChangeLikeStatusPostDto) {
     try {
       await validateOrReject(body);
     } catch (e) {
       throw new BadRequestException(e);
     }
 
-    // const checkPost = await this.queryRepository.getPostById(id);
-    // if (!checkPost) {
-    //   throw new NotFoundException();
-    // }
+    const checkPost = await this.queryRepository.getPostById(id);
+    if (!checkPost) {
+      throw new NotFoundException();
+    }
   }
 
-  public async execute(id: string, body: ChangeLikeStatusPostDto, userId: string | number) {
+  public async execute(id: number, body: ChangeLikeStatusPostDto, userId: number) {
     await this.validate(id, body);
 
-    const user = await this.userQueryRepository.getUserById(userId as number).catch((e) => {
+    const user = await this.userQueryRepository.getUserById(userId).catch((e) => {
       this.logger.error(`Error when getting a user to create a status for a post with id ${id}. ${JSON.stringify(e)}`);
     });
 
@@ -50,15 +50,14 @@ export class ChangeLikeStatusPostAction {
       throw new UnauthorizedException();
     }
 
-    const status = new LikeStatusPosts();
-    status.postId = id;
-    status.userId = userId as string;
-    status.login = user.login;
-    status.myStatus = body.likeStatus;
+    const status = new PostLikesEntity();
+    status.post = id;
+    status.user = user.id;
+    status.my_status = body.likeStatus;
     status.like = LikeStatusEnum.Like === body.likeStatus;
     status.dislike = LikeStatusEnum.Dislike === body.likeStatus;
 
-    const findMyStatus = await this.statusQueryRepository.checkUserStatus(id, userId as string);
+    const findMyStatus = await this.statusQueryRepository.checkUserStatus(id, userId);
     if (findMyStatus) {
       await this.statusMainRepository.changePostMyStatus(id, status).catch((e) => {
         this.logger.error(`Error when updating post status - ${id}. ${JSON.stringify(e)}`);

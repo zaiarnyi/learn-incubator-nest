@@ -8,6 +8,9 @@ import { QueryPostRepository } from '../../../infrastructure/database/repositori
 import { ExtendedLikesInfo } from '../../../presentation/responses/extendedLikesInfo.response';
 import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
 import { QueryLikeStatusRepository } from '../../../infrastructure/database/repositories/comments/like-status/query-like-status.repository';
+import { PostLikesEntity } from '../../../domain/posts/like-status/entity/like-status-posts.entity';
+import { CommentLikesEntity } from '../../../domain/comments/like-status/entity/like-status-comments.entity';
+import { CommentsEntity } from '../../../domain/comments/entities/comment.entity';
 
 @Injectable()
 export class GetCommentsByBlogsAction {
@@ -19,7 +22,7 @@ export class GetCommentsByBlogsAction {
     @Inject(QueryLikeStatusRepository) private readonly queryLikeStatusRepository: QueryLikeStatusRepository,
   ) {}
 
-  private async getLikesInfo(commentId: string): Promise<ExtendedLikesInfo> {
+  private async getLikesInfo(commentId: number): Promise<ExtendedLikesInfo> {
     return new ExtendedLikesInfo();
 
     const [likesCount, dislikesCount] = await Promise.all([
@@ -48,31 +51,33 @@ export class GetCommentsByBlogsAction {
       query.sortDirection,
     );
 
-    // const promises = comments.map(async (item) => {
-    //   return {
-    //     id: item._id.toString(),
-    //     content: item.content,
-    //     createdAt: item.createdAt,
-    //     commentatorInfo: {
-    //       userId: item.userId,
-    //       userLogin: item.userLogin,
-    //     },
-    //     likesInfo: await this.getLikesInfo(item._id.toString()),
-    //     postInfo: {
-    //       id: item.postId,
-    //       // title: post.title,
-    //       // blogId: post.blogId as string,
-    //       // blogName: post.blogName as string,
-    //     },
-    //   };
-    // });
+    const promises = comments.map(
+      async (item: CommentsEntity & { login: string; commentId: number; title: string; name: string }) => {
+        return {
+          id: item.commentId.toString(),
+          content: item.content,
+          createdAt: item.createdAt,
+          commentatorInfo: {
+            userId: item.user,
+            userLogin: item.login,
+          },
+          likesInfo: await this.getLikesInfo(item.id),
+          postInfo: {
+            id: item.post.toString(),
+            title: item.title,
+            blogId: item.blog.toString(),
+            blogName: item.name,
+          },
+        };
+      },
+    );
 
     return plainToClass(GetCommentsByBlogResponse, {
       pagesCount,
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount,
-      items: [],
+      items: await Promise.all(promises),
     });
   }
 }
