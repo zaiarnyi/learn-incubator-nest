@@ -50,7 +50,7 @@ export class MainLikeStatusRepository {
     return this.model.deleteMany();
   }
 
-  async changeStatusForUserBanned(userId: string, isBanned: boolean): Promise<any> {
-    return this.model.updateMany({ userId }, { isBanned });
+  async changeStatusForUserBanned(userId: number, isBanned: boolean): Promise<any> {
+    await this.dataSource.query(`UPDATE comment_likes SET "is_banned" = $1 WHERE "user" = $2`, [isBanned, userId]);
   }
 }

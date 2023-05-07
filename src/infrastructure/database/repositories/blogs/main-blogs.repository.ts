@@ -40,8 +40,8 @@ export class MainBlogsRepository {
     return this.dataSource.query(query, [userId, id]);
   }
 
-  async changeBannedStatus(userId: string, isBanned: boolean): Promise<any> {
-    return this.blogModel.updateMany({ userId }, { isBanned });
+  async changeBannedStatus(userId: number, isBanned: boolean): Promise<any> {
+    return this.dataSource.query(`UPDATE blogs SET "is_banned" = $1 WHERE "user" = $2`, [isBanned, userId]);
   }
 
   async changeBannedStatusByBlogger(userId: number, blogId: number, isBanned: boolean): Promise<any> {
