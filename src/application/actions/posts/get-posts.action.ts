@@ -4,7 +4,7 @@ import { QueryParamsGetPostsDto } from '../../../domain/posts/dto/query-params-g
 import { plainToClass } from 'class-transformer';
 import { GetPost, GetPostsResponse } from '../../../presentation/responses/posts/get-all-posts.response';
 import { GetLikesInfoForPostService } from '../../services/posts/get-likes-info-for-post.service';
-import { BlogEntity } from '../../../domain/blogs/entities/blog.entity';
+import { PostEntity } from '../../../domain/posts/entities/post.entity';
 
 @Injectable()
 export class GetPostsAction {
@@ -25,28 +25,25 @@ export class GetPostsAction {
       throw new BadRequestException();
     });
 
-    const posts = [];
-    for (const p of postsRaw) {
-      const blog = p.blog as BlogEntity;
-      const formattedPost = plainToClass(GetPost, {
-        id: p.id.toString(),
+    const promises = postsRaw.map(async (p: PostEntity & { name: string; postId: number }) => {
+      return plainToClass(GetPost, {
+        id: p.postId.toString(),
         title: p.title,
         shortDescription: p.short_description,
         content: p.content,
-        blogId: blog.id.toString(),
-        blogName: blog.name,
+        blogId: p.blog.toString(),
+        blogName: p.name,
         createdAt: p.createdAt,
         extendedLikesInfo: await this.likesInfoService.likesInfo(p.id, userId),
       });
-      posts.push(formattedPost);
-    }
+    });
 
     return plainToClass(GetPostsResponse, {
       pagesCount,
       page: pageNumber,
       pageSize,
       totalCount,
-      items: posts,
+      items: await Promise.all(promises),
     });
   }
 }
