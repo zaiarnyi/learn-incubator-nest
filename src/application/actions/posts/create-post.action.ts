@@ -35,24 +35,6 @@ export class CreatePostAction {
     };
   }
 
-  private async createDefaultStatus(postId: string, userId: string | number) {
-    if (!userId) return null;
-    const user = await this.userQueryRepository.getUserById(userId as number).catch((e) => {
-      this.logger.error(
-        `Error when getting a user to create a status for a post with id ${postId}. ${JSON.stringify(e)}`,
-      );
-    });
-    if (!user) return null;
-    const statusPost = new LikeStatusPosts();
-    statusPost.postId = postId;
-    statusPost.like = false;
-    statusPost.dislike = false;
-    statusPost.myStatus = LikeStatusEnum.None;
-    statusPost.userId = userId as string;
-    statusPost.login = user.login;
-    return this.statusMainRepository.createDefaultStatusForPost(statusPost);
-  }
-
   private async validate(blogId: number, userId: number) {
     const blog = await this.queryBlogRepository.getBlogsByBloggerWithUser(blogId).catch((e) => {
       this.logger.error(`Error when getting a post by blog id ${blogId}. ${JSON.stringify(e)}`);
@@ -77,9 +59,6 @@ export class CreatePostAction {
     newPost.user = blog.user as number;
 
     const createdPost = await this.mainRepository.createPost(newPost);
-    // await this.createDefaultStatus(createdPost.id, userId).catch((e) => {
-    //   this.logger.error(`Error in post status creation. ${JSON.stringify(e)}`);
-    // });
     return {
       ...plainToClass(GetPost, {
         id: createdPost.id.toString(),

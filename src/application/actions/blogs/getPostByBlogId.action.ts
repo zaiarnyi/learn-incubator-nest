@@ -27,7 +27,7 @@ export class GetPostByBlogIdAction {
     }
   }
 
-  public async execute(id: number, query: GetPostByBlogIdDto, userId?: string): Promise<GetPostByBlogIdResponse> {
+  public async execute(id: number, query: GetPostByBlogIdDto, userId?: number): Promise<GetPostByBlogIdResponse> {
     await this.validate(id);
 
     const { pageSize, pageNumber, sortBy, sortDirection } = query;

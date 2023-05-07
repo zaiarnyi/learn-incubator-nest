@@ -14,7 +14,7 @@ export class GetPostsAction {
     @Inject(GetLikesInfoForPostService) private readonly likesInfoService: GetLikesInfoForPostService,
   ) {}
 
-  public async execute(query: QueryParamsGetPostsDto, userId?: string) {
+  public async execute(query: QueryParamsGetPostsDto, userId?: number) {
     const { pageSize, pageNumber, sortDirection, sortBy } = query;
     const totalCount = await this.queryRepository.getCountPosts();
     const skip = (pageNumber - 1) * pageSize;

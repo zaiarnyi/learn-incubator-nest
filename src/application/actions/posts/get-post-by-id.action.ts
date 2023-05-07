@@ -24,7 +24,7 @@ export class GetPostByIdAction {
   //   }
   // }
 
-  public async execute(id: number, userId?: string): Promise<GetPost> {
+  public async execute(id: number, userId?: number): Promise<GetPost> {
     // await this.validateIsUserBanned(userId);
     const postById = await this.queryRepository.getPostById(id);
     if (!postById) {
