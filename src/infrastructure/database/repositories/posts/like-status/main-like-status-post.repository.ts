@@ -17,7 +17,7 @@ export class MainLikeStatusPostRepository {
     @InjectDataSource() private readonly dataSource: DataSource,
   ) {}
 
-  async changePostMyStatus(id: number, body: PostLikesEntity): Promise<PostLikesEntity> {
+  async changePostMyStatus(body: PostLikesEntity): Promise<PostLikesEntity> {
     const query = `UPDATE post_likes
            SET "like" = $1, "dislike" = $2, "my_status" = $3
            WHERE "post" = $4 AND "user" = $5 RETURNING *`;

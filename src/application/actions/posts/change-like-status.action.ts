@@ -58,9 +58,8 @@ export class ChangeLikeStatusPostAction {
     status.dislike = LikeStatusEnum.Dislike === body.likeStatus;
 
     const findMyStatus = await this.statusQueryRepository.checkUserStatus(id, userId);
-    console.log(findMyStatus, 'findMyStatus');
     if (findMyStatus) {
-      await this.statusMainRepository.changePostMyStatus(id, status).catch((e) => {
+      await this.statusMainRepository.changePostMyStatus(status).catch((e) => {
         this.logger.error(`Error when updating post status - ${id}. ${JSON.stringify(e)}`);
       });
       return;
