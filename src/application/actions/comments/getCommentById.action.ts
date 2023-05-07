@@ -53,7 +53,7 @@ export class GetCommentByIdAction {
       ...comment,
       id: comment.commentId.toString(),
       commentatorInfo: {
-        userId: comment.user,
+        userId: comment.user.toString(),
         userLogin: comment.login,
       },
       likesInfo: await this.getLikesInfo(id, userId),
