@@ -45,7 +45,7 @@ export class GetCommentByIdAction {
       throw new NotFoundException();
       return e;
     });
-    console.log(comment, 'comment');
+
     if (!comment || comment.is_banned) {
       throw new NotFoundException();
     }
