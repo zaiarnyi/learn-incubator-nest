@@ -52,10 +52,10 @@ export class UserMainRepository {
     await Promise.all([
       this.dataSource
         .query(`TRUNCATE TABLE users, posts, blogs, user_bans, user_invalid_tokens, activate_emails_code, user_security, comments, comment_likes, post_likes
-RESTART IDENTITY;`),
+CASCADE;`),
       this.dataSource
         .query(`TRUNCATE TABLE users, posts, blogs, user_bans, user_invalid_tokens, activate_emails_code, user_security, comments, comment_likes, post_likes
-CASCADE;`),
+RESTART IDENTITY;`),
     ]);
   }
 }
