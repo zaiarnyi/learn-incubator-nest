@@ -63,11 +63,11 @@ export class QueryCommentsRepository {
   ): Promise<CommentsEntity[]> {
     const directionUpper = sortBy === 'createdAt' ? sortDir : 'COLLATE "C"' + sortDir.toUpperCase();
     const query = `SELECT comments.*, u."login", comments.id as "commentId", p.*, b.* FROM comments
-            LEFT JOIN user u ON comments."user" = users.id
-            LEFT JOIN post p ON comments."post" = posts.id
-            LEFT JOIN blogs b ON comments."blog" = blogs.id
+            LEFT JOIN users u ON comments."user" = u.id
+            LEFT JOIN posts p ON comments."post" = p.id
+            LEFT JOIN blogs b ON comments."blog" = b.id
             WHERE comments."blog" IN (${blogIds.join(',')}) AND comments."is_banned" = false
-            ORDER BY blogs."${sortBy}" ${directionUpper}
+            ORDER BY comments."${sortBy}" ${directionUpper}
             LIMIT $1
             OFFSET $2`;
     return this.dataSource.query(query, [limit, skip]);
