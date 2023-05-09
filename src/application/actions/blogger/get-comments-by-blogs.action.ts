@@ -57,12 +57,13 @@ export class GetCommentsByBlogsAction {
           title: string;
           name: string;
           commentContent: string;
+          commentCreatedAt: Date;
         },
       ) => {
         return {
           id: item.commentId.toString(),
           content: item.commentContent,
-          createdAt: item.createdAt,
+          createdAt: item.commentCreatedAt,
           commentatorInfo: {
             userId: item.user.toString(),
             userLogin: item.login,
