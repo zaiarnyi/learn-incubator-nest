@@ -43,11 +43,14 @@ export class PostsController {
   }
   @UseGuards(JwtAuthOptionalGuard)
   @Get(':id')
-  async getPostById(@Param('id', ParseIntPipe) id: number, @Req() req: any): Promise<GetPost> {
+  async getPostById(@Param('id') id: string, @Req() req: any): Promise<GetPost> {
     if (req?.user?.is_banned) {
       throw new NotFoundException();
     }
-    return this.getPostByIdService.execute(id, req?.user?.id);
+    if (isNaN(Number(id))) {
+      throw new NotFoundException();
+    }
+    return this.getPostByIdService.execute(Number(id), req?.user?.id);
   }
   @UseGuards(JwtAuthOptionalGuard)
   @Get('/:id/comments')

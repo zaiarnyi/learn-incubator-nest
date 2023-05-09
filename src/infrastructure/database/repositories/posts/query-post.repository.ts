@@ -22,10 +22,11 @@ export class QueryPostRepository {
   }
   async getPost(limit: number, offset: number, sortBy: string, direction: string): Promise<PostEntity[]> {
     const directionUpper = sortBy === 'createdAt' ? direction : 'COLLATE "C"' + direction.toUpperCase();
-    const query = `SELECT posts.*, posts.id as "postId", blogs."name" FROM posts
-                          LEFT JOIN blogs ON posts."blog" = blogs."id"
-                          WHERE posts."is_banned" = false
-                          ORDER BY posts."${sortBy}" ${directionUpper}
+    const sort = sortBy === 'blogName' ? 'blogs."name"' : `posts."${sortBy}"`;
+    const query = `SELECT * FROM posts
+                          LEFT JOIN blogs ON posts."blog" = blogs.id
+                          WHERE posts."is_banned" = FALSE
+                          ORDER BY ${sort} ${directionUpper}
                           LIMIT ${limit} OFFSET ${offset}`;
     return this.dataSource.query(query);
   }

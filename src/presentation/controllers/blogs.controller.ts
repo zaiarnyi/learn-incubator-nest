@@ -1,4 +1,4 @@
-import { Controller, Get, NotFoundException, Param, ParseIntPipe, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param, Query, Req, UseGuards } from '@nestjs/common';
 import { GetBlogsRequest, GetBlogsRequestWithSearch } from '../requests/blogs/get-blogs.request';
 import { CreateBlogResponse } from '../responses/blogger/create-blog.response';
 import { GetBlogByIdAction } from '../../application/actions/blogs/getBlogById.action';
