@@ -76,7 +76,7 @@ export class AuthController {
   async createNewPassword(@Body() body: NewPasswordRequest): Promise<void> {
     return this.newPasswordService.execute(body);
   }
-  @Throttle(5, 10)
+  // @Throttle(5, 10)
   @UseGuards(LocalAuthGuard)
   @Post('login')
   async login(@Req() req: any, @Res({ passthrough: true }) response: Response, @Body() body: LoginRequest) {
@@ -149,7 +149,7 @@ export class AuthController {
       res.status(200).json(registration);
     }
   }
-  @Throttle(5, 10) //TODO Done
+  @Throttle(5, 10)
   @Post('registration-email-resending')
   @HttpCode(204)
   async registrationEmailResending(@Body() body: CheckEmail): Promise<void> {
