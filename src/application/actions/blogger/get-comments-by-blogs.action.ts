@@ -50,10 +50,18 @@ export class GetCommentsByBlogsAction {
     );
 
     const promises = comments.map(
-      async (item: CommentsEntity & { login: string; commentId: number; title: string; name: string }) => {
+      async (
+        item: CommentsEntity & {
+          login: string;
+          commentId: number;
+          title: string;
+          name: string;
+          commentContent: string;
+        },
+      ) => {
         return {
           id: item.commentId.toString(),
-          content: item.content,
+          content: item.commentContent,
           createdAt: item.createdAt,
           commentatorInfo: {
             userId: item.user.toString(),

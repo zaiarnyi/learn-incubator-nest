@@ -62,7 +62,7 @@ export class QueryCommentsRepository {
     sortDir: string,
   ): Promise<CommentsEntity[]> {
     const directionUpper = sortBy === 'createdAt' ? sortDir : 'COLLATE "C"' + sortDir.toUpperCase();
-    const query = `SELECT comments.*, u."login", comments.id as "commentId", p.*, b.* FROM comments
+    const query = `SELECT comments.*, u."login", comments.id as "commentId", comments."content" as "commentContent", p.*, b.* FROM comments
             LEFT JOIN users u ON comments."user" = u.id
             LEFT JOIN posts p ON comments."post" = p.id
             LEFT JOIN blogs b ON comments."blog" = b.id
