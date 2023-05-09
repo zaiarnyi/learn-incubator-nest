@@ -56,7 +56,7 @@ export class GetCommentsByBlogsAction {
           content: item.content,
           createdAt: item.createdAt,
           commentatorInfo: {
-            userId: item.user,
+            userId: item.user.toString(),
             userLogin: item.login,
           },
           likesInfo: await this.getLikesInfo(item.id),
