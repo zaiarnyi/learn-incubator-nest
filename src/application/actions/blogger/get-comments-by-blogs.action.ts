@@ -58,6 +58,7 @@ export class GetCommentsByBlogsAction {
           name: string;
           commentContent: string;
           commentCreatedAt: Date;
+          userId: number;
         },
       ) => {
         return {
@@ -65,7 +66,7 @@ export class GetCommentsByBlogsAction {
           content: item.commentContent,
           createdAt: item.commentCreatedAt,
           commentatorInfo: {
-            userId: item.user.toString(),
+            userId: item.userId.toString(),
             userLogin: item.login,
           },
           likesInfo: await this.getLikesInfo(item.id),
