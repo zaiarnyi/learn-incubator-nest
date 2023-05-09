@@ -1,4 +1,4 @@
-import { Controller, Get, Param, ParseIntPipe, Query, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, NotFoundException, Param, ParseIntPipe, Query, Req, UseGuards } from '@nestjs/common';
 import { GetBlogsRequest, GetBlogsRequestWithSearch } from '../requests/blogs/get-blogs.request';
 import { CreateBlogResponse } from '../responses/blogger/create-blog.response';
 import { GetBlogByIdAction } from '../../application/actions/blogs/getBlogById.action';
@@ -24,15 +24,21 @@ export class BlogsController {
   @UseGuards(JwtAuthOptionalGuard)
   @Get('/:id/posts')
   async getPostByBlogId(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Query() query: GetBlogsRequest,
     @Req() req: any,
   ): Promise<GetPostByBlogIdResponse> {
-    return this.getPostByBlogIdService.execute(id, query, req?.user?.id);
+    if (isNaN(Number(id))) {
+      throw new NotFoundException();
+    }
+    return this.getPostByBlogIdService.execute(Number(id), query, req?.user?.id);
   }
 
   @Get('/:id')
-  async getBlogById(@Param('id', ParseIntPipe) id: number): Promise<CreateBlogResponse> {
-    return this.getByIdService.execute(id);
+  async getBlogById(@Param('id') id: string): Promise<CreateBlogResponse> {
+    if (isNaN(Number(id))) {
+      throw new NotFoundException();
+    }
+    return this.getByIdService.execute(Number(id));
   }
 }
