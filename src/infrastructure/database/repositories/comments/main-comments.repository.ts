@@ -1,17 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Comment, CommentDocument, CommentsEntity } from '../../../../domain/comments/entities/comment.entity';
-import { Model } from 'mongoose';
+import { CommentsEntity } from '../../../../domain/comments/entities/comment.entity';
 import { DeleteResult } from 'mongodb';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class MainCommentsRepository {
-  constructor(
-    @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
-    @InjectDataSource() private readonly dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   async deleteAllComments() {
     return this.dataSource.query('DELETE FROM comments');

@@ -1,46 +1,37 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
 import { UserEntity } from '../../users/entities/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  ManyToMany,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-export type SecurityDocument = HydratedDocument<Security>;
-
-@Schema({
-  timestamps: { createdAt: 'created_at', updatedAt: 'lastActiveDate' },
-  validateBeforeSave: true,
-  versionKey: false,
-  toJSON: {
-    transform: (doc, ret) => {
-      ret.id = ret._id;
-      delete ret._id;
-    },
-  },
-})
-export class Security {
-  @Prop({ type: String, isRequired: true })
-  ip: string;
-
-  @Prop({ type: String, isRequired: true })
-  title: string;
-
-  @Prop({ type: String, isRequired: true })
-  userId: string;
-
-  @Prop({ type: String, isRequired: true })
-  userAgent: string;
-
-  @Prop({ type: String, isRequired: true })
-  deviceId: string;
-}
-
-export const SecuritySchema = SchemaFactory.createForClass(Security);
-
+@Entity('user_security')
 export class SecurityEntity {
+  @PrimaryColumn()
   id: number;
+
+  @Column({ nullable: true })
   ip: string;
+
+  @Column()
   title: string;
-  user: UserEntity | number;
+
+  @ManyToMany(() => UserEntity, (user) => user.id, { onDelete: 'CASCADE' })
+  user: UserEntity;
+
+  @Column()
   userAgent: string;
+
+  @CreateDateColumn()
   createdAt: Date;
+
+  @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
   deletedAt: Date;
 }

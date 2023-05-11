@@ -40,7 +40,7 @@ export class LoginAction {
     user: UserEntity,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     await this.validate(payload);
-    const checkHashPassword = await bcrypt.compare(payload.password, user.password_hash);
+    const checkHashPassword = await bcrypt.compare(payload.password, user.passwordHash);
     if (!checkHashPassword) {
       await this.securityRepository.deleteDeviceForUser(+deviceId, user.id);
       throw new UnauthorizedException();

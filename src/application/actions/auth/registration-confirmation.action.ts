@@ -1,7 +1,7 @@
 import { BadRequestException, Inject, Injectable, Logger } from '@nestjs/common';
 import { UserMainRepository } from '../../../infrastructure/database/repositories/users/main.repository';
 import { MainActivateCodeRepository } from '../../../infrastructure/database/repositories/activate-code/main-activate-code.repository';
-import { ActivateCodeEnum } from '../../../domain/auth/entity/activate-code.entity';
+import { ActivateCodeEnum } from '../../../domain/auth/enums/activate-code.enum';
 
 @Injectable()
 export class RegistrationConfirmationAction {

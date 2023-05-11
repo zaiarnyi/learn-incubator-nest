@@ -1,17 +1,12 @@
 import { CreateBlogDto } from '../../../../domain/blogs/dto/create-blog.dto';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Blog, BlogDocument, BlogEntity } from '../../../../domain/blogs/entities/blog.entity';
+import { BlogEntity } from '../../../../domain/blogs/entities/blog.entity';
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class MainBlogsRepository {
-  constructor(
-    @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
-    @InjectDataSource() private readonly dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
   async createBlog(dto: BlogEntity): Promise<BlogEntity> {
     const blog = await this.dataSource.query(
       `INSERT INTO blogs ("name", "description", "website_url", "user")

@@ -1,21 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { Blog, BlogDocument, BlogEntity } from '../../../../domain/blogs/entities/blog.entity';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Post, PostDocument, PostEntity } from '../../../../domain/posts/entities/post.entity';
-import { PostSortDirection } from '../../../../domain/posts/enums/sort.enum';
-import { CommentDocument, Comment } from '../../../../domain/comments/entities/comment.entity';
+import { PostEntity } from '../../../../domain/posts/entities/post.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class QueryPostRepository {
-  constructor(
-    @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
-    @InjectModel(Post.name) private postModel: Model<PostDocument>,
-    @InjectModel(Comment.name) private commentModel: Model<CommentDocument>,
-    @InjectDataSource() private readonly dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
   async getCountPosts(): Promise<number> {
     const count = await this.dataSource.query(`SELECT COUNT(*) FROM posts WHERE "is_banned" = false`);
     return +count[0].count;

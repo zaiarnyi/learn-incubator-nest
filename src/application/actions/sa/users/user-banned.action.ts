@@ -8,8 +8,8 @@ import { MainPostRepository } from '../../../../infrastructure/database/reposito
 import { UserMainRepository } from '../../../../infrastructure/database/repositories/users/main.repository';
 import { MainLikeStatusRepository } from '../../../../infrastructure/database/repositories/comments/like-status/main-like-status.repository';
 import { MainLikeStatusPostRepository } from '../../../../infrastructure/database/repositories/posts/like-status/main-like-status-post.repository';
-import { UserDocument, UserEntity } from '../../../../domain/users/entities/user.entity';
-import { UserBanned, UserBannedEntity } from '../../../../domain/sa/users/entities/user-bans.entity';
+import { UserEntity } from '../../../../domain/users/entities/user.entity';
+import { UserBannedEntity } from '../../../../domain/sa/users/entities/user-bans.entity';
 
 @Injectable()
 export class UserBannedAction {

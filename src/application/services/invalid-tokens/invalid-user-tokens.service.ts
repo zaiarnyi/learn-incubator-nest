@@ -1,22 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import {
-  InvalidTokens,
-  InvalidTokensDocument,
-  InvalidTokensEntity,
-} from '../../../domain/auth/entity/invalid-tokens.entity';
-import { DeleteResult } from 'mongodb';
+import { InvalidTokensEntity } from '../../../domain/auth/entity/invalid-tokens.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class InvalidUserTokensService {
   private logger = new Logger(InvalidUserTokensService.name);
-  constructor(
-    @InjectModel(InvalidTokens.name) private model: Model<InvalidTokensDocument>,
-    @InjectDataSource() private readonly dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   public async checkTokenFromUsers(token: string): Promise<boolean> {
     const t = await this.dataSource.query(`SELECT * FROM user_invalid_tokens WHERE token = $1 LIMIT 1`, [token]);

@@ -1,21 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  LikeStatusPosts,
-  LikeStatusPostsDocument,
-  PostLikesEntity,
-} from '../../../../../domain/posts/like-status/entity/like-status-posts.entity';
-import { Model } from 'mongoose';
+import { PostLikesEntity } from '../../../../../domain/posts/like-status/entity/like-status-posts.entity';
 import { DeleteResult } from 'mongodb';
 import { DataSource } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 
 @Injectable()
 export class MainLikeStatusPostRepository {
-  constructor(
-    @InjectModel(LikeStatusPosts.name) private readonly repository: Model<LikeStatusPostsDocument>,
-    @InjectDataSource() private readonly dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   async changePostMyStatus(body: PostLikesEntity): Promise<PostLikesEntity> {
     const query = `UPDATE post_likes

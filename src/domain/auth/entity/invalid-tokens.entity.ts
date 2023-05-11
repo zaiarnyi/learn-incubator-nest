@@ -1,32 +1,31 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
 import { UserEntity } from '../../users/entities/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  ManyToMany,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-export type InvalidTokensDocument = HydratedDocument<InvalidTokens>;
-
-@Schema({
-  timestamps: true,
-  validateBeforeSave: true,
-  versionKey: false,
-  toJSON: {
-    transform: (doc, ret) => {
-      ret.id = ret._id;
-      delete ret._id;
-    },
-  },
-})
-export class InvalidTokens {
-  @Prop({ type: String, isRequired: true })
-  token: string;
-}
-
-export const InvalidTokensSchema = SchemaFactory.createForClass(InvalidTokens);
-
+@Entity('invalid_tokens')
 export class InvalidTokensEntity {
+  @PrimaryColumn()
   id: number;
-  user: UserEntity | number;
+
+  @ManyToMany(() => UserEntity, (user) => user.id, { onDelete: 'CASCADE' })
+  user: UserEntity;
+
+  @Column()
   token: string;
+
+  @CreateDateColumn()
   createdAt: Date;
+
+  @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
   deletedAt: Date;
 }

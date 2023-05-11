@@ -1,20 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  UserBanned,
-  UserBannedDocument,
-  UserBannedEntity,
-} from '../../../../../domain/sa/users/entities/user-bans.entity';
-import { Model } from 'mongoose';
+import { UserBannedEntity } from '../../../../../domain/sa/users/entities/user-bans.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class QueryUserBannedRepository {
-  constructor(
-    @InjectModel(UserBanned.name) private readonly model: Model<UserBannedDocument>,
-    @InjectDataSource() private readonly dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   async checkStatus(userId: number): Promise<UserBannedEntity> {
     const d = await this.dataSource.query(`SELECT * FROM user_bans WHERE "user" = $1`, [userId]);
@@ -27,9 +18,6 @@ export class QueryUserBannedRepository {
       blogId,
     ]);
     return ub.length ? ub[0] : null;
-  }
-  async checkStatusByBlog(blogId: string): Promise<UserBannedDocument> {
-    return this.model.findOne({ blogId });
   }
 
   async getCountByBlog(searchLogin: string, blogId: number): Promise<number> {

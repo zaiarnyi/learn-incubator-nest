@@ -1,48 +1,29 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
 import { UserEntity } from '../../users/entities/user.entity';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 
-export type ActivateCodeDocument = HydratedDocument<ActivateCode>;
-
-export enum ActivateCodeEnum {
-  REGISTRATION = 'registration',
-  RECOVERY = 'recovery',
-}
-
-@Schema({
-  timestamps: true,
-  validateBeforeSave: true,
-  versionKey: false,
-  toJSON: {
-    transform: (doc, ret) => {
-      ret.id = ret._id;
-      delete ret._id;
-    },
-  },
-})
-export class ActivateCode {
-  @Prop({ type: String, isRequired: true, unique: true })
-  code: string;
-
-  @Prop({ type: Number, isRequired: true })
-  expireAt: number;
-
-  @Prop({ type: String, isRequired: true })
-  userId: string;
-
-  @Prop({ type: String, isRequired: true })
-  type: string;
-}
-
-export const ActivateCodeSchema = SchemaFactory.createForClass(ActivateCode);
-
+@Entity('activate_emails_code')
 export class ActivateEmailsCodeEntity {
+  @PrimaryColumn()
   id: number;
+
+  @Column()
   code: string;
-  expireAt: number;
-  user: UserEntity | number;
+
+  @Column({ type: Date })
+  expireAt: Date;
+
+  @OneToOne(() => UserEntity, (user) => user.id, { onDelete: 'CASCADE' })
+  user: UserEntity;
+
+  @Column()
   type: string;
+
+  @CreateDateColumn()
   createdAt: Date;
+
+  @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
   deletedAt: Date;
 }

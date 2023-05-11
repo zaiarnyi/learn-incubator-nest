@@ -13,6 +13,8 @@ export class PostgresqlConfigDatabase implements TypeOrmOptionsFactory {
       password: this.configService.get<string>('POSTGRES_PASSWORD'),
       database: this.configService.get<string>('POSTGRES_DATABASE'),
       retryAttempts: 3,
+      synchronize: true,
+      autoLoadEntities: true,
     };
   }
 }

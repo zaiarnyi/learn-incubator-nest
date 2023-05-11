@@ -39,15 +39,9 @@ export class GetAllUsersAction {
 
   async execute(dto: GetUsersDTO): Promise<GetUsersResponse> {
     const statusFilter = this.checkStatus(dto.banStatus);
-    const totalCount = +(await this.queryRepository.getCountUsers(
-      dto.searchLoginTerm,
-      dto.searchEmailTerm,
-      statusFilter,
-    ));
     const skip = (dto.pageNumber - 1) * dto.pageSize;
-    const pagesCount = Math.ceil(totalCount / dto.pageSize);
 
-    const users = await this.queryRepository.getAllUsers(
+    const [users, totalCount] = await this.queryRepository.getAllUsers(
       dto.searchLoginTerm,
       dto.searchEmailTerm,
       skip,
@@ -57,8 +51,10 @@ export class GetAllUsersAction {
       statusFilter,
     );
 
+    const pagesCount = Math.ceil(totalCount / dto.pageSize);
+
     const promises = users.map(async (item) => {
-      const banInfo = await this.checkUserBanStatus(item.id, item.is_banned);
+      const banInfo = await this.checkUserBanStatus(item.id, item.isBanned);
       return {
         ...item,
         id: item.id.toString(),

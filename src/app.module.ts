@@ -22,9 +22,6 @@ import { PostgresqlConfigDatabase } from './infrastructure/database/configs/data
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    MongooseModule.forRootAsync({
-      useClass: MongoConfigDatabase,
-    }),
     TypeOrmModule.forRootAsync({
       useClass: PostgresqlConfigDatabase,
     }),

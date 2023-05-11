@@ -26,7 +26,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     const user = await this.queryUserRepository.getUserByEmailOrLogin(loginOrEmail, loginOrEmail).catch(() => {
       this.logger.error(`Error when getting a user - ${loginOrEmail}`);
     });
-    if (!user || user.is_banned) {
+    if (!user || user.isBanned) {
       throw new UnauthorizedException();
     }
 

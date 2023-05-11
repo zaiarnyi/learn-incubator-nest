@@ -82,13 +82,13 @@ export class AuthController {
   async login(@Req() req: any, @Res({ passthrough: true }) response: Response, @Body() body: LoginRequest) {
     const devicePrepare = new DeviceDto();
     devicePrepare.ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.socket.remoteAddress || null;
-    devicePrepare.user = req.user.id;
+    devicePrepare.user = req.user;
     devicePrepare.title = 'security Name';
     devicePrepare.userAgent = req.headers['user-agent'];
 
     const device = await this.securityRepository.insertDevice(devicePrepare);
-    const { accessToken, refreshToken } = await this.loginService.execute(body, device.id.toString(), req.user);
-
+    console.log(device.raw.id, 'device.raw.id');
+    const { accessToken, refreshToken } = await this.loginService.execute(body, device.raw.id.toString(), req.user);
     response.cookie('refreshToken', refreshToken, { httpOnly: this.httpOnly, secure: this.secure });
     response.status(200).json({ accessToken });
   }
@@ -155,10 +155,10 @@ export class AuthController {
   async registrationEmailResending(@Body() body: CheckEmail): Promise<void> {
     const detectUser = await this.queryUserRepository.getUserByEmail(body.email);
 
-    if (!detectUser || detectUser.is_confirm) {
+    if (!detectUser || detectUser.isConfirm) {
       throw new BadRequestException([{ message: 'User not found', field: 'email' }]);
     }
-    await this.resendingService.execute(body.email, detectUser.id);
+    await this.resendingService.execute(body.email, detectUser);
   }
 
   @Post('logout')

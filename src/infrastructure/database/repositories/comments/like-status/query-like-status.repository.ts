@@ -1,18 +1,9 @@
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  CommentLikesEntity,
-  LikeStatusComment,
-  LikeStatusCommentDocument,
-} from '../../../../../domain/comments/like-status/entity/like-status-comments.entity';
-import { Model } from 'mongoose';
+import { CommentLikesEntity } from '../../../../../domain/comments/like-status/entity/like-status-comments.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 export class QueryLikeStatusRepository {
-  constructor(
-    @InjectModel(LikeStatusComment.name) private readonly model: Model<LikeStatusCommentDocument>,
-    @InjectDataSource() private readonly dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   async getMyStatusByCommentId(id: number, userId: number): Promise<CommentLikesEntity> {
     const find = await this.dataSource.query(

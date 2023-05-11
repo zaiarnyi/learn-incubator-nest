@@ -1,18 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Blog, BlogDocument, BlogEntity } from '../../../../domain/blogs/entities/blog.entity';
-import { Model } from 'mongoose';
-import { Post, PostDocument, PostEntity } from '../../../../domain/posts/entities/post.entity';
+import { BlogEntity } from '../../../../domain/blogs/entities/blog.entity';
+import { PostEntity } from '../../../../domain/posts/entities/post.entity';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class QueryBlogsRepository {
-  constructor(
-    @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
-    @InjectModel(Post.name) private postModel: Model<PostDocument>,
-    @InjectDataSource() private readonly dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   async getBlogs(
     filter: string,

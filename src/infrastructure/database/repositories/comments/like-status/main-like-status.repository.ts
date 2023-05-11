@@ -1,19 +1,14 @@
-import { InjectModel } from '@nestjs/mongoose';
 import {
   CommentLikesEntity,
   LikeStatusComment,
   LikeStatusCommentDocument,
 } from '../../../../../domain/comments/like-status/entity/like-status-comments.entity';
-import { DeleteResult, UpdateResult } from 'mongodb';
-import { Model } from 'mongoose';
+import { DeleteResult } from 'mongodb';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 export class MainLikeStatusRepository {
-  constructor(
-    @InjectModel(LikeStatusComment.name) private readonly model: Model<LikeStatusCommentDocument>,
-    @InjectDataSource() private readonly dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   async changeLikeStatusByCommentId(body: CommentLikesEntity): Promise<CommentLikesEntity> {
     const findQuery = `SELECT * FROM comment_likes WHERE "comment" = $1 AND "user" = $2`;
@@ -40,14 +35,6 @@ export class MainLikeStatusRepository {
     ]);
 
     return insert.length ? insert[0] : null;
-  }
-
-  async createLikeStatusForComment(body: LikeStatusComment): Promise<LikeStatusCommentDocument> {
-    return this.model.create(body);
-  }
-
-  async deleteAll(): Promise<DeleteResult> {
-    return this.model.deleteMany();
   }
 
   async changeStatusForUserBanned(userId: number, isBanned: boolean): Promise<any> {

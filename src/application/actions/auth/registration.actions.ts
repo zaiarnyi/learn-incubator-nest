@@ -5,8 +5,8 @@ import { EmailRegistrationService } from '../../services/email/email-registratio
 import { generateCode } from '../../../utils/generateCode';
 import { MainActivateCodeRepository } from '../../../infrastructure/database/repositories/activate-code/main-activate-code.repository';
 import { UserMainRepository } from '../../../infrastructure/database/repositories/users/main.repository';
-import { ActivateCodeEnum } from '../../../domain/auth/entity/activate-code.entity';
 import { ConfigService } from '@nestjs/config';
+import { ActivateCodeEnum } from '../../../domain/auth/enums/activate-code.enum';
 
 @Injectable()
 export class RegistrationActions {
@@ -26,7 +26,7 @@ export class RegistrationActions {
     try {
       const isDev = this.configService.get<string>('NODE_ENV') === 'development';
       await Promise.all([
-        this.activateRepository.saveRegActivation(code, user.id, ActivateCodeEnum.REGISTRATION),
+        this.activateRepository.saveRegActivation(code, user, ActivateCodeEnum.REGISTRATION),
         !isDev && this.emailService.registration(payload.email, code),
       ]);
 

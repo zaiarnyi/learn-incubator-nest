@@ -1,14 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { User, UserDocument, UserEntity } from '../../../../domain/users/entities/user.entity';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { UserEntity } from '../../../../domain/users/entities/user.entity';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { Brackets, DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class UserQueryRepository {
   constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
+    @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
     @InjectDataSource() private readonly dataSource: DataSource,
   ) {}
   async getAllUsers(
@@ -19,68 +17,39 @@ export class UserQueryRepository {
     sortBy: string,
     direction: string,
     filter: Record<any, any> = {},
-  ): Promise<UserEntity[]> {
-    if ('isBanned' in filter) {
-      return this.dataSource.query(
-        `SELECT * FROM users WHERE ("login" ILIKE $1 OR "email" ILIKE $2) AND "is_banned" = $3
-               ORDER BY "${sortBy}" ${sortBy === 'createdAt' ? direction : 'COLLATE "C"' + direction.toUpperCase()}
-               LIMIT $4
-               OFFSET $5`,
-        [`%${searchLogin}%`, `%${searchEmail}%`, filter.isBanned, limit, skip],
-      );
-    }
-    return this.dataSource.query(
-      `SELECT * FROM users WHERE "login" ILIKE $1 OR "email" ILIKE $2
-             ORDER BY "${sortBy}" ${sortBy === 'createdAt' ? direction : 'COLLATE "C"' + direction.toUpperCase()}
-             LIMIT $3
-             OFFSET $4`,
-      [`%${searchLogin}%`, `%${searchEmail}%`, limit, skip],
+  ): Promise<[UserEntity[], number]> {
+    const query = this.userRepository.createQueryBuilder('u').where(
+      new Brackets((qb) => {
+        qb.where('u."login" ILIKE = :login', { login: `%${searchLogin}%` }).orWhere('u."email" ILIKE = :email', {
+          email: `%${searchEmail}%`,
+        });
+      }),
     );
-  }
 
-  async getCountUsers(
-    searchLoginTerm: string,
-    searchEmailTerm: string,
-    filter: Record<any, any> = {},
-  ): Promise<number> {
-    let usersCount = 0;
     if ('isBanned' in filter) {
-      const count = await this.dataSource.query(
-        `SELECT COUNT(*) FROM users WHERE ("login" ILIKE $1 OR "email" ILIKE $2) AND "is_banned" = $3`,
-        [`%${searchLoginTerm}%`, `%${searchEmailTerm}%`, filter.isBanned],
-      );
-      usersCount = count[0].count;
-    } else {
-      const count = await this.dataSource.query(
-        `SELECT COUNT(*) FROM users WHERE "login" ILIKE $1 OR "email" ILIKE $2`,
-        [`%${searchLoginTerm}%`, `%${searchEmailTerm}%`],
-      );
-      usersCount = count[0].count;
+      query.andWhere('u."isBanned" = :banned', { banned: filter.isBanned });
     }
 
-    return usersCount;
+    query
+      .orderBy(sortBy, direction.toUpperCase() as 'ASC' | 'DESC')
+      .skip(skip)
+      .limit(limit);
+    return query.getManyAndCount();
   }
 
   async getUserByEmailOrLogin(login: string, email: string): Promise<UserEntity> {
-    const user = await this.dataSource.query(`SELECT * FROM users WHERE login = $1 OR email = $2 LIMIT 1`, [
-      login,
-      email,
-    ]);
-    return user.length ? user[0] : null;
+    return this.userRepository
+      .createQueryBuilder('u')
+      .where('u."login" = :login', { login })
+      .orWhere('u."email" = :email', { email })
+      .getOne();
   }
 
   async getUserByEmail(email: string): Promise<UserEntity> {
-    const user = await this.dataSource.query(`SELECT * FROM users WHERE email = $1 LIMIT 1`, [email]);
-    return user.length ? user[0] : null;
+    return this.userRepository.createQueryBuilder('u').where('u."email" = :email', { email }).getOne();
   }
 
   async getUserById(id: number): Promise<UserEntity> {
-    if (!id) return null;
-    const u = await this.dataSource.query(`SELECT * FROM users WHERE id = $1 LIMIT 1`, [id]);
-    return u.length ? u[0] : null;
-  }
-
-  async getUserRole(id: string, role: number): Promise<UserDocument> {
-    return this.userModel.findOne({ userId: id, role });
+    return this.userRepository.findOne({ where: { id } });
   }
 }

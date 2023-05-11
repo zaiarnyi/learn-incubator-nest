@@ -1,55 +1,38 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
 import { UserRoles } from '../../auth/enums/roles.enum';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 
-export type UserDocument = HydratedDocument<User>;
+@Entity('users')
+export class UserEntity {
+  @PrimaryColumn()
+  id: number;
 
-@Schema({
-  timestamps: true,
-  validateBeforeSave: true,
-  versionKey: false,
-  toJSON: {
-    transform: (doc, ret) => {
-      ret.id = ret._id;
-      delete ret._id;
-    },
-  },
-})
-export class User {
-  @Prop({ type: String, isRequired: true, unique: true })
+  @Column()
   login: string;
 
-  @Prop({ type: String, isRequired: true, unique: true })
-  email: number;
+  @Column()
+  email: string;
 
-  @Prop({ type: String, isRequired: true })
+  @Column()
   passwordHash: string;
 
-  @Prop({ type: Boolean, default: false })
+  @Column({ default: false, type: 'boolean' })
   isConfirm: boolean;
 
-  @Prop({ type: Boolean, default: false })
+  @Column({ default: false, type: 'boolean' })
   isSendEmail: boolean;
 
-  @Prop({ enum: UserRoles, isRequired: true, type: String, default: UserRoles.USER })
-  role: number;
-
-  @Prop({ type: Boolean, default: false })
-  isBanned: boolean;
-}
-
-export const UserSchema = SchemaFactory.createForClass(User);
-
-export class UserEntity {
-  id: number;
-  login: string;
-  email: string;
-  password_hash: string;
-  is_confirm: boolean;
-  is_send_email: boolean;
+  @Column({ type: 'enum', enum: UserRoles })
   role: UserRoles;
-  is_banned: boolean;
+
+  @Column({ default: false, type: 'boolean' })
+  isBanned: boolean;
+
+  @CreateDateColumn()
   createdAt: Date;
+
+  @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
   deletedAt: Date;
 }

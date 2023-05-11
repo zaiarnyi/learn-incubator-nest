@@ -23,7 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     }
     const user = await this.userQueryRepository.getUserById(payload.id);
 
-    if (!user || user.is_banned) {
+    if (!user || user.isBanned) {
       throw new UnauthorizedException();
     }
     return user;

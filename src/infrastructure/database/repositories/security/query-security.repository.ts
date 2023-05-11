@@ -1,29 +1,31 @@
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Security, SecurityDocument, SecurityEntity } from '../../../../domain/security/entity/security.entity';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { SecurityEntity } from '../../../../domain/security/entity/security.entity';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 export class QuerySecurityRepository {
   constructor(
-    @InjectModel(Security.name) private securityModel: Model<SecurityDocument>,
     @InjectDataSource() private readonly dataSource: DataSource,
+    @InjectRepository(SecurityEntity) private readonly repository: Repository<SecurityEntity>,
   ) {}
 
   public async getDevicesByUserId(userId: number): Promise<SecurityEntity[]> {
-    return this.dataSource.query(`SELECT * FROM user_security WHERE "user" = $1`, [userId]);
+    return this.repository
+      .createQueryBuilder('s')
+      .leftJoin('s."user"', 'u')
+      .where('u."id" = :id', { id: userId })
+      .getMany();
   }
 
   public async getDevicesByUserIdAndDevice(userId: number, deviceId: number): Promise<SecurityEntity> {
-    const d = await this.dataSource.query(`SELECT * FROM user_security WHERE "user" = $1 AND id = $2 LIMIT 1`, [
-      userId,
-      deviceId,
-    ]);
-    return d.length > 0 ? d[0] : null;
+    return this.repository
+      .createQueryBuilder('s')
+      .leftJoin('s."user"', 'u')
+      .where('s."id" = :userId', { userId: userId })
+      .andWhere('s.id = :id', { id: deviceId })
+      .getOne();
   }
 
   public async getDeviceById(deviceId: number): Promise<SecurityEntity> {
-    const d = await this.dataSource.query(`SELECT * FROM user_security WHERE id = $1 LIMIT 1`, [deviceId]);
-    return d.length > 0 ? d[0] : null;
+    return this.repository.createQueryBuilder('s').andWhere('s.id = :id', { id: deviceId }).getOne();
   }
 }

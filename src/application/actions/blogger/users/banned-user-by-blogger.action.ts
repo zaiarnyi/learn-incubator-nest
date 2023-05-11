@@ -14,7 +14,7 @@ import { MainUserBannedRepository } from '../../../../infrastructure/database/re
 import { MainBlogsRepository } from '../../../../infrastructure/database/repositories/blogs/main-blogs.repository';
 import { MainPostRepository } from '../../../../infrastructure/database/repositories/posts/main-post.repository';
 import { MainCommentsRepository } from '../../../../infrastructure/database/repositories/comments/main-comments.repository';
-import { UserDocument, UserEntity } from '../../../../domain/users/entities/user.entity';
+import { UserEntity } from '../../../../domain/users/entities/user.entity';
 import { BlogEntity } from '../../../../domain/blogs/entities/blog.entity';
 
 @Injectable()

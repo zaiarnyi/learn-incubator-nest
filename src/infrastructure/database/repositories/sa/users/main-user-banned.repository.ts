@@ -1,21 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import {
-  UserBanned,
-  UserBannedDocument,
-  UserBannedEntity,
-} from '../../../../../domain/sa/users/entities/user-bans.entity';
-import { Model } from 'mongoose';
+import { UserBannedEntity } from '../../../../../domain/sa/users/entities/user-bans.entity';
 import { DeleteResult } from 'mongodb';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class MainUserBannedRepository {
-  constructor(
-    @InjectModel(UserBanned.name) private readonly model: Model<UserBannedDocument>,
-    @InjectDataSource() private readonly dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   async setUserBan(userBanned: UserBannedEntity) {
     const hasUserBan = await this.dataSource.query(`SELECT * FROM user_bans WHERE "user" = $1`, [userBanned.user]);

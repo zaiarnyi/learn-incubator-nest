@@ -1,19 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Post, PostDocument, PostEntity } from '../../../../domain/posts/entities/post.entity';
-import { SaveNewPostDto } from '../../../../domain/posts/dto/save-new-post.dto';
+import { PostEntity } from '../../../../domain/posts/entities/post.entity';
 import { CreatePostDto } from '../../../../domain/posts/dto/create-post.dto';
-import { DeleteResult } from 'mongodb';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 
 @Injectable()
 export class MainPostRepository {
-  constructor(
-    @InjectModel(Post.name) private postModel: Model<PostDocument>,
-    @InjectDataSource() private readonly dataSource: DataSource,
-  ) {}
+  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
 
   async createPost(post: PostEntity): Promise<PostEntity> {
     const query = `INSERT INTO posts ("title", "content", "user", "blog", "short_description")

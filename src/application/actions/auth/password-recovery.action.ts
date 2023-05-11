@@ -3,8 +3,8 @@ import { UserQueryRepository } from '../../../infrastructure/database/repositori
 import { EmailRegistrationService } from '../../services/email/email-registration.service';
 import { generateCode } from '../../../utils/generateCode';
 import { MainActivateCodeRepository } from '../../../infrastructure/database/repositories/activate-code/main-activate-code.repository';
-import { ActivateCodeEnum } from '../../../domain/auth/entity/activate-code.entity';
 import { ConfigService } from '@nestjs/config';
+import { ActivateCodeEnum } from '../../../domain/auth/enums/activate-code.enum';
 
 @Injectable()
 export class PasswordRecoveryAction {
@@ -24,9 +24,9 @@ export class PasswordRecoveryAction {
     try {
       await Promise.all([
         this.emailService.recoveryPassword(email, code),
-        this.activateRepository.deleteByUserId(user.id, ActivateCodeEnum.RECOVERY),
+        this.activateRepository.deleteByUserId(user, ActivateCodeEnum.RECOVERY),
       ]);
-      await this.activateRepository.saveRegActivation(code, user.id, ActivateCodeEnum.RECOVERY);
+      await this.activateRepository.saveRegActivation(code, user, ActivateCodeEnum.RECOVERY);
     } catch (e) {
       this.logger.error(JSON.stringify(e));
     }
