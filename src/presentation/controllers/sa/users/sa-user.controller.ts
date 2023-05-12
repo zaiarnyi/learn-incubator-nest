@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   Inject,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
@@ -41,22 +42,29 @@ export class SaUserController {
   @Post()
   async createUser(@Body() body: CreateUserRequest): Promise<CreateUserResponse> {
     const createdUser = await this.createUserService.execute(body, true);
-    const payload = Object.assign(createdUser, {
+
+    return plainToClass(CreateUserResponse, {
+      ...createdUser,
       id: createdUser.id.toString(),
       banInfo: { isBanned: false, banDate: null, banReason: null },
     });
-    return plainToClass(CreateUserResponse, payload);
   }
 
   @Delete(':id')
   @HttpCode(204)
   async deleteUser(@Param('id') id: string) {
-    return this.deleteUserService.execute(id);
+    if (isNaN(Number(id))) {
+      throw new NotFoundException();
+    }
+    return this.deleteUserService.execute(Number(id));
   }
 
   @Put(':id/ban')
   @HttpCode(204)
-  async banToUser(@Param('id', ParseIntPipe) id: number, @Body() body: UserBannedRequest) {
-    return this.banUserService.execute(id, body);
+  async banToUser(@Param('id', ParseIntPipe) id: string, @Body() body: UserBannedRequest) {
+    if (isNaN(Number(id))) {
+      throw new NotFoundException();
+    }
+    return this.banUserService.execute(Number(id), body);
   }
 }

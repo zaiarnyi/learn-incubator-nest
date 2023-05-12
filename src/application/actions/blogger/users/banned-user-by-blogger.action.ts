@@ -1,13 +1,6 @@
-import {
-  ForbiddenException,
-  Inject,
-  Injectable,
-  Logger,
-  NotFoundException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { UserBannedByBloggerDto } from '../../../../domain/blogger/dto/user-banned-by-blogger.dto';
-import { UserBanned, UserBannedEntity } from '../../../../domain/sa/users/entities/user-bans.entity';
+import { UserBannedEntity } from '../../../../domain/sa/users/entities/user-bans.entity';
 import { UserQueryRepository } from '../../../../infrastructure/database/repositories/users/query.repository';
 import { QueryBlogsRepository } from '../../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 import { MainUserBannedRepository } from '../../../../infrastructure/database/repositories/sa/users/main-user-banned.repository';
@@ -66,12 +59,12 @@ export class BannedUserByBloggerAction {
     await this.changeStatus(userId, body.blogId, body.isBanned);
 
     if (!body.isBanned) {
-      return this.banRepository.deleteBan(userId);
+      return this.banRepository.deleteBan(user);
     }
     const bannedUserByBlog = new UserBannedEntity();
-    bannedUserByBlog.user = user.id;
-    bannedUserByBlog.ban_reason = body.banReason;
-    bannedUserByBlog.blog = blog.id;
+    bannedUserByBlog.user = user;
+    bannedUserByBlog.banReason = body.banReason;
+    // bannedUserByBlog.blog = blog;
 
     return this.banRepository.save(bannedUserByBlog).catch((e) => {
       this.logger.error(`Error when save blog banner. MEssage: ${JSON.stringify(e)}`);

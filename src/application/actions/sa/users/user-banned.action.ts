@@ -26,12 +26,12 @@ export class UserBannedAction {
 
   private async changeStatus(userId: number, isBanned: boolean) {
     await Promise.all([
-      this.blogRepository.changeBannedStatus(userId, isBanned),
-      this.commentsRepository.changeBannedStatus(userId, isBanned),
-      this.postRepository.changeBannedStatus(userId, isBanned),
+      // this.blogRepository.changeBannedStatus(userId, isBanned),
+      // this.commentsRepository.changeBannedStatus(userId, isBanned),
+      // this.postRepository.changeBannedStatus(userId, isBanned),
       this.userMainRepository.changeStatusBan(userId, isBanned),
-      this.likeStatusRepository.changeStatusForUserBanned(userId, isBanned),
-      this.likeStatusPostRepository.changeStatusBan(userId, isBanned),
+      // this.likeStatusRepository.changeStatusForUserBanned(userId, isBanned),
+      // this.likeStatusPostRepository.changeStatusBan(userId, isBanned),
     ]);
   }
 
@@ -47,11 +47,11 @@ export class UserBannedAction {
     const user = await this.validateAndGetUser(userId);
     if (body.isBanned) {
       const userBanned = new UserBannedEntity();
-      userBanned.user = user.id;
-      userBanned.ban_reason = body.banReason;
+      userBanned.user = user;
+      userBanned.banReason = body.banReason;
       await this.repository.setUserBan(userBanned);
     } else {
-      await this.repository.deleteBan(user.id);
+      await this.repository.deleteBan(user);
     }
     await this.changeStatus(userId, body.isBanned);
   }

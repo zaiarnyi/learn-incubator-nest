@@ -10,16 +10,13 @@ export class DeleteUserAction {
     @Inject(UserQueryRepository) private readonly queryRepository: UserQueryRepository,
   ) {}
 
-  async execute(id: string): Promise<void> {
-    if (isNaN(Number(id)) || typeof Number(id) !== 'number') {
-      throw new NotFoundException();
-    }
-    const user = await this.queryRepository.getUserById(parseInt(id));
+  async execute(id: number): Promise<void> {
+    const user = await this.queryRepository.getUserById(id);
     if (!user) {
       throw new NotFoundException();
     }
     await this.repository
-      .deleteUserById(parseInt(id))
+      .deleteUserById(id)
       .then((res) => {
         if (!res) {
           this.logger.warn(`Not found user with ID - ${id}`);

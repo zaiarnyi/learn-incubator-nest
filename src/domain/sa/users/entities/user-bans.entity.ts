@@ -1,43 +1,34 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
 import { UserEntity } from '../../../users/entities/user.entity';
-import { BlogEntity } from '../../../blogs/entities/blog.entity';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-export type UserBannedDocument = HydratedDocument<UserBanned & { banDate: Date }>;
+@Entity('users_banned')
+export class UserBannedEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-@Schema({
-  timestamps: { createdAt: 'banDate' },
-  validateBeforeSave: true,
-  versionKey: false,
-  toJSON: {
-    transform: (doc, ret) => {
-      ret.id = ret._id;
-      delete ret._id;
-    },
-  },
-})
-export class UserBanned {
-  @Prop({ type: String, isRequired: true })
+  @Column({ nullable: false })
   banReason: string;
 
-  @Prop({ type: String, isRequired: true })
-  userId: string;
+  @ManyToOne(() => UserEntity, (user) => user.id, { nullable: false })
+  user: UserEntity;
 
-  @Prop({ type: String, isRequired: true })
-  userLogin: string;
+  // @ManyToOne(() => BlogEntity, (blog) => blog.id, { nullable: true })
+  // blog: BlogEntity;
 
-  @Prop({ type: String, isRequired: false, default: null })
-  blogId: string;
-}
-
-export const UserBannedSchema = SchemaFactory.createForClass(UserBanned);
-
-export class UserBannedEntity {
-  id: number;
-  ban_reason: string;
-  user: UserEntity | number;
-  blog: BlogEntity | number;
+  @CreateDateColumn()
   createdAt: Date;
+
+  @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
   deletedAt: Date;
 }

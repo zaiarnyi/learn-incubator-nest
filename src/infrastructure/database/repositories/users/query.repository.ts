@@ -20,7 +20,7 @@ export class UserQueryRepository {
   ): Promise<[UserEntity[], number]> {
     const query = this.userRepository.createQueryBuilder('u').where(
       new Brackets((qb) => {
-        qb.where('u."login" ILIKE = :login', { login: `%${searchLogin}%` }).orWhere('u."email" ILIKE = :email', {
+        qb.where('u."login" ILIKE :login', { login: `%${searchLogin}%` }).orWhere('u."email" ILIKE :email', {
           email: `%${searchEmail}%`,
         });
       }),
@@ -31,7 +31,7 @@ export class UserQueryRepository {
     }
 
     query
-      .orderBy(sortBy, direction.toUpperCase() as 'ASC' | 'DESC')
+      .orderBy(`"${sortBy}"`, direction.toUpperCase() as 'ASC' | 'DESC')
       .skip(skip)
       .limit(limit);
     return query.getManyAndCount();

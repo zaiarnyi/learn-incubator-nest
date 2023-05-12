@@ -10,9 +10,12 @@ import { MainUserBannedRepository } from '../../../database/repositories/sa/user
 import { BlogsModule } from '../../blogs.module';
 import { CommentsModule } from '../../comments.module';
 import { PostsModule } from '../../posts.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserBannedEntity } from '../../../../domain/sa/users/entities/user-bans.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([UserBannedEntity]),
     UsersModule,
     forwardRef(() => BlogsModule),
     forwardRef(() => CommentsModule),

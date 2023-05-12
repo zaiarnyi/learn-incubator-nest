@@ -51,7 +51,7 @@ export class GetBannedUserAction {
         banInfo: {
           isBanned: true,
           banDate: item.createdAt,
-          banReason: item.ban_reason,
+          banReason: item.banReason,
         },
       };
     });
