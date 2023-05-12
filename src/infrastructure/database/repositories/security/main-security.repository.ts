@@ -16,21 +16,19 @@ export class MainSecurityRepository {
   public async deleteAllExcludeCurrent(deviceId: number, userId: number) {
     await this.repository
       .createQueryBuilder('s')
-      .leftJoin('s."user"', 'u')
+      .leftJoin('s.user', 'u')
       .where('s.id <> :id', { id: deviceId })
-      .andWhere('u."id" = :userId', { userId })
-      .delete()
-      .execute();
+      .andWhere('u.id = :userId', { userId })
+      .delete();
   }
 
   public async deleteCurrent(deviceId: number, userId: number) {
     await this.repository
       .createQueryBuilder('s')
-      .leftJoin('s."user"', 'u')
+      .leftJoin('s.user', 'u')
       .where('s.id = :id', { id: deviceId })
-      .andWhere('u."id" = :userId', { userId })
-      .delete()
-      .execute();
+      .andWhere('u.id = :userId', { userId })
+      .delete();
   }
   public async deleteDeviceForUser(deviceId: number, userId: number) {
     return this.repository
