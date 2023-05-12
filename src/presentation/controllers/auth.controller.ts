@@ -37,7 +37,6 @@ import { LoginRequest } from '../requests/auth/login.request';
 import { Throttle } from '@nestjs/throttler';
 import { JwtService } from '@nestjs/jwt';
 import { InvalidUserTokensService } from '../../application/services/invalid-tokens/invalid-user-tokens.service';
-import { v4 as uuidv4 } from 'uuid';
 import { QueryUserBannedRepository } from '../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
 
 @Controller('auth')
@@ -87,8 +86,8 @@ export class AuthController {
     devicePrepare.userAgent = req.headers['user-agent'];
 
     const device = await this.securityRepository.insertDevice(devicePrepare);
-    console.log(device.raw.id, 'device.raw.id');
-    const { accessToken, refreshToken } = await this.loginService.execute(body, device.raw.id.toString(), req.user);
+
+    const { accessToken, refreshToken } = await this.loginService.execute(body, device.id.toString(), req.user);
     response.cookie('refreshToken', refreshToken, { httpOnly: this.httpOnly, secure: this.secure });
     response.status(200).json({ accessToken });
   }
@@ -114,12 +113,15 @@ export class AuthController {
     if (checkToken) {
       throw new UnauthorizedException();
     }
-
     const { accessToken, refreshToken } = await this.refreshTokenService.execute(deviceId, userId);
 
-    const findDevice = await this.securityRepository.getDevice(+deviceId);
+    const [findDevice, user] = await Promise.all([
+      this.securityRepository.getDevice(+deviceId),
+      this.queryUserRepository.getUserById(userId),
+    ]);
+
     await Promise.all([
-      this.tokensRepository.saveToken(token, userId),
+      this.tokensRepository.saveToken(token, user),
       findDevice && this.securityRepository.updateDevice(findDevice),
     ]);
     response.cookie('refreshToken', refreshToken, { httpOnly: this.httpOnly, secure: this.secure });
@@ -179,8 +181,9 @@ export class AuthController {
     if (checkToken) {
       throw new UnauthorizedException();
     }
+    const user = await this.queryUserRepository.getUserById(userId);
     await Promise.all([
-      this.tokensRepository.saveToken(token, userId),
+      this.tokensRepository.saveToken(token, user),
       this.securityRepository.deleteDeviceForUser(deviceId, userId),
     ]);
     response.clearCookie('refreshToken').sendStatus(204);

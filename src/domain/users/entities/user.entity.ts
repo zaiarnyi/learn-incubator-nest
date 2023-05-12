@@ -1,9 +1,9 @@
 import { UserRoles } from '../../auth/enums/roles.enum';
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('users')
 export class UserEntity {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
@@ -21,7 +21,7 @@ export class UserEntity {
   @Column({ default: false, type: 'boolean' })
   isSendEmail: boolean;
 
-  @Column({ type: 'enum', enum: UserRoles })
+  @Column({ type: 'enum', enum: UserRoles, default: UserRoles.USER })
   role: UserRoles;
 
   @Column({ default: false, type: 'boolean' })

@@ -13,8 +13,9 @@ export class MainActivateCodeRepository {
   ) {}
 
   async saveRegActivation(code: string, user: UserEntity, type: string) {
-    const find = await this.repository.findOne({ where: { user, type } });
+    const find = await this.repository.findOne({ where: { user: { id: user.id }, type }, relations: ['user'] });
     const expireAt = addMinutes(new Date(), 60);
+
     if (find) {
       return this.repository.update({ user, type }, { code, expireAt });
     }
@@ -24,7 +25,7 @@ export class MainActivateCodeRepository {
   async getUserIdByCode(code: string, type: string): Promise<number> {
     const find = await this.repository.findOne({
       where: { code, type },
-      relations: ['users'],
+      relations: ['user'],
     });
     return find?.user?.id ?? null;
   }

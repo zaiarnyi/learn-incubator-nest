@@ -8,7 +8,7 @@ export class UserMainRepository {
     @InjectDataSource() private readonly dataSource: DataSource,
     @InjectRepository(UserEntity) private readonly userRepository: Repository<UserEntity>,
   ) {}
-  async createUser(user: Omit<CreateUserVo, 'password'>): Promise<UserEntity> {
+  async createUser(user: UserEntity): Promise<UserEntity> {
     return this.userRepository.save(user);
   }
 
@@ -34,12 +34,8 @@ export class UserMainRepository {
 
   async deleteAllData() {
     await Promise.all([
-      this.dataSource
-        .query(`TRUNCATE TABLE users, posts, blogs, user_bans, user_invalid_tokens, activate_emails_code, user_security, comments, comment_likes, post_likes
-CASCADE;`),
-      this.dataSource
-        .query(`TRUNCATE TABLE users, posts, blogs, user_bans, user_invalid_tokens, activate_emails_code, user_security, comments, comment_likes, post_likes
-RESTART IDENTITY;`),
+      this.dataSource.query(`TRUNCATE TABLE users, activate_emails_code, user_security CASCADE;`),
+      this.dataSource.query(`TRUNCATE TABLE users, activate_emails_code, user_security RESTART IDENTITY;`),
     ]);
   }
 }

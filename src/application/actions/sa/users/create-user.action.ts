@@ -5,6 +5,7 @@ import { BadRequestException, Inject, Logger, UnauthorizedException } from '@nes
 import { validateOrReject } from 'class-validator';
 import { UserQueryRepository } from '../../../../infrastructure/database/repositories/users/query.repository';
 import { UserEntity } from '../../../../domain/users/entities/user.entity';
+import * as bcrypt from 'bcryptjs';
 
 export class CreateUserAction {
   logger = new Logger(CreateUserAction.name);
@@ -30,9 +31,11 @@ export class CreateUserAction {
   async execute(dto: CreateUserDto, isConfirm = false): Promise<UserEntity> {
     await this.validate(dto);
 
-    const user = new CreateUserVo(dto.login, dto.password, dto.email, isConfirm);
-    await user.generateHash();
-    await user.validate();
+    const user = new UserEntity();
+    user.email = dto.email;
+    user.login = dto.login;
+    user.passwordHash = await bcrypt.hash(dto.password, 10);
+    user.isConfirm = isConfirm;
 
     return this.mainRepository.createUser(user).catch((e) => {
       this.logger.error(`Login: ${user.login}, Email: ${user.email}. Error create user: ${e.message}`);

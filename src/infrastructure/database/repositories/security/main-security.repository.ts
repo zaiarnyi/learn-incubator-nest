@@ -10,7 +10,7 @@ export class MainSecurityRepository {
   ) {}
 
   public async insertDevice(device: DeviceDto) {
-    return this.repository.insert(device);
+    return this.repository.save(device);
   }
 
   public async deleteAllExcludeCurrent(deviceId: number, userId: number) {
@@ -19,7 +19,8 @@ export class MainSecurityRepository {
       .leftJoin('s."user"', 'u')
       .where('s.id <> :id', { id: deviceId })
       .andWhere('u."id" = :userId', { userId })
-      .delete();
+      .delete()
+      .execute();
   }
 
   public async deleteCurrent(deviceId: number, userId: number) {
@@ -27,14 +28,17 @@ export class MainSecurityRepository {
       .createQueryBuilder('s')
       .leftJoin('s."user"', 'u')
       .where('s.id = :id', { id: deviceId })
-      .andWhere('u."id" = :userId', { userId });
+      .andWhere('u."id" = :userId', { userId })
+      .delete()
+      .execute();
   }
   public async deleteDeviceForUser(deviceId: number, userId: number) {
     return this.repository
       .createQueryBuilder('s')
-      .leftJoin('s."user"', 'u')
+      .leftJoin('s.user', 'u')
       .where('s.id = :id', { id: deviceId })
-      .andWhere('u."id" = :userId', { userId });
+      .andWhere('u.id = :userId', { userId })
+      .delete();
   }
 
   public async getDevice(deviceId: number): Promise<SecurityEntity> {

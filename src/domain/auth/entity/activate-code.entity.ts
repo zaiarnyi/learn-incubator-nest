@@ -1,9 +1,18 @@
 import { UserEntity } from '../../users/entities/user.entity';
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, OneToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('activate_emails_code')
 export class ActivateEmailsCodeEntity {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
@@ -12,7 +21,8 @@ export class ActivateEmailsCodeEntity {
   @Column({ type: Date })
   expireAt: Date;
 
-  @OneToOne(() => UserEntity, (user) => user.id, { onDelete: 'CASCADE' })
+  @OneToOne(() => UserEntity, (user) => user.id, { onDelete: 'CASCADE', nullable: false })
+  @JoinColumn()
   user: UserEntity;
 
   @Column()

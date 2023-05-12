@@ -4,14 +4,15 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  ManyToMany,
-  PrimaryColumn,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity('user_security')
 export class SecurityEntity {
-  @PrimaryColumn()
+  @PrimaryGeneratedColumn()
   id: number;
 
   @Column({ nullable: true })
@@ -20,7 +21,8 @@ export class SecurityEntity {
   @Column()
   title: string;
 
-  @ManyToMany(() => UserEntity, (user) => user.id, { onDelete: 'CASCADE' })
+  @ManyToOne(() => UserEntity, (user) => user.id, { nullable: false })
+  @JoinColumn()
   user: UserEntity;
 
   @Column()

@@ -58,13 +58,4 @@ export class CreateUserVo {
       throw new BadRequestException(err);
     }
   }
-  public getUser() {
-    return {
-      email: this.email,
-      passwordHash: this.passwordHash,
-      login: this.login,
-      isConfirm: this.isConfirm,
-      isSendEmail: this.isSendEmail,
-    };
-  }
 }

@@ -27,7 +27,7 @@ export class RegistrationActions {
       const isDev = this.configService.get<string>('NODE_ENV') === 'development';
       await Promise.all([
         this.activateRepository.saveRegActivation(code, user, ActivateCodeEnum.REGISTRATION),
-        !isDev && this.emailService.registration(payload.email, code),
+        // !isDev && this.emailService.registration(payload.email, code),
       ]);
 
       if (isDev) {
