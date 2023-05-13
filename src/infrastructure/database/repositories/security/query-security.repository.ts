@@ -11,16 +11,16 @@ export class QuerySecurityRepository {
   public async getDevicesByUserId(userId: number): Promise<SecurityEntity[]> {
     return this.repository
       .createQueryBuilder('s')
-      .leftJoin('s."user"', 'u')
-      .where('u."id" = :id', { id: userId })
+      .leftJoin('s.user', 'u')
+      .where('u.id = :id', { id: userId })
       .getMany();
   }
 
   public async getDevicesByUserIdAndDevice(userId: number, deviceId: number): Promise<SecurityEntity> {
     return this.repository
       .createQueryBuilder('s')
-      .leftJoin('s."user"', 'u')
-      .where('s."id" = :userId', { userId: userId })
+      .leftJoin('s.user', 'u')
+      .where('s.id = :userId', { userId: userId })
       .andWhere('s.id = :id', { id: deviceId })
       .getOne();
   }
