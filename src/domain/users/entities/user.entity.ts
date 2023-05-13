@@ -6,10 +6,10 @@ export class UserEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ collation: 'c' })
   login: string;
 
-  @Column()
+  @Column({ collation: 'c' })
   email: string;
 
   @Column()
