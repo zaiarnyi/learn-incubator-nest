@@ -31,7 +31,7 @@ export class UserQueryRepository {
     }
 
     query
-      .orderBy(`"${sortBy}"`, direction.toUpperCase() as 'ASC' | 'DESC')
+      .orderBy(`u."${sortBy}"`, direction.toUpperCase() as 'ASC' | 'DESC')
       .offset(skip)
       .limit(limit);
     return query.getManyAndCount();
