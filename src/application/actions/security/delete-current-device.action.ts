@@ -32,7 +32,7 @@ export class DeleteCurrentDeviceAction {
       throw new UnauthorizedException();
     }
 
-    if (device?.user !== user?.id) {
+    if (device?.user?.id !== user?.id) {
       throw new ForbiddenException();
     }
     await this.mainRepository.deleteCurrent(+deviceId, user.id).catch(() => {

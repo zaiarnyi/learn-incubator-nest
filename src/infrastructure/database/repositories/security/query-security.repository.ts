@@ -26,6 +26,6 @@ export class QuerySecurityRepository {
   }
 
   public async getDeviceById(deviceId: number): Promise<SecurityEntity> {
-    return this.repository.findOneBy({ id: deviceId });
+    return this.repository.findOne({ where: { id: deviceId }, relations: ['user'] });
   }
 }
