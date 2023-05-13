@@ -34,8 +34,12 @@ export class UserMainRepository {
 
   async deleteAllData() {
     await Promise.all([
-      this.dataSource.query(`TRUNCATE TABLE users, activate_emails_code, user_security CASCADE;`),
-      this.dataSource.query(`TRUNCATE TABLE users, activate_emails_code, user_security RESTART IDENTITY;`),
+      this.dataSource.query(
+        `TRUNCATE TABLE users, activate_emails_code, user_security, users_banned,invalid_tokens  CASCADE;`,
+      ),
+      this.dataSource.query(
+        `TRUNCATE TABLE users, activate_emails_code, user_security, users_banned, invalid_tokens RESTART IDENTITY;`,
+      ),
     ]);
   }
 }
