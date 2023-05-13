@@ -32,8 +32,8 @@ export class GetAllUsersAction {
 
     return plainToClass(BanInfo, {
       isBanned: true,
-      banDate: checkUserBanned?.createdAt,
-      banReason: checkUserBanned?.banReason,
+      banDate: checkUserBanned?.createdAt ?? null,
+      banReason: checkUserBanned?.banReason ?? null,
     });
   }
 
