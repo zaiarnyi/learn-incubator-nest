@@ -29,7 +29,6 @@ export class DeleteCurrentDeviceAction {
     try {
       user = await this.jwtService.verify(token);
     } catch (e) {
-      console.log(e, 'eeeeee');
       throw new UnauthorizedException();
     }
 

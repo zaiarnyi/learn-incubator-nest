@@ -49,9 +49,9 @@ export class SecurityController {
     if (!token) {
       throw new UnauthorizedException();
     }
-    if (!id || isNaN(+id) || typeof +id !== 'number') {
+    if (isNaN(Number(id))) {
       throw new NotFoundException();
     }
-    return this.deleteCurrentDeviceAction.execute(token, +id);
+    return this.deleteCurrentDeviceAction.execute(token, Number(id));
   }
 }

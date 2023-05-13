@@ -26,6 +26,6 @@ export class QuerySecurityRepository {
   }
 
   public async getDeviceById(deviceId: number): Promise<SecurityEntity> {
-    return this.repository.createQueryBuilder('s').andWhere('s.id = :id', { id: deviceId }).getOne();
+    return this.repository.findOneBy({ id: deviceId });
   }
 }
