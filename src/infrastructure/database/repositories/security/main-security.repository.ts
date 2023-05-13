@@ -1,7 +1,8 @@
 import { SecurityEntity } from '../../../../domain/security/entity/security.entity';
 import { DeviceDto } from '../../../../domain/security/dto/device.dto';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Not, Repository } from 'typeorm';
+import { UserEntity } from '../../../../domain/users/entities/user.entity';
 
 export class MainSecurityRepository {
   constructor(
@@ -13,30 +14,15 @@ export class MainSecurityRepository {
     return this.repository.save(device);
   }
 
-  public async deleteAllExcludeCurrent(deviceId: number, userId: number) {
-    await this.repository
-      .createQueryBuilder('s')
-      .leftJoin('s.user', 'u')
-      .where('s.id <> :id', { id: deviceId })
-      .andWhere('u.id = :userId', { userId })
-      .delete();
+  public async deleteAllExcludeCurrent(deviceId: number, user: UserEntity) {
+    await this.repository.delete({ id: Not(deviceId), user });
   }
 
-  public async deleteCurrent(deviceId: number, userId: number) {
-    await this.repository
-      .createQueryBuilder('s')
-      .leftJoin('s.user', 'u')
-      .where('s.id = :id', { id: deviceId })
-      .andWhere('u.id = :userId', { userId })
-      .delete();
+  public async deleteCurrent(deviceId: number, user: UserEntity) {
+    return this.repository.delete({ id: deviceId, user });
   }
-  public async deleteDeviceForUser(deviceId: number, userId: number) {
-    return this.repository
-      .createQueryBuilder('s')
-      .leftJoin('s.user', 'u')
-      .where('s.id = :id', { id: deviceId })
-      .andWhere('u.id = :userId', { userId })
-      .delete();
+  public async deleteDeviceForUser(deviceId: number, user: UserEntity) {
+    return this.repository.delete({ id: deviceId, user });
   }
 
   public async getDevice(deviceId: number): Promise<SecurityEntity> {

@@ -42,7 +42,7 @@ export class LoginAction {
     await this.validate(payload);
     const checkHashPassword = await bcrypt.compare(payload.password, user.passwordHash);
     if (!checkHashPassword) {
-      await this.securityRepository.deleteDeviceForUser(+deviceId, user.id);
+      await this.securityRepository.deleteDeviceForUser(+deviceId, user);
       throw new UnauthorizedException();
     }
     return this.generateTokens(user.id, deviceId);

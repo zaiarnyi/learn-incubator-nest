@@ -32,10 +32,10 @@ export class DeleteCurrentDeviceAction {
       throw new UnauthorizedException();
     }
 
-    if (device?.user?.id !== user?.id) {
+    if (device.user.id !== user.id) {
       throw new ForbiddenException();
     }
-    await this.mainRepository.deleteCurrent(+deviceId, user.id).catch(() => {
+    await this.mainRepository.deleteCurrent(+deviceId, device.user).catch(() => {
       this.logger.error(`Error when deleting the current session. DeviceId: ${deviceId}`);
     });
   }

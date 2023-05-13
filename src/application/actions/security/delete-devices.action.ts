@@ -14,8 +14,9 @@ export class DeleteDevicesAction {
 
   public async execute(token: string) {
     try {
-      const { deviceId, id } = await this.jwtService.verify(token);
-      await this.mainRepository.deleteAllExcludeCurrent(deviceId, id).catch((e) => {
+      const { deviceId } = await this.jwtService.verify(token);
+      const device = await this.queryRepository.getDeviceById(+deviceId);
+      await this.mainRepository.deleteAllExcludeCurrent(deviceId, device.user).catch((e) => {
         this.logger.error(`Error when deleting all sessions except the current one. Error: ${JSON.stringify(e)}`);
       });
     } catch (e) {

@@ -184,7 +184,7 @@ export class AuthController {
     const user = await this.queryUserRepository.getUserById(userId);
     await Promise.all([
       this.tokensRepository.saveToken(token, user),
-      this.securityRepository.deleteDeviceForUser(deviceId, userId),
+      this.securityRepository.deleteDeviceForUser(deviceId, user),
     ]);
     response.clearCookie('refreshToken').sendStatus(204);
   }
