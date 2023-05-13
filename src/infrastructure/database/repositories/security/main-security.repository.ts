@@ -44,9 +44,6 @@ export class MainSecurityRepository {
   }
 
   public async updateDevice(payload: SecurityEntity) {
-    await this.repository.update(
-      { id: payload.id },
-      { ip: payload.ip, title: payload.title, userAgent: payload.userAgent },
-    );
+    await this.repository.save(payload);
   }
 }

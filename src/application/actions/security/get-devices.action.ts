@@ -20,6 +20,7 @@ export class GetDevicesAction {
         plainToClass(GetDevicesResponse, { ...item, deviceId: item.id.toString(), lastActiveDate: item.updatedAt }),
       );
     } catch (e) {
+      console.log(e, 'UnauthorizedException - GetDevicesAction');
       throw new UnauthorizedException();
     }
   }
