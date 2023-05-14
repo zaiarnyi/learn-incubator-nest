@@ -39,7 +39,7 @@ export class QueryLikeStatusPostRepository {
         isBanned: false,
         [LikeStatusEnum.Like.toLowerCase()]: true,
       },
-      relations: ['post'],
+      relations: ['post', 'user'],
       order: {
         createdAt: 'DESC',
       },
