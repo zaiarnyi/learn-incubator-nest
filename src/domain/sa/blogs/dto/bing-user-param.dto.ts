@@ -7,5 +7,5 @@ export class BingUserParamDto {
 
   @IsString()
   @IsNotEmpty()
-  userId: string | number;
+  userId: number;
 }

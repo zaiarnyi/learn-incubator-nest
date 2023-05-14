@@ -19,12 +19,8 @@ export class GetBlogByIdAction {
       throw new NotFoundException();
     }
     return plainToClass(CreateBlogResponse, {
+      ...findBlog,
       id: findBlog.id.toString(),
-      name: findBlog.name,
-      description: findBlog.description,
-      websiteUrl: findBlog.website_url,
-      createdAt: findBlog.createdAt,
-      isMembership: findBlog.is_membership,
     });
   }
 }

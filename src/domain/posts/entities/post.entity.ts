@@ -1,55 +1,47 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
 import { UserEntity } from '../../users/entities/user.entity';
 import { BlogEntity } from '../../blogs/entities/blog.entity';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-export type PostDocument = HydratedDocument<Post>;
+@Entity('posts')
+export class PostEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-@Schema({
-  timestamps: true,
-  validateBeforeSave: true,
-  versionKey: false,
-  toJSON: {
-    transform: (doc, ret) => {
-      ret.id = ret._id;
-      delete ret._id;
-    },
-  },
-})
-export class Post {
-  @Prop({ type: String, isRequired: true })
+  @Column({ collation: 'C' })
   title: string;
 
-  @Prop({ type: String, isRequired: true })
+  @Column({ collation: 'C' })
   shortDescription: string;
 
-  @Prop({ type: String, isRequired: true })
+  @Column({ collation: 'C' })
   content: string;
 
-  @Prop({ type: String, isRequired: true })
-  blogName: string;
+  @ManyToOne(() => BlogEntity, (blog) => blog.id)
+  @JoinColumn()
+  blog: BlogEntity;
 
-  @Prop({ type: String, isRequired: true })
-  blogId: string;
+  @ManyToOne(() => UserEntity, (user) => user.id)
+  @JoinColumn()
+  user: UserEntity;
 
-  @Prop({ type: String, isRequired: false })
-  userId: string;
-
-  @Prop({ type: Boolean, isRequired: true, default: false })
+  @Column({ type: 'boolean', default: false })
   isBanned: boolean;
-}
 
-export const PostSchema = SchemaFactory.createForClass(Post);
-
-export class PostEntity {
-  id: number;
-  title: string;
-  short_description: string;
-  content: string;
-  blog: BlogEntity | number;
-  user: UserEntity | number;
-  is_banned: boolean;
+  @CreateDateColumn()
   createdAt: Date;
+
+  @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
   deletedAt: Date;
 }

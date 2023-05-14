@@ -39,7 +39,7 @@ export class GetCommentsByPostIdAction {
     return {
       likesCount,
       dislikesCount,
-      myStatus: info?.my_status ?? LikeStatusEnum.None,
+      myStatus: info?.myStatus ?? LikeStatusEnum.None,
     };
   }
 
@@ -51,20 +51,25 @@ export class GetCommentsByPostIdAction {
     await this.validate(postId);
 
     const { pageSize, pageNumber, sortDirection, sortBy } = query;
-    const totalCount = await this.queryRepository.getCountComments(postId);
     const skip = (pageNumber - 1) * pageSize;
-    const pagesCount = Math.ceil(totalCount / pageSize);
 
-    const commentsRaw = await this.queryRepository.getCommentByPostId(postId, skip, pageSize, sortBy, sortDirection);
-    const promises = commentsRaw.map(async (comment: CommentsEntity & { commentId: number; login: string }) => {
+    const [commentsRaw, totalCount] = await this.queryRepository.getCommentByPostId(
+      postId,
+      skip,
+      pageSize,
+      sortBy,
+      sortDirection,
+    );
+    const pagesCount = Math.ceil(totalCount / pageSize);
+    const promises = commentsRaw.map(async (comment: CommentsEntity) => {
       return plainToClass(PostCommentInfo, {
         ...comment,
-        id: comment.commentId.toString(),
+        id: comment.id.toString(),
         commentatorInfo: {
-          userId: comment.user.toString(),
-          userLogin: comment.login,
+          userId: comment.user.id.toString(),
+          userLogin: comment.user.login,
         },
-        likesInfo: await this.getLikesInfo(comment.commentId, userId),
+        likesInfo: await this.getLikesInfo(comment.id, userId),
       });
     });
 

@@ -1,5 +1,5 @@
 import { CreateBlogDto } from '../../../domain/blogs/dto/create-blog.dto';
-import { Blog, BlogEntity } from '../../../domain/blogs/entities/blog.entity';
+import { BlogEntity } from '../../../domain/blogs/entities/blog.entity';
 import { MainBlogsRepository } from '../../../infrastructure/database/repositories/blogs/main-blogs.repository';
 import { Inject } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
@@ -20,18 +20,14 @@ export class CreateBlogAction {
     const blog = new BlogEntity();
     blog.name = payload.name;
     blog.description = payload.description;
-    blog.website_url = payload.websiteUrl;
-    blog.user = user.id;
+    blog.websiteUrl = payload.websiteUrl;
+    blog.user = user;
 
     const createdBlog = await this.mainRepository.createBlog(blog);
 
     return plainToClass(CreateBlogResponse, {
+      ...createdBlog,
       id: createdBlog.id.toString(),
-      name: createdBlog.name,
-      description: createdBlog.description,
-      websiteUrl: createdBlog.website_url,
-      createdAt: createdBlog.createdAt,
-      isMembership: createdBlog.is_membership,
     });
   }
 }

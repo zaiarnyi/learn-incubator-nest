@@ -31,7 +31,7 @@ export class BlogsController {
     if (isNaN(Number(id))) {
       throw new NotFoundException();
     }
-    return this.getPostByBlogIdService.execute(Number(id), query, req?.user?.id);
+    return this.getPostByBlogIdService.execute(Number(id), query, req?.user);
   }
 
   @Get('/:id')

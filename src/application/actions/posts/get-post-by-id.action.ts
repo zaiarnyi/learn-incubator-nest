@@ -31,7 +31,7 @@ export class GetPostByIdAction {
       throw new NotFoundException();
     }
 
-    const blog = await this.queryBlogRepository.getBlogById(postById.blog as number);
+    const blog = await this.queryBlogRepository.getBlogById(postById.blog.id);
     if (!blog) {
       throw new NotFoundException();
     }
@@ -39,7 +39,7 @@ export class GetPostByIdAction {
     return plainToClass(GetPost, {
       id: id.toString(),
       title: postById.title,
-      shortDescription: postById.short_description,
+      shortDescription: postById.shortDescription,
       content: postById.content,
       blogId: blog.id.toString(),
       blogName: blog.name,

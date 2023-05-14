@@ -19,9 +19,19 @@ import { CommentsModule } from './comments.module';
 import { ValidateBlogByIdValidator } from '../validators/validateBlogById.validator';
 import { BlogsModule } from './blogs.module';
 import { SaUsersModule } from './sa/users/sa-users.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PostEntity } from '../../domain/posts/entities/post.entity';
+import { CommentsEntity } from '../../domain/comments/entities/comment.entity';
+import { PostLikesEntity } from '../../domain/posts/like-status/entity/like-status-posts.entity';
 
 @Module({
-  imports: [SaUsersModule, UsersModule, CommentsModule, BlogsModule],
+  imports: [
+    SaUsersModule,
+    UsersModule,
+    CommentsModule,
+    BlogsModule,
+    TypeOrmModule.forFeature([PostEntity, CommentsEntity, PostLikesEntity]),
+  ],
   controllers: [PostsController],
   providers: [
     CreatePostAction,

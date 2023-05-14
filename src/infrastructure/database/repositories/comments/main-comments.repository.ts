@@ -1,51 +1,34 @@
 import { Injectable } from '@nestjs/common';
 import { CommentsEntity } from '../../../../domain/comments/entities/comment.entity';
 import { DeleteResult } from 'mongodb';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
+import { ChangeCommentByIdDto } from '../../../../domain/comments/dto/change-comment-by-id.dto';
 
 @Injectable()
 export class MainCommentsRepository {
-  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
+  constructor(
+    @InjectDataSource() private readonly dataSource: DataSource,
+    @InjectRepository(CommentsEntity) private readonly repository: Repository<CommentsEntity>,
+  ) {}
 
-  async deleteAllComments() {
-    return this.dataSource.query('DELETE FROM comments');
+  async changeCommentById(id: number, body: ChangeCommentByIdDto) {
+    await this.repository.update({ id }, { content: body.content });
   }
 
-  async changeCommentById(id: number, body: any) {
-    await this.dataSource.query('UPDATE comments SET "content" = $2 WHERE id = $1', [id, body.content]);
-  }
-
-  async removeCommentById(id: number): Promise<DeleteResult> {
-    return this.dataSource.query('DELETE FROM comments WHERE id = $1', [id]);
-  }
-
-  async removeAllComments(): Promise<DeleteResult> {
-    return this.dataSource.query('DELETE FROM comments');
+  async removeCommentById(id: number) {
+    return this.repository.delete({ id });
   }
 
   async createComment(body: CommentsEntity): Promise<CommentsEntity> {
-    const query = `INSERT INTO comments ("content", "user", "post", "blog")
-        VALUES ($1, $2, $3, $4) RETURNING *`;
-    const c = await this.dataSource.query(query, [body.content, body.user, body.post, body.blog]);
-    return c.length ? c[0] : null;
+    return this.repository.save(body);
   }
 
   async changeBannedStatus(userId: number, isBanned: boolean): Promise<any> {
-    const updated = await this.dataSource.query(
-      `UPDATE comments SET "is_banned" = $2
-                WHERE "user" = $1 RETURNING *`,
-      [userId, isBanned],
-    );
-    return updated.length ? updated[0] : null;
+    return this.repository.update({ user: { id: userId } }, { isBanned });
   }
 
   async changeBannedStatusByBlogger(userId: number, blogId: number, isBanned: boolean): Promise<any> {
-    const updated = await this.dataSource.query(
-      `UPDATE comments SET "is_banned" = $2
-                WHERE "user" = $1 AND "blog" = $3 RETURNING *`,
-      [userId, isBanned, blogId],
-    );
-    return updated.length ? updated[0] : null;
+    return this.repository.update({ user: { id: userId }, blog: { id: blogId } }, { isBanned });
   }
 }

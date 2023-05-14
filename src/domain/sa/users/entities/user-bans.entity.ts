@@ -4,10 +4,12 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { BlogEntity } from '../../../blogs/entities/blog.entity';
 
 @Entity('users_banned')
 export class UserBannedEntity {
@@ -18,10 +20,12 @@ export class UserBannedEntity {
   banReason: string;
 
   @ManyToOne(() => UserEntity, (user) => user.id, { nullable: false })
+  @JoinColumn()
   user: UserEntity;
 
-  // @ManyToOne(() => BlogEntity, (blog) => blog.id, { nullable: true })
-  // blog: BlogEntity;
+  @ManyToOne(() => BlogEntity, (blog) => blog.id, { nullable: true })
+  @JoinColumn()
+  blog: BlogEntity;
 
   @CreateDateColumn()
   createdAt: Date;

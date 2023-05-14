@@ -37,11 +37,9 @@ export class GetCommentsByBlogsAction {
   public async execute(query: GetPostByBlogIdDto, userId: number): Promise<GetCommentsByBlogResponse | any> {
     const blogIds = await this.queryRepository.getBlogsByBlogger(userId);
 
-    const totalCount = await this.commentMainRepository.getCountCommentsForAllBlogs(blogIds);
     const skip = (query.pageNumber - 1) * query.pageSize;
-    const pagesCount = Math.ceil(totalCount / query.pageSize);
 
-    const comments = await this.commentMainRepository.getCommentForAllBlogs(
+    const [comments, totalCount] = await this.commentMainRepository.getCommentForAllBlogs(
       blogIds,
       skip,
       query.pageSize,
@@ -49,36 +47,24 @@ export class GetCommentsByBlogsAction {
       query.sortDirection,
     );
 
-    const promises = comments.map(
-      async (
-        item: CommentsEntity & {
-          login: string;
-          commentId: number;
-          title: string;
-          name: string;
-          commentContent: string;
-          commentCreatedAt: Date;
-          userId: number;
+    const pagesCount = Math.ceil(totalCount / query.pageSize);
+
+    const promises = comments.map(async (item: CommentsEntity) => {
+      return {
+        id: item.id.toString(),
+        commentatorInfo: {
+          userId: item.user.id.toString(),
+          userLogin: item.user.login,
         },
-      ) => {
-        return {
-          id: item.commentId.toString(),
-          content: item.commentContent,
-          createdAt: item.commentCreatedAt,
-          commentatorInfo: {
-            userId: item.userId.toString(),
-            userLogin: item.login,
-          },
-          likesInfo: await this.getLikesInfo(item.id),
-          postInfo: {
-            id: item.post.toString(),
-            title: item.title,
-            blogId: item.blog.toString(),
-            blogName: item.name,
-          },
-        };
-      },
-    );
+        // likesInfo: await this.getLikesInfo(item.id),
+        postInfo: {
+          id: item.post.id.toString(),
+          title: item.post.title,
+          blogId: item.blog.id.toString(),
+          blogName: item.blog.name,
+        },
+      };
+    });
 
     return plainToClass(GetCommentsByBlogResponse, {
       pagesCount,

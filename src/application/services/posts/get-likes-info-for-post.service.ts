@@ -3,7 +3,6 @@ import { QueryLikeStatusPostRepository } from '../../../infrastructure/database/
 import { LikesInfo, NewestLikes } from '../../../presentation/responses/posts/get-all-posts.response';
 import { plainToClass } from 'class-transformer';
 import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
-import { PostLikesEntity } from '../../../domain/posts/like-status/entity/like-status-posts.entity';
 
 @Injectable()
 export class GetLikesInfoForPostService {
@@ -18,18 +17,18 @@ export class GetLikesInfoForPostService {
       this.statusPostRepository.getLastLikesStatus(postId),
       userId && this.statusPostRepository.checkUserStatus(postId, userId),
     ]);
-    const newestLikes = lastLikes?.map((item: PostLikesEntity & { login: string }) => {
+    const newestLikes = lastLikes?.map((item) => {
       return plainToClass(NewestLikes, {
         addedAt: item.createdAt,
-        userId: item.user.toString(),
-        login: item.login,
+        userId: item.user.id.toString(),
+        login: item.user.login,
       });
     });
 
     return plainToClass(LikesInfo, {
       likesCount,
       dislikesCount,
-      myStatus: info?.my_status ?? LikeStatusEnum.None,
+      myStatus: info?.myStatus ?? LikeStatusEnum.None,
       newestLikes,
     });
   }

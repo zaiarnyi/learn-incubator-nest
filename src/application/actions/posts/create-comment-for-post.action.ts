@@ -33,19 +33,19 @@ export class CreateCommentForPostAction {
       throw new BadRequestException(e);
     }
 
-    const post = await this.queryPostRepository.getPostById(postId).catch((e) => {
+    const post = await this.queryPostRepository.getPostById(postId, ['blog']).catch((e) => {
       this.logger.error(`Error when checking for the presence of a post - ${postId}. ${JSON.stringify(e)}`);
     });
     if (!post) {
       throw new NotFoundException();
     }
 
-    const blog = await this.queryBlogsRepository.getBlogById(post.blog as number);
-    if (blog.is_banned) {
+    const blog = await this.queryBlogsRepository.getBlogById(post.blog.id);
+    if (blog.isBanned) {
       throw new ForbiddenException();
     }
 
-    const userIsBanned = await this.queryUserBannedRepository.checkStatusByUserBlog(userId, post.blog as number);
+    const userIsBanned = await this.queryUserBannedRepository.checkStatusByUserBlog(userId, post.blog.id);
     if (userIsBanned) {
       throw new ForbiddenException();
     }
@@ -64,20 +64,19 @@ export class CreateCommentForPostAction {
     }
 
     const comment = new CommentsEntity();
-    comment.post = post.id;
-    comment.user = user.id;
+    comment.post = post;
+    comment.user = user;
     comment.blog = post.blog;
     comment.content = body.content;
 
     const createdComment = await this.commentMainRepository.createComment(comment);
-    const commentId = createdComment.id.toString();
 
     return plainToClass(PostCommentInfo, {
       ...createdComment,
-      id: commentId.toString(),
+      id: createdComment.id.toString(),
       commentatorInfo: {
-        userId: createdComment.user.toString(),
-        userLogin: user.login,
+        userId: createdComment.user.id.toString(),
+        userLogin: createdComment.user.login,
       },
       likesInfo: {
         likesCount: 0,

@@ -18,7 +18,7 @@ export class DeleteCommentByIdAction {
     if (!comment) {
       throw new NotFoundException();
     }
-    if (comment.user !== userId) {
+    if (comment.user.id !== userId) {
       throw new ForbiddenException();
     }
 

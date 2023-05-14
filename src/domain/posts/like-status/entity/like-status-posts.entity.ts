@@ -2,54 +2,49 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
 import { LikeStatusEnum } from '../../../../infrastructure/enums/like-status.enum';
 import { UserEntity } from '../../../users/entities/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { PostEntity } from '../../entities/post.entity';
 
-export type LikeStatusPostsDocument = HydratedDocument<LikeStatusPosts>;
+@Entity('post_likes')
+export class PostLikesEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-@Schema({
-  timestamps: true,
-  validateBeforeSave: true,
-  versionKey: false,
-  toJSON: {
-    transform: (doc, ret) => {
-      ret.id = ret._id;
-      delete ret._id;
-    },
-  },
-})
-export class LikeStatusPosts {
-  @Prop({ type: String, isRequired: true })
-  userId: string;
+  @ManyToOne(() => UserEntity, (user) => user.id)
+  @JoinColumn()
+  user: UserEntity;
 
-  @Prop({ type: Boolean, isRequired: false, default: false })
+  @ManyToOne(() => PostEntity, (post) => post.id)
+  @JoinColumn()
+  post: PostEntity;
+
+  @Column({ type: 'boolean', default: false })
   like: boolean;
 
-  @Prop({ type: Boolean, isRequired: false, default: false })
+  @Column({ type: 'boolean', default: false })
   dislike: boolean;
 
-  @Prop({ enum: LikeStatusEnum, isRequired: true, type: String, default: LikeStatusEnum.None })
+  @Column({ type: 'enum', enum: LikeStatusEnum, default: LikeStatusEnum.None })
   myStatus: LikeStatusEnum;
 
-  @Prop({ type: String, isRequired: true })
-  postId: string;
-
-  @Prop({ type: String, isRequired: true })
-  login: string;
-
-  @Prop({ type: Boolean, isRequired: false, default: false })
+  @Column({ type: 'boolean', default: false })
   isBanned: boolean;
-}
 
-export const LikeStatusPostsSchema = SchemaFactory.createForClass(LikeStatusPosts);
-
-export class PostLikesEntity {
-  id: number;
-  user: number;
-  post: number;
-  like: boolean;
-  dislike: boolean;
-  my_status: LikeStatusEnum;
-  is_banned: boolean;
+  @CreateDateColumn()
   createdAt: Date;
+
+  @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
   deletedAt: Date;
 }

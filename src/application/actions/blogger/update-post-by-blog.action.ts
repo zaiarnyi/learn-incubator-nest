@@ -25,7 +25,7 @@ export class UpdatePostByBlogAction {
 
   private async validate(blogId: number, postId: number, userId?: number) {
     const [findPost, findBlog] = await Promise.all([
-      this.queryPostRepository.getPostById(postId),
+      this.queryPostRepository.getPostById(postId, ['user']),
       this.queryBlogRepository.getBlogById(blogId),
     ]);
 
@@ -35,7 +35,7 @@ export class UpdatePostByBlogAction {
     if (!userId) {
       throw new UnauthorizedException();
     }
-    if ((findPost.user && findPost.user !== userId) || (findBlog.user && findBlog.user !== userId)) {
+    if ((findPost.user && findPost.user.id !== userId) || (findBlog.user && findBlog.user.id !== userId)) {
       throw new ForbiddenException();
     }
   }

@@ -13,10 +13,8 @@ export class GetAllBlogsAction {
   ) {}
 
   public async execute(query: GetBlogsDto, userId?: number): Promise<GetAllBlogsResponse> {
-    const totalCount = await this.queryRepository.getCountBlogs(query.searchNameTerm, userId, null, false);
     const skip = (query.pageNumber - 1) * query.pageSize;
-    const pagesCount = Math.ceil(totalCount / query.pageSize);
-    const blogs = await this.queryRepository.getBlogs(
+    const [blogs, totalCount] = await this.queryRepository.getBlogs(
       query.searchNameTerm,
       skip,
       query.pageSize,
@@ -27,6 +25,8 @@ export class GetAllBlogsAction {
       false,
     );
 
+    const pagesCount = Math.ceil(totalCount / query.pageSize);
+
     return {
       pagesCount,
       page: query.pageNumber,
@@ -34,12 +34,8 @@ export class GetAllBlogsAction {
       totalCount,
       items: blogs.map((item) =>
         plainToClass(CreateBlogResponse, {
+          ...item,
           id: item.id.toString(),
-          name: item.name,
-          description: item.description,
-          websiteUrl: item.website_url,
-          createdAt: item.createdAt,
-          isMembership: item.is_membership,
         }),
       ),
     };

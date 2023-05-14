@@ -1,58 +1,48 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
 import { UserEntity } from '../../users/entities/user.entity';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
-export type BlogDocument = HydratedDocument<Blog>;
+@Entity('blogs')
+export class BlogEntity {
+  @PrimaryGeneratedColumn()
+  id: number;
 
-@Schema({
-  timestamps: true,
-  validateBeforeSave: true,
-  versionKey: false,
-  toJSON: {
-    transform: (doc, ret) => {
-      ret.id = ret._id;
-      delete ret._id;
-    },
-  },
-})
-export class Blog {
-  @Prop({ type: String, isRequired: true })
+  @Column({ collation: 'C' })
   name: string;
 
-  @Prop({ type: String, isRequired: true })
+  @Column({ collation: 'C' })
   description: string;
 
-  @Prop({ type: String, isRequired: true })
+  @Column({ collation: 'C' })
   websiteUrl: string;
 
-  @Prop({ type: Boolean, default: false })
+  @Column({ type: 'boolean', default: false })
   isMembership: boolean;
 
-  @Prop({ type: String, isRequired: false, default: null })
-  userId: string;
+  @ManyToOne(() => UserEntity, (user) => user.id, { onDelete: 'CASCADE' })
+  @JoinColumn()
+  user: UserEntity;
 
-  @Prop({ type: String, isRequired: false, default: null })
-  userLogin: string;
-
-  @Prop({ type: Boolean, isRequired: true, default: false })
+  @Column({ type: 'boolean', default: false })
   isBanned: boolean;
 
-  @Prop({ type: Date, isRequired: false, default: null })
+  @Column({ type: 'timestamp without time zone', nullable: true })
   banDate: Date;
-}
 
-export const BlogSchema = SchemaFactory.createForClass(Blog);
-
-export class BlogEntity {
-  id: number;
-  name: string;
-  description: string;
-  website_url: string;
-  is_membership: boolean;
-  user: UserEntity | number;
-  is_banned: boolean;
-  ban_date: Date;
+  @CreateDateColumn()
   createdAt: Date;
+
+  @UpdateDateColumn()
   updatedAt: Date;
+
+  @DeleteDateColumn()
   deletedAt: Date;
 }

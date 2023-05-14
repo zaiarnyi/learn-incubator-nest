@@ -47,7 +47,7 @@ export class BannedUserByBloggerAction {
       throw new NotFoundException();
     }
 
-    if (blog.user !== bloggerId) {
+    if (blog.user.id !== bloggerId) {
       throw new ForbiddenException();
     }
 

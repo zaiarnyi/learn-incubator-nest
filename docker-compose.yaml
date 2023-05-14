@@ -81,40 +81,6 @@ services:
     networks:
       - incubator-postgresql
 
-  mongo:
-    container_name: mongo
-    image: mongo
-    restart: unless-stopped
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: testUser
-      MONGO_INITDB_ROOT_PASSWORD: testPassword
-      MONGO_INITDB_DATABASE: incubator-nest
-    volumes:
-      - ./.docker/mongo_data:/data/db
-    ports:
-      - "27018:27017"
-    networks:
-      - incubator-mongo
-
-  mongo-express:
-    container_name: mongo-express
-    image: mongo-express
-    depends_on:
-      - mongo
-    ports:
-      - '8081:8081'
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: testUser
-      ME_CONFIG_MONGODB_ADMINPASSWORD: testPassword
-      ME_CONFIG_MONGODB_URL: mongodb://testUser:testPassword@mongo:27017/
-      ME_CONFIG_MONGODB_SERVER: mongo
-    networks:
-      - incubator-mongo
-    restart: unless-stopped
-
 networks:
   incubator-postgresql:
-    driver: bridge
-
-  incubator-mongo:
     driver: bridge

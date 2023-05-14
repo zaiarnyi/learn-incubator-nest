@@ -1,4 +1,15 @@
-import { Body, Controller, Get, HttpCode, Inject, Param, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Inject,
+  NotFoundException,
+  Param,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { BasicAuthGuard } from '../../../../domain/auth/guards/basic-auth.guard';
 import { ParamBindUserRequest } from '../../../requests/sa/blogs/param-bind-user.request';
 import { GetBlogListRequest } from '../../../requests/sa/blogs/get-blog-list.request';
@@ -27,7 +38,10 @@ export class SaBlogsControllers {
   @Put(':id/bind-with-user/:userId')
   @HttpCode(204)
   async bindUserToBlog(@Param() param: ParamBindUserRequest) {
-    return this.bindBlogAction.execute(param);
+    if (isNaN(Number(param.id)) || isNaN(Number(param.userId))) {
+      throw new NotFoundException();
+    }
+    return this.bindBlogAction.execute({ ...param, userId: Number(param.userId) });
   }
 
   @Put(':id/ban')
@@ -36,6 +50,9 @@ export class SaBlogsControllers {
     @Param() param: UpdateParamBannedByBlogRequest,
     @Body() body: UpdateBannedByBlogRequest,
   ) {
-    await this.updateStatusBannedByBlogAction.execute(+param.id, body.isBanned);
+    if (isNaN(Number(param.id))) {
+      throw new NotFoundException();
+    }
+    await this.updateStatusBannedByBlogAction.execute(Number(param.id), body.isBanned);
   }
 }

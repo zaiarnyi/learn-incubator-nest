@@ -7,9 +7,11 @@ import { GetAllBlogsAction } from '../../application/actions/blogs/get-all-blogs
 import { PostsModule } from './posts.module';
 import { GetPostByBlogIdAction } from '../../application/actions/blogs/getPostByBlogId.action';
 import { UsersModule } from './users.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { BlogEntity } from '../../domain/blogs/entities/blog.entity';
 
 @Module({
-  imports: [forwardRef(() => PostsModule), UsersModule],
+  imports: [forwardRef(() => PostsModule), UsersModule, TypeOrmModule.forFeature([BlogEntity])],
   controllers: [BlogsController],
   providers: [MainBlogsRepository, GetBlogByIdAction, QueryBlogsRepository, GetAllBlogsAction, GetPostByBlogIdAction],
   exports: [QueryBlogsRepository, MainBlogsRepository, GetAllBlogsAction],

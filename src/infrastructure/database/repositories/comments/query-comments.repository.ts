@@ -1,46 +1,35 @@
 import { Injectable } from '@nestjs/common';
-import { CommentDocument, CommentsEntity } from '../../../../domain/comments/entities/comment.entity';
-import { InjectDataSource } from '@nestjs/typeorm';
-import { DataSource } from 'typeorm';
+import { CommentsEntity } from '../../../../domain/comments/entities/comment.entity';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
 export class QueryCommentsRepository {
-  constructor(@InjectDataSource() private readonly dataSource: DataSource) {}
+  constructor(
+    @InjectDataSource() private readonly dataSource: DataSource,
+    @InjectRepository(CommentsEntity) private readonly repository: Repository<CommentsEntity>,
+  ) {}
 
-  async getCountComments(postId: number): Promise<number> {
-    const comments = await this.dataSource.query(
-      `SELECT COUNT(*) FROM comments
-            WHERE "post" = $1 AND "is_banned" = FALSE`,
-      [postId],
-    );
-    return +comments[0].count;
-  }
   async getCommentByPostId(
     postId: number,
     offset: number,
     limit: number,
     sortBy: string,
     direction: string,
-  ): Promise<CommentsEntity[]> {
-    const directionUpper = sortBy === 'createdAt' ? direction : 'COLLATE "C"' + direction.toUpperCase();
-    const query = `SELECT comments.*, comments.id as "commentId", u."login" FROM comments
-               LEFT JOIN users u ON comments."user" = u.id
-               WHERE comments."post" = $3 AND comments."is_banned" = FALSE
-               ORDER BY comments."${sortBy}" ${directionUpper}
-               LIMIT $1
-               OFFSET $2`;
-
-    return this.dataSource.query(query, [limit, offset, postId]);
+  ): Promise<[CommentsEntity[], number]> {
+    return this.repository
+      .createQueryBuilder('c')
+      .leftJoinAndSelect('c.user', 'user')
+      .leftJoinAndSelect('c.post', 'post')
+      .where('post.id = :postId', { postId })
+      .orderBy(`c."${sortBy}"`, direction.toUpperCase() as 'ASC' | 'DESC')
+      .limit(limit)
+      .offset(offset)
+      .getManyAndCount();
   }
 
   async getCommentById(id: number): Promise<CommentsEntity> {
-    const comments = await this.dataSource.query(
-      `SELECT comments.*, comments."id" as "commentId", users."login" FROM comments
-    LEFT JOIN users ON comments."user" = users.id
-    WHERE comments."id" = $1`,
-      [id],
-    );
-    return comments.length ? comments[0] : null;
+    return this.repository.findOne({ where: { id }, relations: ['user'] });
   }
   async getCommentForAllBlogs(
     blogIds: number[],
@@ -48,23 +37,14 @@ export class QueryCommentsRepository {
     limit: number,
     sortBy: string,
     sortDir: string,
-  ): Promise<CommentsEntity[]> {
-    const directionUpper = sortBy === 'createdAt' ? sortDir : 'COLLATE "C"' + sortDir.toUpperCase();
-    const query = `SELECT comments.*, u."login", u.id as "userId", comments.id as "commentId", comments."content" as "commentContent", comments."createdAt" as "commentCreatedAt", p.*, b.* FROM comments
-            LEFT JOIN users u ON comments."user" = u.id
-            LEFT JOIN posts p ON comments."post" = p.id
-            LEFT JOIN blogs b ON comments."blog" = b.id
-            WHERE comments."blog" IN (${blogIds.join(',')}) AND comments."is_banned" = false
-            ORDER BY comments."${sortBy}" ${directionUpper}
-            LIMIT $1
-            OFFSET $2`;
-    return this.dataSource.query(query, [limit, skip]);
-  }
-
-  async getCountCommentsForAllBlogs(blogIds: number[]): Promise<number> {
-    const query = `SELECT COUNT(*) FROM comments
-        WHERE "blog" IN (${blogIds.join(',')}) AND "is_banned" = false`;
-    const count = await this.dataSource.query(query);
-    return +count[0].count;
+  ): Promise<[CommentsEntity[], number]> {
+    return this.repository
+      .createQueryBuilder('c')
+      .leftJoinAndSelect('c.user', 'user')
+      .leftJoinAndSelect('c.post', 'post')
+      .leftJoinAndSelect('c.blog', 'blog')
+      .where('blog.id IN(:...blogIds)', { blogIds })
+      .orderBy(`c."${sortBy}"`, sortDir.toUpperCase() as 'ASC' | 'DESC')
+      .getManyAndCount();
   }
 }

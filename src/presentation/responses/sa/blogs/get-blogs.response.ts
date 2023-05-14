@@ -22,7 +22,7 @@ class BanInfo {
 }
 
 @Exclude()
-class GetBlogsWithOwner extends CreateBlogResponse {
+export class GetBlogsWithOwner extends CreateBlogResponse {
   @Expose()
   @ValidateNested()
   @Type(() => BlogOwner)

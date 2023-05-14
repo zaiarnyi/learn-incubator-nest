@@ -39,7 +39,7 @@ export class PostsController {
   @UseGuards(JwtAuthOptionalGuard)
   @Get()
   async getAllPosts(@Query() query: GetPostsRequest, @Req() req: any): Promise<GetPostsResponse> {
-    return this.getPostsService.execute(query, req?.user?.id);
+    return this.getPostsService.execute(query, req?.user);
   }
   @UseGuards(JwtAuthOptionalGuard)
   @Get(':id')
@@ -72,7 +72,7 @@ export class PostsController {
     @Body() body: CreateCommentForPostRequest,
     @Req() req: any,
   ): Promise<PostCommentInfo> {
-    if (isNaN(Number(id)) || req?.user?.is_banned) {
+    if (isNaN(Number(id)) || req?.user?.isBanned) {
       throw new NotFoundException();
     }
     return this.createCommentForPostAction.execute(Number(id), body, req.user.id);
@@ -89,6 +89,6 @@ export class PostsController {
     if (isNaN(Number(id)) || req?.user?.is_banned) {
       throw new NotFoundException();
     }
-    return this.changeLikeStatusByPostIdService.execute(Number(id), body, req.user.id);
+    return this.changeLikeStatusByPostIdService.execute(Number(id), body, req.user);
   }
 }

@@ -2,6 +2,7 @@ import { ForbiddenException, Inject, Injectable, Logger, NotFoundException } fro
 import { MainBlogsRepository } from '../../../infrastructure/database/repositories/blogs/main-blogs.repository';
 import { CreateBlogDto } from '../../../domain/blogs/dto/create-blog.dto';
 import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
+import { UserEntity } from '../../../domain/users/entities/user.entity';
 
 @Injectable()
 export class UpdateBlogAction {
@@ -18,15 +19,15 @@ export class UpdateBlogAction {
       throw new NotFoundException();
     }
 
-    if (findBlog.user !== userId) {
+    if (findBlog.user.id !== userId) {
       throw new ForbiddenException();
     }
   }
 
-  async execute(id: number, dto: CreateBlogDto, userId: number) {
-    await this.validateBlog(id, userId);
+  async execute(id: number, dto: CreateBlogDto, user: UserEntity) {
+    await this.validateBlog(id, user.id);
 
-    await this.mainRepository.updateBlog(id, userId, dto).catch((e) => {
+    await this.mainRepository.updateBlog(id, user.id, dto).catch((e) => {
       this.logger.error(`Error when updating the blog with ID - ${id}. ${JSON.stringify(e)}`);
       throw new NotFoundException();
     });

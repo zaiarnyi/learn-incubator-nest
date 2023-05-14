@@ -10,9 +10,16 @@ import { MainLikeStatusRepository } from '../database/repositories/comments/like
 import { QueryLikeStatusRepository } from '../database/repositories/comments/like-status/query-like-status.repository';
 import { PostsModule } from './posts.module';
 import { SaUsersModule } from './sa/users/sa-users.module';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { CommentsEntity } from '../../domain/comments/entities/comment.entity';
+import { CommentLikesEntity } from '../../domain/comments/like-status/entity/like-status-comments.entity';
 
 @Module({
-  imports: [forwardRef(() => PostsModule), SaUsersModule],
+  imports: [
+    forwardRef(() => PostsModule),
+    SaUsersModule,
+    TypeOrmModule.forFeature([CommentsEntity, CommentLikesEntity]),
+  ],
   controllers: [CommentsController],
   providers: [
     QueryCommentsRepository,

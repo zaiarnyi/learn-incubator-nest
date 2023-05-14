@@ -1,16 +1,12 @@
 import { CreatePostDto } from '../../../domain/posts/dto/create-post.dto';
 import { ForbiddenException, Inject, Logger, NotFoundException } from '@nestjs/common';
-import { Post, PostEntity } from '../../../domain/posts/entities/post.entity';
+import { PostEntity } from '../../../domain/posts/entities/post.entity';
 import { MainPostRepository } from '../../../infrastructure/database/repositories/posts/main-post.repository';
 import { plainToClass } from 'class-transformer';
 import { GetPost } from '../../../presentation/responses/posts/get-all-posts.response';
-import { QueryPostRepository } from '../../../infrastructure/database/repositories/posts/query-post.repository';
 import { MainLikeStatusPostRepository } from '../../../infrastructure/database/repositories/posts/like-status/main-like-status-post.repository';
-import { LikeStatusPosts } from '../../../domain/posts/like-status/entity/like-status-posts.entity';
 import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
 import { UserQueryRepository } from '../../../infrastructure/database/repositories/users/query.repository';
-import { UserEntity } from '../../../domain/users/entities/user.entity';
-import { BlogEntity } from '../../../domain/blogs/entities/blog.entity';
 import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 
 export class CreatePostAction {
@@ -43,7 +39,7 @@ export class CreatePostAction {
     if (!blog) {
       throw new NotFoundException();
     }
-    if (blog.user !== userId || blog.is_banned) {
+    if (blog.user.id !== userId || blog.isBanned) {
       throw new ForbiddenException();
     }
     return blog;
@@ -54,18 +50,14 @@ export class CreatePostAction {
 
     newPost.title = payload.title;
     newPost.content = payload.content;
-    newPost.short_description = payload.shortDescription;
-    newPost.blog = blog.id;
-    newPost.user = blog.user as number;
+    newPost.shortDescription = payload.shortDescription;
+    newPost.blog = blog;
+    newPost.user = blog.user;
 
     const createdPost = await this.mainRepository.createPost(newPost);
     return {
       ...plainToClass(GetPost, {
         id: createdPost.id.toString(),
-        title: createdPost.title,
-        shortDescription: createdPost.short_description,
-        content: createdPost.content,
-        createdAt: createdPost.createdAt,
         blogId: blog.id.toString(),
         blogName: blog.name,
       }),

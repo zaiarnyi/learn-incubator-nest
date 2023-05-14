@@ -34,7 +34,7 @@ export class CommentsController {
   @UseGuards(JwtAuthOptionalGuard)
   @Get('/:id')
   async getCommentById(@Param('id') id: string, @Req() req: any): Promise<CommentResponse> {
-    if (isNaN(Number(id)) || req?.user?.is_banned) {
+    if (isNaN(Number(id)) || req?.user?.isBanned) {
       throw new NotFoundException();
     }
     return this.commentByIdService.execute(Number(id), req?.user?.id);
@@ -61,7 +61,7 @@ export class CommentsController {
     if (isNaN(Number(id))) {
       throw new NotFoundException();
     }
-    return this.changeLikeStatusService.execute(Number(id), req.user.id, body);
+    return this.changeLikeStatusService.execute(Number(id), req.user, body);
   }
 
   @UseGuards(JwtAuthGuard)

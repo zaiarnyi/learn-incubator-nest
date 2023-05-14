@@ -8,12 +8,15 @@ import {
 import { plainToClass } from 'class-transformer';
 import { GetLikesInfoForPostService } from '../../services/posts/get-likes-info-for-post.service';
 import { PostEntity } from '../../../domain/posts/entities/post.entity';
+import { UserEntity } from '../../../domain/users/entities/user.entity';
+import { QueryPostRepository } from '../../../infrastructure/database/repositories/posts/query-post.repository';
 
 @Injectable()
 export class GetPostByBlogIdAction {
   logger = new Logger(GetPostByBlogIdAction.name);
   constructor(
     @Inject(QueryBlogsRepository) private readonly queryRepository: QueryBlogsRepository,
+    @Inject(QueryPostRepository) private readonly queryPostsRepository: QueryPostRepository,
     @Inject(GetLikesInfoForPostService) private readonly likesInfoService: GetLikesInfoForPostService,
   ) {}
   private async validate(id: number): Promise<void> {
@@ -27,26 +30,28 @@ export class GetPostByBlogIdAction {
     }
   }
 
-  public async execute(id: number, query: GetPostByBlogIdDto, userId?: number): Promise<GetPostByBlogIdResponse> {
+  public async execute(id: number, query: GetPostByBlogIdDto, user: UserEntity): Promise<GetPostByBlogIdResponse> {
     await this.validate(id);
 
     const { pageSize, pageNumber, sortBy, sortDirection } = query;
-    const totalCount = await this.queryRepository.getPostsCount(id);
     const skip = (pageNumber - 1) * pageSize;
+
+    const [postsRaw, totalCount] = await this.queryPostsRepository.getManyPostsByBlogId(
+      id,
+      skip,
+      pageSize,
+      sortBy,
+      sortDirection,
+    );
     const pagesCount = Math.ceil(totalCount / pageSize);
 
-    const postsRaw = await this.queryRepository.getPostByBlogId(id, skip, pageSize, sortBy, sortDirection);
-
-    const promises = postsRaw.map(async (el: PostEntity & { name: string }) => {
+    const promises = postsRaw.map(async (el: PostEntity) => {
       return plainToClass(PostByBlogItem, {
+        ...el,
         id: el.id.toString(),
-        title: el.title,
-        shortDescription: el.short_description,
-        content: el.content,
-        blogId: el.blog.toString(),
-        blogName: el.name,
-        createdAt: el.createdAt,
-        extendedLikesInfo: await this.likesInfoService.likesInfo(el.id, userId),
+        blogId: el.blog.id.toString(),
+        blogName: el.blog.name,
+        // extendedLikesInfo: await this.likesInfoService.likesInfo(el.id, user.id),
       });
     });
 

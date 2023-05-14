@@ -6,6 +6,7 @@ import { QueryLikeStatusRepository } from '../../../infrastructure/database/repo
 import { ExtendedLikesInfo } from '../../../presentation/responses/extendedLikesInfo.response';
 import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
 import { QueryUserBannedRepository } from '../../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
+import { UserEntity } from '../../../domain/users/entities/user.entity';
 
 @Injectable()
 export class GetCommentByIdAction {
@@ -17,7 +18,7 @@ export class GetCommentByIdAction {
     @Inject(QueryUserBannedRepository) private readonly queryUserBannedRepository: QueryUserBannedRepository,
   ) {}
 
-  private async validateIsUserBanned(userId: number) {
+  private async validateIsUserBanned(userId: number): Promise<UserEntity> {
     if (!userId) return;
     const hasBanned = await this.queryUserBannedRepository.checkStatus(userId);
     if (hasBanned) {
@@ -34,7 +35,7 @@ export class GetCommentByIdAction {
     return plainToClass(ExtendedLikesInfo, {
       likesCount,
       dislikesCount,
-      myStatus: info?.my_status ?? LikeStatusEnum.None,
+      myStatus: info?.myStatus ?? LikeStatusEnum.None,
     });
   }
 
@@ -46,7 +47,7 @@ export class GetCommentByIdAction {
       return e;
     });
 
-    if (!comment || comment.is_banned) {
+    if (!comment || comment.isBanned) {
       throw new NotFoundException();
     }
 
@@ -54,8 +55,8 @@ export class GetCommentByIdAction {
       ...comment,
       id: comment.commentId.toString(),
       commentatorInfo: {
-        userId: comment.user.toString(),
-        userLogin: comment.login,
+        userId: comment.user.id.toString(),
+        userLogin: comment.user.login,
       },
       likesInfo: await this.getLikesInfo(id, userId),
     });

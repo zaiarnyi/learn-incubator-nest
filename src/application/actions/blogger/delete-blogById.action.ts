@@ -30,7 +30,7 @@ export class DeleteBlogByIdAction {
       throw new UnauthorizedException();
     }
 
-    if (findBlog.user !== userId) {
+    if (findBlog.user.id !== userId) {
       throw new ForbiddenException();
     }
   }

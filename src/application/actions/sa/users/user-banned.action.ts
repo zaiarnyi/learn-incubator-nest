@@ -26,12 +26,12 @@ export class UserBannedAction {
 
   private async changeStatus(userId: number, isBanned: boolean) {
     await Promise.all([
-      // this.blogRepository.changeBannedStatus(userId, isBanned),
-      // this.commentsRepository.changeBannedStatus(userId, isBanned),
-      // this.postRepository.changeBannedStatus(userId, isBanned),
+      this.blogRepository.changeBannedStatus(userId, isBanned),
+      this.commentsRepository.changeBannedStatus(userId, isBanned),
+      this.postRepository.changeBannedStatus(userId, isBanned),
       this.userMainRepository.changeStatusBan(userId, isBanned),
-      // this.likeStatusRepository.changeStatusForUserBanned(userId, isBanned),
-      // this.likeStatusPostRepository.changeStatusBan(userId, isBanned),
+      this.likeStatusRepository.changeStatusForUserBanned(userId, isBanned),
+      this.likeStatusPostRepository.changeStatusBan(userId, isBanned),
     ]);
   }
 

@@ -7,7 +7,6 @@ import {
   Inject,
   NotFoundException,
   Param,
-  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -91,7 +90,7 @@ export class BloggerController {
   @Put('blogs/:id')
   @HttpCode(204)
   async updateBlog(@Param() param: CheckBlogIdRequest, @Body() body: CreateBlogRequest, @Req() req: any) {
-    return this.updateService.execute(param.id, body, req?.user?.id);
+    return this.updateService.execute(param.id, body, req?.user);
   }
 
   @Put('blogs/:blogId/posts/:postId')
