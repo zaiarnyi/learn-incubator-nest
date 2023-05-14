@@ -39,9 +39,8 @@ export class QueryPostRepository {
   ): Promise<[PostEntity[], number]> {
     return this.repository
       .createQueryBuilder('p')
-      .leftJoinAndSelect('p.blog', 'blog')
-      .where('blog.id = :blogId', { blogIg: id })
-      .andWhere('p."isBanned" = false')
+      .leftJoinAndSelect('p.blog', 'blog', `blog.id = ${id}`)
+      .where('p."isBanned" = false')
       .orderBy(`p."${sortBy}"`, direction.toUpperCase() as 'ASC' | 'DESC')
       .offset(skip)
       .limit(limit)

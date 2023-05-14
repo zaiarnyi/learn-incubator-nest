@@ -30,7 +30,7 @@ export class GetPostByBlogIdAction {
     }
   }
 
-  public async execute(id: number, query: GetPostByBlogIdDto, user: UserEntity): Promise<GetPostByBlogIdResponse> {
+  public async execute(id: number, query: GetPostByBlogIdDto, user?: UserEntity): Promise<GetPostByBlogIdResponse> {
     await this.validate(id);
 
     const { pageSize, pageNumber, sortBy, sortDirection } = query;
@@ -44,14 +44,14 @@ export class GetPostByBlogIdAction {
       sortDirection,
     );
     const pagesCount = Math.ceil(totalCount / pageSize);
-
     const promises = postsRaw.map(async (el: PostEntity) => {
+      console.log(el, '12312');
       return plainToClass(PostByBlogItem, {
         ...el,
         id: el.id.toString(),
         blogId: el.blog.id.toString(),
         blogName: el.blog.name,
-        // extendedLikesInfo: await this.likesInfoService.likesInfo(el.id, user.id),
+        extendedLikesInfo: await this.likesInfoService.likesInfo(el.id, user?.id),
       });
     });
 
