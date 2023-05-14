@@ -15,11 +15,7 @@ export class MainLikeStatusPostRepository {
     return this.repository.save(status);
   }
 
-  async deleteAll(): Promise<DeleteResult> {
-    return this.dataSource.query('DELETE FROM post_likes');
-  }
-
   async changeStatusBan(userId: number, isBanned: boolean): Promise<any> {
-    await this.dataSource.query(`UPDATE post_likes SET "is_banned" = $1 WHERE "user" = $2`, [isBanned, userId]);
+    return this.repository.update({ user: { id: userId } }, { isBanned });
   }
 }
