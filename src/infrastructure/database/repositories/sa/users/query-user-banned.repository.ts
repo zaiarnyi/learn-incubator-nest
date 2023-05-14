@@ -36,7 +36,7 @@ export class QueryUserBannedRepository {
       .where('user.login ILIKE :login', { login: `%${searchLogin}%` });
 
     if (sortBy === 'login') {
-      query.orderBy(`user."${sortBy}"`, sortDir.toUpperCase() as 'ASC' | 'DESC');
+      query.orderBy(`user.login`, sortDir.toUpperCase() as 'ASC' | 'DESC');
     } else {
       query.orderBy(`ub."${sortBy}"`, sortDir.toUpperCase() as 'ASC' | 'DESC');
     }
