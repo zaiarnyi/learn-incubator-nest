@@ -57,6 +57,7 @@ export class CreatePostAction {
     const createdPost = await this.mainRepository.createPost(newPost);
     return {
       ...plainToClass(GetPost, {
+        ...createdPost,
         id: createdPost.id.toString(),
         blogId: blog.id.toString(),
         blogName: blog.name,
