@@ -15,7 +15,8 @@ export class GetBlogByIdAction {
       this.logger.error(`I can't find the blog. ID: ${id}`);
       throw new NotFoundException();
     });
-    if (!findBlog) {
+
+    if (!findBlog || findBlog.isBanned) {
       throw new NotFoundException();
     }
     return plainToClass(CreateBlogResponse, {
