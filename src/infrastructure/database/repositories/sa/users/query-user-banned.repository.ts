@@ -41,6 +41,6 @@ export class QueryUserBannedRepository {
       query.orderBy(`ub."${sortBy}"`, sortDir.toUpperCase() as 'ASC' | 'DESC');
     }
 
-    return query.limit(3).getManyAndCount();
+    return query.limit(limit).offset(skip).getManyAndCount();
   }
 }
