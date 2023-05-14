@@ -84,7 +84,7 @@ export class BloggerController {
     if (isNaN(Number(id))) {
       throw new NotFoundException();
     }
-    return this.createPostService.execute({ ...body, blogId: Number(id) }, req?.user?.id);
+    return this.createPostService.execute({ ...body, blogId: Number(id) }, req?.user);
   }
 
   @Put('blogs/:id')

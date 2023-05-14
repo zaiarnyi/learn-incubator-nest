@@ -8,6 +8,7 @@ import { MainLikeStatusPostRepository } from '../../../infrastructure/database/r
 import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
 import { UserQueryRepository } from '../../../infrastructure/database/repositories/users/query.repository';
 import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
+import { UserEntity } from '../../../domain/users/entities/user.entity';
 
 export class CreatePostAction {
   logger = new Logger(CreatePostAction.name);
@@ -44,15 +45,15 @@ export class CreatePostAction {
     }
     return blog;
   }
-  public async execute(payload: CreatePostDto, userId?: number): Promise<GetPost | any> {
-    const blog = await this.validate(payload.blogId, userId);
+  public async execute(payload: CreatePostDto, user?: UserEntity): Promise<GetPost | any> {
+    const blog = await this.validate(payload.blogId, user?.id);
     const newPost = new PostEntity();
 
     newPost.title = payload.title;
     newPost.content = payload.content;
     newPost.shortDescription = payload.shortDescription;
     newPost.blog = blog;
-    newPost.user = blog.user;
+    newPost.user = user ?? blog.user;
 
     const createdPost = await this.mainRepository.createPost(newPost);
     return {

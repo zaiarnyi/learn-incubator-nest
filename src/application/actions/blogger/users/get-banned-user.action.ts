@@ -31,11 +31,9 @@ export class GetBannedUserAction {
     bloggerId: number,
   ): Promise<GetUserBannedByBlogResponse | any> {
     await this.validateBlogId(blogId, bloggerId);
-    const totalCount = await this.userBannedRepository.getCountByBlog(query.searchLoginTerm, blogId);
     const skip = (query.pageNumber - 1) * query.pageSize;
-    const pagesCount = Math.ceil(totalCount / query.pageSize);
 
-    const users = await this.userBannedRepository.getUserBannedByBlog(
+    const [users, totalCount] = await this.userBannedRepository.getUserBannedByBlog(
       blogId,
       query.searchLoginTerm,
       skip,
@@ -44,10 +42,12 @@ export class GetBannedUserAction {
       query.sortDirection,
     );
 
-    const items = users.map((item: UserBannedEntity & { login: string }) => {
+    const pagesCount = Math.ceil(totalCount / query.pageSize);
+
+    const items = users.map((item) => {
       return {
-        id: item.user.toString(),
-        login: item.login,
+        id: item.user.id.toString(),
+        login: item.user.login,
         banInfo: {
           isBanned: true,
           banDate: item.createdAt,
