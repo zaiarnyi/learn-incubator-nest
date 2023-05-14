@@ -56,7 +56,7 @@ export class GetCommentsByBlogsAction {
           userId: item.user.id.toString(),
           userLogin: item.user.login,
         },
-        // likesInfo: await this.getLikesInfo(item.id),
+        likesInfo: await this.getLikesInfo(item.id),
         postInfo: {
           id: item.post.id.toString(),
           title: item.post.title,

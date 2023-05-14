@@ -65,6 +65,6 @@ export class QueryBlogsRepository {
   }
 
   async getBlogsByBloggerWithUser(blogId: number): Promise<BlogEntity> {
-    return this.repository.findOne({ where: { id: blogId, isBanned: false } });
+    return this.repository.findOne({ where: { id: blogId, isBanned: false }, relations: ['user'] });
   }
 }
