@@ -43,6 +43,10 @@ export class UpdatePostByBlogAction {
   public async execute(body: CreatePostDto, postId: number, userId?: number) {
     await this.validate(body.blogId, postId, userId);
 
-    await this.repository.updatePost(postId, body);
+    await this.repository.updatePost(postId, {
+      title: body.title,
+      content: body.content,
+      shortDescription: body.shortDescription,
+    });
   }
 }

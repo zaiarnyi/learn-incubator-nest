@@ -14,7 +14,7 @@ export class MainPostRepository {
   async createPost(post: PostEntity): Promise<PostEntity> {
     return this.repository.save(post);
   }
-  async updatePost(id: number, payload: CreatePostDto) {
+  async updatePost(id: number, payload: Omit<CreatePostDto, 'blogId'>) {
     return this.repository.update({ id }, payload);
   }
 
