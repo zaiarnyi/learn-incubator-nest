@@ -49,8 +49,9 @@ export class GetCommentsByBlogsAction {
 
     const pagesCount = Math.ceil(totalCount / query.pageSize);
 
-    const promises = comments.map(async (item: CommentsEntity) => {
+    const promises = comments.map(async (item) => {
       return {
+        ...item,
         id: item.id.toString(),
         commentatorInfo: {
           userId: item.user.id.toString(),
