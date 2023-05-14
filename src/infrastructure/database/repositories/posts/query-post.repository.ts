@@ -11,14 +11,18 @@ export class QueryPostRepository {
   ) {}
 
   async getPost(limit: number, offset: number, sortBy: string, direction: string): Promise<[PostEntity[], number]> {
-    return this.repository
+    const sort = sortBy === 'blogName' ? 'name' : sortBy;
+    const query = this.repository
       .createQueryBuilder('p')
       .leftJoinAndSelect('p.blog', 'blog')
-      .where('p."isBanned" = false')
-      .orderBy(`p."${sortBy}"`, direction.toUpperCase() as 'ASC' | 'DESC')
-      .limit(limit)
-      .offset(offset)
-      .getManyAndCount();
+      .where('p."isBanned" = false');
+
+    if (sort === 'name') {
+      query.orderBy(`blog.name`, direction.toUpperCase() as 'ASC' | 'DESC');
+    } else {
+      query.orderBy(`p."${sortBy}"`, direction.toUpperCase() as 'ASC' | 'DESC');
+    }
+    return query.limit(limit).offset(offset).getManyAndCount();
   }
   async getPostByBlogId(id: number): Promise<PostEntity> {
     return this.repository.findOne({

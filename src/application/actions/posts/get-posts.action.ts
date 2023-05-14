@@ -27,7 +27,6 @@ export class GetPostsAction {
     const pagesCount = Math.ceil(totalCount / pageSize);
 
     const promises = postsRaw.map(async (p) => {
-      console.log(p);
       return plainToClass(GetPost, {
         ...p,
         id: p.id.toString(),
