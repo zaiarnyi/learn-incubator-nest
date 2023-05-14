@@ -24,7 +24,7 @@ export class QueryBlogsRepository {
   ): Promise<[BlogEntity[], number]> {
     const query = this.repository.createQueryBuilder('b');
 
-    if (isJoinUser) {
+    if (isJoinUser || userId) {
       query.leftJoinAndSelect('b.user', 'u');
     }
 
