@@ -36,7 +36,7 @@ export class QueryBlogsRepository {
     }
 
     if (filter) {
-      query.andWhere(`b.name ILIKE :filter`, { filter: `"%${filter}%"` });
+      query.andWhere(`b.name ILIKE :filter`, { filter: `%${filter}%` });
     }
 
     if (userIsNotNull) {
