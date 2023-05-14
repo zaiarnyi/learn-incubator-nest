@@ -29,13 +29,18 @@ export class QueryUserBannedRepository {
     sortBy: string,
     sortDir: string,
   ): Promise<[UserBannedEntity[], number]> {
-    return this.repository
+    const query = this.repository
       .createQueryBuilder('ub')
       .leftJoinAndSelect('ub.user', 'user')
       .leftJoinAndSelect('ub.blog', 'blog', `blog.id = ${blogId}`)
-      .where('user.login ILIKE :login', { login: `%${searchLogin}%` })
-      .orderBy(`ub."${sortBy}"`, sortDir.toUpperCase() as 'ASC' | 'DESC')
-      .limit(3)
-      .getManyAndCount();
+      .where('user.login ILIKE :login', { login: `%${searchLogin}%` });
+
+    if (sortBy === 'login') {
+      query.orderBy(`user."${sortBy}"`, sortDir.toUpperCase() as 'ASC' | 'DESC');
+    } else {
+      query.orderBy(`ub."${sortBy}"`, sortDir.toUpperCase() as 'ASC' | 'DESC');
+    }
+
+    return query.limit(3).getManyAndCount();
   }
 }
