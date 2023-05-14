@@ -45,7 +45,6 @@ export class GetPostByBlogIdAction {
     );
     const pagesCount = Math.ceil(totalCount / pageSize);
     const promises = postsRaw.map(async (el: PostEntity) => {
-      console.log(el, '12312');
       return plainToClass(PostByBlogItem, {
         ...el,
         id: el.id.toString(),

@@ -27,21 +27,17 @@ export class GetPostByIdAction {
   public async execute(id: number, userId?: number): Promise<GetPost> {
     await this.validateIsUserBanned(userId);
     const postById = await this.queryRepository.getPostById(id, ['blog']);
-    if (!postById) {
+    if (!postById || postById.isBanned || postById.blog.isBanned) {
       throw new NotFoundException();
     }
 
-    const blog = await this.queryBlogRepository.getBlogById(postById.blog.id);
-    if (!blog) {
-      throw new NotFoundException();
-    }
     return plainToClass(GetPost, {
       id: id.toString(),
       title: postById.title,
       shortDescription: postById.shortDescription,
       content: postById.content,
-      blogId: blog.id.toString(),
-      blogName: blog.name,
+      blogId: postById.blog.id.toString(),
+      blogName: postById.blog.name,
       createdAt: postById.createdAt,
       extendedLikesInfo: await this.likesInfoService.likesInfo(id, userId),
     });

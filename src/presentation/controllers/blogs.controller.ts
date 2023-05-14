@@ -28,6 +28,7 @@ export class BlogsController {
     @Query() query: GetBlogsRequest,
     @Req() req: any,
   ): Promise<GetPostByBlogIdResponse> {
+    console.log(id, '/:id/posts');
     if (isNaN(Number(id))) {
       throw new NotFoundException();
     }
