@@ -45,6 +45,8 @@ export class QueryCommentsRepository {
       .leftJoinAndSelect('c.blog', 'blog')
       .where('blog.id IN(:...blogIds)', { blogIds })
       .orderBy(`c."${sortBy}"`, sortDir.toUpperCase() as 'ASC' | 'DESC')
+      .offset(skip)
+      .limit(limit)
       .getManyAndCount();
   }
 }
