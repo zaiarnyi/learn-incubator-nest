@@ -4,7 +4,6 @@ import { QueryParamsGetPostsDto } from '../../../domain/posts/dto/query-params-g
 import { plainToClass } from 'class-transformer';
 import { GetPost, GetPostsResponse } from '../../../presentation/responses/posts/get-all-posts.response';
 import { GetLikesInfoForPostService } from '../../services/posts/get-likes-info-for-post.service';
-import { PostEntity } from '../../../domain/posts/entities/post.entity';
 import { UserEntity } from '../../../domain/users/entities/user.entity';
 
 @Injectable()
@@ -15,7 +14,7 @@ export class GetPostsAction {
     @Inject(GetLikesInfoForPostService) private readonly likesInfoService: GetLikesInfoForPostService,
   ) {}
 
-  public async execute(query: QueryParamsGetPostsDto, user: UserEntity) {
+  public async execute(query: QueryParamsGetPostsDto, user?: UserEntity) {
     const { pageSize, pageNumber, sortDirection, sortBy } = query;
     const skip = (pageNumber - 1) * pageSize;
 
@@ -27,13 +26,14 @@ export class GetPostsAction {
       });
     const pagesCount = Math.ceil(totalCount / pageSize);
 
-    const promises = postsRaw.map(async (p: PostEntity) => {
+    const promises = postsRaw.map(async (p) => {
+      console.log(p);
       return plainToClass(GetPost, {
         ...p,
         id: p.id.toString(),
         blogId: p.blog.id.toString(),
         blogName: p.blog.name,
-        extendedLikesInfo: await this.likesInfoService.likesInfo(p.id, user.id),
+        extendedLikesInfo: await this.likesInfoService.likesInfo(p.id, user?.id),
       });
     });
 
