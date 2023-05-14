@@ -42,11 +42,13 @@ export class QueryBlogsRepository {
     if (userIsNotNull) {
       query.andWhere('b.user is not null');
     }
-    return query
-      .orderBy(`b."${sortBy}"`, direction.toUpperCase() as 'DESC' | 'ASC')
-      .offset(skip)
-      .limit(limit)
-      .getManyAndCount();
+
+    if (sortBy === 'login') {
+      query.orderBy(`u.login`, direction.toUpperCase() as 'DESC' | 'ASC');
+    } else {
+      query.orderBy(`b."${sortBy}"`, direction.toUpperCase() as 'DESC' | 'ASC');
+    }
+    return query.offset(skip).limit(limit).getManyAndCount();
   }
   async getBlogById(id: number): Promise<BlogEntity> {
     return this.repository.findOne({ where: { id }, relations: ['user'] });
