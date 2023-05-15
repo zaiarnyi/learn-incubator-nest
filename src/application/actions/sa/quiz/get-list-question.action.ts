@@ -26,6 +26,7 @@ export class GetListQuestionAction {
       items: quizList.map((item) => ({
         ...item,
         id: String(item.id),
+        updatedAt: new Date(item.updatedAt).getTime() === new Date(item.createdAt).getTime() ? null : item.updatedAt,
       })),
     });
   }
