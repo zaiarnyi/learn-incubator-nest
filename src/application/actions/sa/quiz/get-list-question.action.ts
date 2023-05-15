@@ -23,7 +23,13 @@ export class GetListQuestionAction {
       page: payload.pageNumber,
       pageSize: payload.pageSize,
       totalCount,
-      items: quizList,
+      items: quizList.map((item) => {
+        return {
+          ...item,
+          id: String(item.id),
+          updatedAt: new Date(item.updatedAt).getTime() === new Date(item.createdAt).getTime() ? null : item.updatedAt,
+        };
+      }),
     });
   }
 }
