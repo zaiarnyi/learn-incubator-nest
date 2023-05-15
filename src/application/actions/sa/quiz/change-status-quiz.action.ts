@@ -20,6 +20,6 @@ export class ChangeStatusQuizAction {
     const quiz = await this.validationAndGetQuiz(id);
 
     quiz.published = payload.published;
-    await this.mainRepository.update(quiz);
+    await this.mainRepository.save(quiz);
   }
 }

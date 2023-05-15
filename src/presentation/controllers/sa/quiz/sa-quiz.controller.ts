@@ -58,7 +58,7 @@ export class SaQuizController {
   @HttpCode(204)
   async changeStatus(@Param('id') id: string, @Body() body: ChangeStatusRequest) {
     if (isNaN(Number(id))) {
-      return null;
+      throw new NotFoundException();
     }
     await this.changeStatusQuizAction.execute(Number(id), body);
   }
