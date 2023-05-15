@@ -22,7 +22,9 @@ export class GetQuestionsParamsRequest {
   sortDirection: 'ASC' | 'DESC' = 'DESC';
 
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => value && parseInt(value, 10))
+  @IsInt()
+  @Max(100)
   @Min(1)
   pageNumber = 1;
 
