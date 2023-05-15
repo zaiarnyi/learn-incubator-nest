@@ -14,4 +14,8 @@ export class MainQuizRepository {
   async update(payload: QuizEntity) {
     await this.repository.update({ id: payload.id }, payload);
   }
+
+  async deleteQuiz(id: number) {
+    return this.repository.delete({ id });
+  }
 }

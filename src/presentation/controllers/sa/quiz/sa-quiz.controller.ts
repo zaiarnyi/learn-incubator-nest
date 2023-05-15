@@ -60,9 +60,6 @@ export class SaQuizController {
     if (isNaN(Number(id))) {
       throw new NotFoundException();
     }
-    if (typeof body.published !== 'boolean') {
-      throw new BadRequestException([{ message: 'only boolean', field: 'published' }]);
-    }
     await this.changeStatusQuizAction.execute(Number(id), body);
   }
 
