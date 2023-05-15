@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -10,6 +11,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { GetQuestionsParamsRequest } from '../../../requests/sa/quiz/get-questions-params.request';
 import { CreateQuizRequest } from '../../../requests/sa/quiz/create-quiz.request';
@@ -21,8 +23,10 @@ import { ChangeQuizActions } from '../../../../application/actions/sa/quiz/chang
 import { DeleteQuizActions } from '../../../../application/actions/sa/quiz/delete-quiz.actions';
 import { ChangeStatusQuizAction } from '../../../../application/actions/sa/quiz/change-status-quiz.action';
 import { CreateQuizResponse } from '../../../responses/sa/quiz/create-quiz.response';
+import { BasicAuthGuard } from '../../../../domain/auth/guards/basic-auth.guard';
 
 @Controller('sa/quiz/questions')
+@UseGuards(BasicAuthGuard)
 export class SaQuizController {
   constructor(
     @Inject(CreateQuizAction) private readonly createAction: CreateQuizAction,
@@ -55,6 +59,9 @@ export class SaQuizController {
   async changeStatus(@Param('id') id: string, @Body() body: ChangeStatusRequest) {
     if (isNaN(Number(id))) {
       throw new NotFoundException();
+    }
+    if (typeof body.published !== 'boolean') {
+      throw new BadRequestException([{ message: 'only boolean', field: 'published' }]);
     }
     await this.changeStatusQuizAction.execute(Number(id), body);
   }

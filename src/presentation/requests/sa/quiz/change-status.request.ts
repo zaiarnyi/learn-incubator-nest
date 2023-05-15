@@ -1,7 +1,14 @@
-import { IsBoolean, IsNotEmpty } from 'class-validator';
+import { IsBoolean, IsEnum, IsNotEmpty, ValidateNested } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 export class ChangeStatusRequest {
   @IsNotEmpty()
   @IsBoolean()
-  published: boolean;
+  @Transform(({ value }) => {
+    if (typeof value !== 'boolean') {
+      return '1';
+    }
+    return value;
+  })
+  published: any;
 }
