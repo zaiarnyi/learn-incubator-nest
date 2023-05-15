@@ -23,13 +23,10 @@ export class GetListQuestionAction {
       page: payload.pageNumber,
       pageSize: payload.pageSize,
       totalCount,
-      items: quizList.map((item) => {
-        return {
-          ...item,
-          id: String(item.id),
-          updatedAt: new Date(item.updatedAt).getTime() === new Date(item.createdAt).getTime() ? null : item.updatedAt,
-        };
-      }),
+      items: quizList.map((item) => ({
+        ...item,
+        id: String(item.id),
+      })),
     });
   }
 }

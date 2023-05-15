@@ -14,6 +14,6 @@ export class CreateQuizAction {
     newQuiz.correctAnswers = payload.correctAnswers;
 
     const saved = await this.mainRepository.save(newQuiz);
-    return plainToClass(CreateQuizResponse, saved);
+    return plainToClass(CreateQuizResponse, { ...saved, id: String(saved.id), updatedAt: null });
   }
 }
