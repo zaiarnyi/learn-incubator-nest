@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QuizEntity } from '../../../../../domain/sa/quiz/entities/quiz.entity';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { FindQuizListDto } from '../../../../../domain/sa/quiz/dto/find-quiz-list.dto';
 import { PublishedStatusEnum } from '../../../../../domain/sa/quiz/enums/published-status.enum';
 
@@ -31,5 +31,9 @@ export class QueryQuizRepository {
       .limit(options.limit)
       .orderBy(`q.${options.sortBy}`, options.direction)
       .getManyAndCount();
+  }
+
+  async findAnswerForPair(): Promise<QuizEntity[]> {
+    return this.repository.findBy({ pair: IsNull() });
   }
 }

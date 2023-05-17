@@ -1,10 +1,9 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { BaseEntity } from '../../../../infrastructure/database/base.entity';
+import { PairsEntity } from '../../../pairs/entity/pairs.entity';
 
 @Entity('quiz')
-export class QuizEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
+export class QuizEntity extends BaseEntity {
   @Column({ nullable: false })
   body: string;
 
@@ -14,12 +13,7 @@ export class QuizEntity {
   @Column({ type: 'jsonb', nullable: false })
   correctAnswers: Array<string | number>;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
-
-  @DeleteDateColumn()
-  deletedAt: Date;
+  @ManyToOne(() => PairsEntity, (pair) => pair.id, { nullable: true })
+  @JoinColumn()
+  pair: PairsEntity;
 }

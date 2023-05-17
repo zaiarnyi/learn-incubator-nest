@@ -18,6 +18,7 @@ import { SaModule } from './infrastructure/ioc/sa/sa.module';
 import { LoggerInterceptor } from './infrastructure/interseptor/logger.interseptor';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostgresqlConfigDatabase } from './infrastructure/database/configs/databases/postgresql-config.database';
+import { PairsModule } from './infrastructure/ioc/pairs.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { PostgresqlConfigDatabase } from './infrastructure/database/configs/data
     AuthModule,
     SecurityModule,
     SaModule,
+    PairsModule,
   ],
   controllers: [TestController],
   providers: [

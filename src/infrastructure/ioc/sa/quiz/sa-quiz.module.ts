@@ -22,5 +22,6 @@ import { MainQuizRepository } from '../../../database/repositories/sa/quiz/main-
     QueryQuizRepository,
     MainQuizRepository,
   ],
+  exports: [QueryQuizRepository, MainQuizRepository],
 })
 export class SaQuizModule {}
