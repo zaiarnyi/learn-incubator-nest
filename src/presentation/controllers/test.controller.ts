@@ -31,7 +31,10 @@ export class TestController {
   async getAdguardRules() {
     const arr = await readFile();
     if (typeof arr === 'string') {
-      return arr.split('\n').slice(0, -1);
+      return arr
+        .split('\n')
+        .slice(0, -1)
+        .filter((item) => !/^!/.test(item));
     }
   }
 }
