@@ -1,6 +1,4 @@
 import { CacheModule, Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { MongoConfigDatabase } from './infrastructure/database/configs/databases/mongo-config.database';
 import { UsersModule } from './infrastructure/ioc/users.module';
 import { PostsModule } from './infrastructure/ioc/posts.module';
 import { BlogsModule } from './infrastructure/ioc/blogs.module';
