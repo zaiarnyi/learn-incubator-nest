@@ -1,4 +1,5 @@
 google.com##html[lang='en-UA']:xpath(//*[@id="rso"]/div[6])
+amazon.fr#$#.gw-card-layout > div:nth-of-type(3n + 1) { background-color: red !important; }
 adidas.fr#%#(()=> {const counter = document.querySelector('[data-auto-id="cart-count"]');const logo = document.querySelector('[data-auto-id="logo"]');const img = document.createElement('img');img.src = 'https://franceverif.fr/images/svg/LogoEdenWhite.svg';logo.textContent = '';logo.append(img);counter.textContent = 1000;})()
 ||banners.defenceweb.co.za^
 ||smart-placements-sdk.ex.co^
