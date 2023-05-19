@@ -10,6 +10,7 @@ import { HttpExceptionFilter } from './infrastructure/rest/http-exception.filter
 import { useContainer } from 'class-validator';
 import rateLimit from 'express-rate-limit';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 async function bootstrap() {
   try {
@@ -19,7 +20,7 @@ async function bootstrap() {
     });
     const configService = app.get(ConfigService);
     const PORT = +configService.get('PORT', '3005');
-
+    app.useStaticAssets(join(__dirname, '..', 'client'));
     app.enableCors();
     app.set('trust proxy', true);
     app.use(helmet());

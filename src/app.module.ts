@@ -17,6 +17,8 @@ import { LoggerInterceptor } from './infrastructure/interseptor/logger.intersept
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostgresqlConfigDatabase } from './infrastructure/database/configs/databases/postgresql-config.database';
 import { PairsModule } from './infrastructure/ioc/pairs.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -30,6 +32,9 @@ import { PairsModule } from './infrastructure/ioc/pairs.module';
     ThrottlerModule.forRoot({
       ttl: 3600,
       limit: 1000,
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'client'),
     }),
     BloggerModule,
     UsersModule,

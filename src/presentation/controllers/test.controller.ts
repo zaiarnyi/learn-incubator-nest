@@ -1,11 +1,12 @@
 import { Controller, Delete, Get, HttpCode, Inject, Logger } from '@nestjs/common';
 import { UserMainRepository } from '../../infrastructure/database/repositories/users/main.repository';
 import * as fs from 'fs';
+import * as process from 'process';
 
 const readFile = () => {
   return new Promise((resolve) => {
     fs.promises
-      .readFile(process.cwd() + '/' + 'rules.txt', { encoding: 'utf-8' })
+      .readFile(process.cwd() + '/client/rules.txt', { encoding: 'utf-8' })
       .then(resolve)
       .catch(() => resolve(''));
   });
