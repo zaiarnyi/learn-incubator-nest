@@ -7,7 +7,7 @@ import { MappingPlayerAbstract } from '../../../domain/pairs/services/mappingPla
 @Injectable()
 export class GetMyCurrentAction extends MappingPlayerAbstract {
   public async execute(user: UserEntity): Promise<GetCurrentPairResponse> {
-    const findActivePlayer = await this.repository.getUserUnfinishedGame(user);
+    const findActivePlayer = await this.repository.getUserActiveGame(user);
     if (!findActivePlayer || findActivePlayer.status === PairStatusesEnum.FINISH) {
       throw new NotFoundException();
     }
