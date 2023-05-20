@@ -7,15 +7,11 @@ import { MappingPlayerAbstract } from '../../../domain/pairs/services/mappingPla
 @Injectable()
 export class GetMyCurrentAction extends MappingPlayerAbstract {
   public async execute(user: UserEntity): Promise<GetCurrentPairResponse> {
-    const findActivePlayer = await this.repository.getUserActiveGame(user);
-    if (!findActivePlayer || findActivePlayer.status === PairStatusesEnum.FINISH) {
+    const findActivePlayer = await this.repository.getUserUnfinishedGame(user);
+    if (!findActivePlayer || findActivePlayer.status === PairStatusesEnum.ACTIVE) {
       throw new NotFoundException();
     }
 
-    if (findActivePlayer.status === PairStatusesEnum.ACTIVE) {
-      return this.mappingForActiveStatus(findActivePlayer);
-    }
-
-    return this.mappingForPendingStatus(findActivePlayer);
+    return this.mappingForActiveStatus(findActivePlayer);
   }
 }
