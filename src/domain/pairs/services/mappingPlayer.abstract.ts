@@ -52,7 +52,7 @@ export class MappingPlayerAbstract {
         score: pair.scoreSecondPlayer,
         answers: await this.mappingAnswers(pair.secondPlayer, pair),
       },
-      questions: pair?.questions ?? null,
+      questions: pair?.questions?.map((item) => ({ ...item, id: item.id.toString() })) ?? null,
       pairCreatedDate: pair.createdAt,
     });
   }
@@ -68,7 +68,7 @@ export class MappingPlayerAbstract {
         score: pair.scoreFirstPlayer,
         answers: await this.mappingAnswers(pair.firstPlayer, pair),
       },
-      questions: pair?.questions ?? null,
+      questions: pair?.questions?.map((item) => ({ ...item, id: item.id.toString() })) ?? null,
       secondPlayerProgress: null,
       pairCreatedDate: pair.createdAt,
     });
