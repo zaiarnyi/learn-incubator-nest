@@ -1,4 +1,4 @@
-import { AfterUpdate, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { AfterUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../infrastructure/database/base.entity';
 import { UserEntity } from '../../users/entities/user.entity';
 import { PairStatusesEnum } from '../enums/pair-statuses.enum';

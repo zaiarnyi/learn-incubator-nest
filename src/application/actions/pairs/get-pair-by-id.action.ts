@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { MappingPlayerAbstract } from '../../../domain/pairs/services/mappingPlayer.abstract';
 import { GetCurrentPairResponse } from '../../../presentation/responses/pairs/get-current-pair.response';
 import { PairStatusesEnum } from '../../../domain/pairs/enums/pair-statuses.enum';
@@ -14,7 +14,7 @@ export class GetPairByIdAction extends MappingPlayerAbstract {
     }
 
     if (findPairById?.firstPlayer?.id !== user.id && findPairById?.secondPlayer?.id !== user.id) {
-      throw new UnauthorizedException();
+      throw new ForbiddenException();
     }
 
     if (findPairById.status === PairStatusesEnum.PENDING_SECOND_PLAYER) {
