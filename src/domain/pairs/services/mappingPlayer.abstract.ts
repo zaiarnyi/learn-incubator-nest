@@ -18,7 +18,7 @@ export class MappingPlayerAbstract {
   ) {}
 
   private mappingQuestions(questions: QuizEntity[]) {
-    if (!questions.length) return null;
+    if (!questions?.length) return null;
     return questions.map((item) => ({ ...item, id: item.id.toString() }));
   }
   private async mappingAnswers(user: UserEntity, pair: PairsEntity): Promise<AnswerResponse[] | null> {
