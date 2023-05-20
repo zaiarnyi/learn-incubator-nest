@@ -12,6 +12,8 @@ export class GetMyCurrentAction extends MappingPlayerAbstract {
       throw new NotFoundException();
     }
 
+    console.log(findActivePlayer.status, user);
+
     return this.mappingForActiveStatus(findActivePlayer);
   }
 }
