@@ -1,4 +1,4 @@
-import { ForbiddenException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { GetCurrentPairResponse } from '../../../presentation/responses/pairs/get-current-pair.response';
 import { UserEntity } from '../../../domain/users/entities/user.entity';
 import { QueryPairsRepository } from '../../../infrastructure/database/repositories/pairs/query.repository';
@@ -18,10 +18,7 @@ export class ConnectionPairAction {
   ) {}
 
   private async createRoom(user: UserEntity): Promise<PairsEntity> {
-    const questions = await this.quizRepository.findAnswerForPair();
-
     const pair = new PairsEntity();
-    pair.questions = questions;
     pair.firstPlayer = user;
     return this.mainRepository.saveRoom(pair);
   }
@@ -51,6 +48,7 @@ export class ConnectionPairAction {
     const hasFirstPlayer = await this.checkPendingStatus(user);
 
     if (hasFirstPlayer && hasFirstPlayer.status === PairStatusesEnum.ACTIVE) {
+      hasFirstPlayer.questions = await this.quizRepository.findAnswerForPair();
       return this.mapping.mappingForActiveStatus(hasFirstPlayer);
     }
 
