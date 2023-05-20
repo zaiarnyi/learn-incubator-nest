@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PairsEntity } from '../../../../domain/pairs/entity/pairs.entity';
 import { Repository } from 'typeorm';
+import { PairStatusesEnum } from '../../../../domain/pairs/enums/pair-statuses.enum';
 
 @Injectable()
 export class MainPairRepository {
@@ -9,5 +10,9 @@ export class MainPairRepository {
 
   async saveRoom(pair: PairsEntity): Promise<PairsEntity> {
     return this.repository.save(pair);
+  }
+
+  async changeStatus(id: number, status: PairStatusesEnum) {
+    return this.repository.update({ id }, { status });
   }
 }

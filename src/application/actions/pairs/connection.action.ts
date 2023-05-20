@@ -1,75 +1,21 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { GetCurrentPairResponse } from '../../../presentation/responses/pairs/get-current-pair.response';
 import { UserEntity } from '../../../domain/users/entities/user.entity';
 import { QueryPairsRepository } from '../../../infrastructure/database/repositories/pairs/query.repository';
 import { MainPairRepository } from '../../../infrastructure/database/repositories/pairs/pair.repository';
 import { QueryQuizRepository } from '../../../infrastructure/database/repositories/sa/quiz/query-quiz.repository';
 import { PairsEntity } from '../../../domain/pairs/entity/pairs.entity';
-import { plainToClass } from 'class-transformer';
-import { AnswersStatusesEnum } from '../../../domain/pairs/enums/answers-statuses.enum';
 import { PairStatusesEnum } from '../../../domain/pairs/enums/pair-statuses.enum';
+import { MappingPlayerAbstract } from '../../../domain/pairs/services/mappingPlayer.abstract';
 
 @Injectable()
 export class ConnectionPairAction {
   constructor(
-    @Inject(QueryPairsRepository) private readonly repository: QueryPairsRepository,
+    @Inject(MappingPlayerAbstract) private readonly mapping: MappingPlayerAbstract,
     @Inject(MainPairRepository) private readonly mainRepository: MainPairRepository,
     @Inject(QueryQuizRepository) private readonly quizRepository: QueryQuizRepository,
+    @Inject(QueryPairsRepository) protected readonly repository: QueryPairsRepository,
   ) {}
-
-  private mappingForActiveStatus(pair: PairsEntity): GetCurrentPairResponse {
-    return plainToClass(GetCurrentPairResponse, {
-      ...pair,
-      firstPlayerProgress: {
-        player: pair.firstPlayer,
-        score: pair.scoreFirstPlayer,
-        answers: pair.questions.map((item, i) => {
-          const status = pair.firstPlayerCorrectAnswers.includes(i + 1)
-            ? AnswersStatusesEnum.CORRECT
-            : AnswersStatusesEnum.INCORRECT;
-          return {
-            questionId: item.id,
-            answerStatus: status,
-            addedAt: item.createdAt,
-          };
-        }),
-      },
-      secondPlayerProgress: {
-        player: pair.secondPlayer,
-        score: pair.scoreSecondPlayer,
-        answers: pair.questions.map((item, i) => {
-          const status = pair.secondPlayerCorrectAnswers.includes(i + 1)
-            ? AnswersStatusesEnum.CORRECT
-            : AnswersStatusesEnum.INCORRECT;
-          return {
-            questionId: item.id,
-            answerStatus: status,
-            addedAt: item.createdAt,
-          };
-        }),
-      },
-      pairCreatedDate: pair.createdAt,
-    });
-  }
-
-  private mappingForPendingStatus(pair: PairsEntity): GetCurrentPairResponse {
-    return plainToClass(GetCurrentPairResponse, {
-      ...pair,
-      firstPlayerProgress: {
-        player: pair.firstPlayer,
-        score: pair.scoreFirstPlayer,
-        answers: pair.questions.map((item) => {
-          return {
-            questionId: item.id,
-            answerStatus: null,
-            addedAt: item.createdAt,
-          };
-        }),
-      },
-      secondPlayerProgress: null,
-      pairCreatedDate: pair.createdAt,
-    });
-  }
 
   private async createRoom(user: UserEntity): Promise<PairsEntity> {
     const questions = await this.quizRepository.findAnswerForPair();
@@ -81,8 +27,19 @@ export class ConnectionPairAction {
   }
 
   private async checkPendingStatus(user: UserEntity): Promise<PairsEntity> {
-    const pair = await this.repository.getPendingRoom();
+    const [pair, hasActiveGame] = await Promise.all([
+      this.repository.getPendingRoom(),
+      this.repository.getActiveGameByUserId(user),
+    ]);
+
+    if (hasActiveGame) {
+      throw new ForbiddenException();
+    }
     if (!pair) return null;
+
+    if (pair?.firstPlayer?.id === user.id || pair?.secondPlayer?.id === user.id) {
+      throw new ForbiddenException();
+    }
 
     pair.secondPlayer = user;
     pair.startGameDate = new Date();
@@ -91,12 +48,13 @@ export class ConnectionPairAction {
   }
 
   public async execute(user: UserEntity): Promise<GetCurrentPairResponse> {
-    const isPending = await this.checkPendingStatus(user);
-    if (isPending) {
-      return this.mappingForActiveStatus(isPending);
+    const hasFirstPlayer = await this.checkPendingStatus(user);
+
+    if (hasFirstPlayer && hasFirstPlayer.status === PairStatusesEnum.ACTIVE) {
+      return this.mapping.mappingForActiveStatus(hasFirstPlayer);
     }
 
     const createPair = await this.createRoom(user);
-    return this.mappingForPendingStatus(createPair);
+    return this.mapping.mappingForPendingStatus(createPair);
   }
 }

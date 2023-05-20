@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { AfterUpdate, BeforeUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../infrastructure/database/base.entity';
 import { UserEntity } from '../../users/entities/user.entity';
 import { PairStatusesEnum } from '../enums/pair-statuses.enum';
@@ -29,13 +29,14 @@ export class PairsEntity extends BaseEntity {
   @Column({ type: 'float', default: 0 })
   scoreSecondPlayer: number;
 
-  @OneToMany(() => QuizEntity, (quiz) => quiz.pair, { nullable: true })
+  @OneToMany(() => QuizEntity, (quiz) => quiz.pair, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn()
   questions: QuizEntity[];
 
-  @Column({ type: 'jsonb', nullable: true, default: [] })
-  firstPlayerCorrectAnswers: number[];
-
-  @Column({ type: 'jsonb', nullable: true, default: [] })
-  secondPlayerCorrectAnswers: number[];
+  @AfterUpdate()
+  setFinishDate() {
+    if (this.status === PairStatusesEnum.FINISH) {
+      this.finishGameDate = new Date();
+    }
+  }
 }

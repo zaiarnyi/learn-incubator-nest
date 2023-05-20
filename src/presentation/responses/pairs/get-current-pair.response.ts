@@ -17,7 +17,7 @@ export class Player {
   @Expose()
   id: string;
 
-  @Exclude()
+  @Expose()
   login: string;
 }
 

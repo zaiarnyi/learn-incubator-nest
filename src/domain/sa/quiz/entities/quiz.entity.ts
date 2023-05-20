@@ -13,7 +13,7 @@ export class QuizEntity extends BaseEntity {
   @Column({ type: 'jsonb', nullable: false })
   correctAnswers: Array<string | number>;
 
-  @ManyToOne(() => PairsEntity, (pair) => pair.id, { nullable: true })
+  @ManyToOne(() => PairsEntity, (pair) => pair.id, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn()
   pair: PairsEntity;
 }
