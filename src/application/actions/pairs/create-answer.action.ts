@@ -47,14 +47,14 @@ export class CreateAnswerAction {
 
     const saved = await this.mainAnswerPairRepository.save(userAnswer);
 
-    const isFirstPlayer = activeGame.firstPlayer.id === user.id;
-    const isSecondPlayer = activeGame.secondPlayer.id === user.id;
-
-    if (userAnswer.status === AnswersStatusesEnum.CORRECT && isFirstPlayer) {
-      await this.mainPairRepository.setScore(activeGame.id, 'scoreFirstPlayer', activeGame.scoreFirstPlayer + 1);
-    } else if (userAnswer.status === AnswersStatusesEnum.CORRECT && isSecondPlayer) {
-      await this.mainPairRepository.setScore(activeGame.id, 'scoreSecondPlayer', activeGame.scoreSecondPlayer + 1);
-    }
+    // const isFirstPlayer = activeGame.firstPlayer.id === user.id;
+    // const isSecondPlayer = activeGame.secondPlayer.id === user.id;
+    //
+    // if (userAnswer.status === AnswersStatusesEnum.CORRECT && isFirstPlayer) {
+    //   await this.mainPairRepository.setScore(activeGame.id, 'scoreFirstPlayer', activeGame.scoreFirstPlayer + 1);
+    // } else if (userAnswer.status === AnswersStatusesEnum.CORRECT && isSecondPlayer) {
+    //   await this.mainPairRepository.setScore(activeGame.id, 'scoreSecondPlayer', activeGame.scoreSecondPlayer + 1);
+    // }
 
     if (answersByPairId.length >= 9) {
       await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
