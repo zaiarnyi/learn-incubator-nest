@@ -8,7 +8,7 @@ import { MappingPlayerAbstract } from '../../../domain/pairs/services/mappingPla
 export class GetMyCurrentAction extends MappingPlayerAbstract {
   public async execute(user: UserEntity): Promise<GetCurrentPairResponse> {
     const findActivePlayer = await this.repository.getUserUnfinishedGame(user);
-    if (!findActivePlayer || findActivePlayer.status === PairStatusesEnum.ACTIVE) {
+    if (!findActivePlayer || findActivePlayer.status !== PairStatusesEnum.ACTIVE) {
       throw new NotFoundException();
     }
 
