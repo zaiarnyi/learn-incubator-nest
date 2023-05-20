@@ -36,9 +36,6 @@ export class CreateAnswerAction {
     if (countOfAnswersPlayer >= 5) {
       throw new ForbiddenException();
     }
-    if (answersByPairId.length >= 9) {
-      await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
-    }
 
     const currentQuestion = activeGame.questions[countOfAnswersPlayer];
     const isCorrectAnswer = currentQuestion.correctAnswers.includes(answer);
@@ -49,6 +46,9 @@ export class CreateAnswerAction {
     userAnswer.status = isCorrectAnswer ? AnswersStatusesEnum.CORRECT : AnswersStatusesEnum.INCORRECT;
 
     const saved = await this.mainAnswerPairRepository.save(userAnswer);
+    if (answersByPairId.length >= 9) {
+      await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
+    }
 
     return plainToClass(AnswerResponse, {
       ...saved,
