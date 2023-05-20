@@ -18,10 +18,10 @@ export class MappingPlayerAbstract {
   private async mappingAnswers(user: UserEntity, pair: PairsEntity): Promise<AnswerResponse[] | null> {
     const answersForUser = await this.answerRepository.getPairByUserAndId(user.id, pair.id);
 
-    if (!answersForUser.length) return null;
+    if (!answersForUser.length) return [];
     const questions = pair.questions.slice(0, answersForUser.length);
 
-    if (!questions.length) return null;
+    if (!questions.length) return [];
 
     return questions.map((item, i) => {
       return plainToClass(AnswerResponse, {
@@ -35,6 +35,7 @@ export class MappingPlayerAbstract {
   public async mappingForActiveStatus(pair: PairsEntity): Promise<GetCurrentPairResponse> {
     return plainToClass(GetCurrentPairResponse, {
       ...pair,
+      id: pair.id.toString(),
       firstPlayerProgress: {
         player: {
           ...pair.firstPlayer,
@@ -51,12 +52,14 @@ export class MappingPlayerAbstract {
         score: pair.scoreSecondPlayer,
         answers: await this.mappingAnswers(pair.secondPlayer, pair),
       },
+      questions: pair?.questions ?? null,
       pairCreatedDate: pair.createdAt,
     });
   }
   public async mappingForPendingStatus(pair: PairsEntity): Promise<GetCurrentPairResponse> {
     return plainToClass(GetCurrentPairResponse, {
       ...pair,
+      id: pair.id.toString(),
       firstPlayerProgress: {
         player: {
           ...pair.firstPlayer,
@@ -65,6 +68,7 @@ export class MappingPlayerAbstract {
         score: pair.scoreFirstPlayer,
         answers: await this.mappingAnswers(pair.firstPlayer, pair),
       },
+      questions: pair?.questions ?? null,
       secondPlayerProgress: null,
       pairCreatedDate: pair.createdAt,
     });
