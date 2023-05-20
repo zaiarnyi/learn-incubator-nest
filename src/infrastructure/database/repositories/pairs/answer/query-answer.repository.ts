@@ -14,7 +14,7 @@ export class QueryAnswerRepository {
           id,
         },
       },
-      relations: ['pair'],
+      relations: ['pair', 'user'],
     });
   }
 
