@@ -8,6 +8,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { QueryPairsRepository } from '../../../infrastructure/database/repositories/pairs/query.repository';
 import { UserEntity } from '../../users/entities/user.entity';
 import { QueryAnswerRepository } from '../../../infrastructure/database/repositories/pairs/answer/query-answer.repository';
+import { QuizEntity } from '../../sa/quiz/entities/quiz.entity';
 
 @Injectable()
 export class MappingPlayerAbstract {
@@ -15,6 +16,11 @@ export class MappingPlayerAbstract {
     @Inject(QueryPairsRepository) protected readonly repository: QueryPairsRepository,
     @Inject(QueryAnswerRepository) private readonly answerRepository: QueryAnswerRepository,
   ) {}
+
+  private mappingQuestions(questions: QuizEntity[]) {
+    if (!questions.length) return null;
+    return questions.map((item) => ({ ...item, id: item.id.toString() }));
+  }
   private async mappingAnswers(user: UserEntity, pair: PairsEntity): Promise<AnswerResponse[] | null> {
     const answersForUser = await this.answerRepository.getPairByUserAndId(user.id, pair.id);
 
@@ -52,7 +58,7 @@ export class MappingPlayerAbstract {
         score: pair.scoreSecondPlayer,
         answers: await this.mappingAnswers(pair.secondPlayer, pair),
       },
-      questions: pair?.questions?.map((item) => ({ ...item, id: item.id.toString() })) ?? null,
+      questions: this.mappingQuestions(pair.questions),
       pairCreatedDate: pair.createdAt,
     });
   }
@@ -68,7 +74,7 @@ export class MappingPlayerAbstract {
         score: pair.scoreFirstPlayer,
         answers: await this.mappingAnswers(pair.firstPlayer, pair),
       },
-      questions: pair?.questions?.map((item) => ({ ...item, id: item.id.toString() })) ?? null,
+      questions: this.mappingQuestions(pair.questions),
       secondPlayerProgress: null,
       pairCreatedDate: pair.createdAt,
     });
