@@ -61,9 +61,9 @@ export class CreateAnswerAction {
     }
 
     return plainToClass(AnswerResponse, {
-      ...saved,
+      addedAt: saved.addedAt,
       answerStatus: saved.status,
-      questionId: currentQuestion.id,
+      questionId: currentQuestion.id.toString(),
     });
   }
 }
