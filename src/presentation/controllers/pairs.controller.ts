@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   Inject,
+  NotFoundException,
   Param,
   Post,
   Req,
@@ -38,7 +39,7 @@ export class PairsController {
     @Req() req: Request & { user: UserEntity },
   ): Promise<GetCurrentPairResponse> {
     if (isNaN(Number(id))) {
-      throw new BadRequestException([{ message: 'has invalid format', field: 'id' }]);
+      throw new NotFoundException();
     }
     return this.getPairByIdAction.execute(Number(id), req.user);
   }

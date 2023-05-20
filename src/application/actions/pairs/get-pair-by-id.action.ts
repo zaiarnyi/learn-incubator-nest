@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { MappingPlayerAbstract } from '../../../domain/pairs/services/mappingPlayer.abstract';
 import { GetCurrentPairResponse } from '../../../presentation/responses/pairs/get-current-pair.response';
 import { PairStatusesEnum } from '../../../domain/pairs/enums/pair-statuses.enum';
@@ -10,7 +10,7 @@ export class GetPairByIdAction extends MappingPlayerAbstract {
     const findPairById = await this.repository.getPairById(id);
 
     if (!findPairById) {
-      throw new NotFoundException();
+      throw new BadRequestException([{ message: 'has invalid format', field: 'id' }]);
     }
 
     if (findPairById?.firstPlayer?.id !== user.id && findPairById?.secondPlayer?.id !== user.id) {
