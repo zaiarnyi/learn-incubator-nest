@@ -36,7 +36,7 @@ export class CreateAnswerAction {
     if (countOfAnswersPlayer >= 5) {
       throw new ForbiddenException();
     }
-    if (answersByPairId.length >= 10) {
+    if (answersByPairId.length >= 9) {
       await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
     }
 
