@@ -41,6 +41,7 @@ export class ConnectionPairAction {
     pair.secondPlayer = user;
     pair.startGameDate = new Date();
     pair.status = PairStatusesEnum.ACTIVE;
+    pair.questions = await this.quizRepository.findAnswerForPair();
     return this.mainRepository.saveRoom(pair);
   }
 
@@ -48,7 +49,6 @@ export class ConnectionPairAction {
     const hasFirstPlayer = await this.checkPendingStatus(user);
 
     if (hasFirstPlayer && hasFirstPlayer.status === PairStatusesEnum.ACTIVE) {
-      hasFirstPlayer.questions = await this.quizRepository.findAnswerForPair();
       return this.mapping.mappingForActiveStatus(hasFirstPlayer);
     }
 
