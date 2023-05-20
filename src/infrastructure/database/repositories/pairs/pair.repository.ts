@@ -15,4 +15,8 @@ export class MainPairRepository {
   async changeStatus(id: number, status: PairStatusesEnum) {
     return this.repository.update({ id }, { status });
   }
+
+  async setScore(id: number, player: string, score: number) {
+    return this.repository.update({ id }, { [player]: score });
+  }
 }
