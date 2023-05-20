@@ -17,13 +17,15 @@ export class MappingPlayerAbstract {
   ) {}
   private async mappingAnswers(user: UserEntity, pair: PairsEntity): Promise<AnswerResponse[] | null> {
     const answersForUser = await this.answerRepository.getPairByUserAndId(user.id, pair.id);
-    if (!answersForUser.length) {
-      return null;
-    }
+
+    if (!answersForUser.length) return null;
     const questions = pair.questions.slice(0, answersForUser.length);
+
+    if (!questions.length) return null;
+
     return questions.map((item, i) => {
       return plainToClass(AnswerResponse, {
-        questionId: item.id,
+        questionId: item.id.toString(),
         answerStatus: answersForUser[i].status,
         addedAt: answersForUser[i].addedAt,
       });
@@ -34,12 +36,18 @@ export class MappingPlayerAbstract {
     return plainToClass(GetCurrentPairResponse, {
       ...pair,
       firstPlayerProgress: {
-        player: pair.firstPlayer,
+        player: {
+          ...pair.firstPlayer,
+          id: pair.firstPlayer.id.toString(),
+        },
         score: pair.scoreFirstPlayer,
         answers: await this.mappingAnswers(pair.firstPlayer, pair),
       },
       secondPlayerProgress: {
-        player: pair.secondPlayer,
+        player: {
+          ...pair.secondPlayer,
+          id: pair.secondPlayer.id.toString(),
+        },
         score: pair.scoreSecondPlayer,
         answers: await this.mappingAnswers(pair.secondPlayer, pair),
       },
@@ -50,7 +58,10 @@ export class MappingPlayerAbstract {
     return plainToClass(GetCurrentPairResponse, {
       ...pair,
       firstPlayerProgress: {
-        player: pair.firstPlayer,
+        player: {
+          ...pair.firstPlayer,
+          id: pair.firstPlayer.id.toString(),
+        },
         score: pair.scoreFirstPlayer,
         answers: await this.mappingAnswers(pair.firstPlayer, pair),
       },
