@@ -23,6 +23,22 @@ export class CreateAnswerAction {
     @Inject(QueryQuizRepository) private readonly quizRepository: QueryQuizRepository,
   ) {}
 
+  private async plusScore(activeGame: PairsEntity, user: UserEntity, userAnswer: PairAnswersEntity): Promise<number> {
+    const { isFirstPlayer, isSecondPlayer } = this.checkPlayer(activeGame, user);
+    const isCorrect = userAnswer.status === AnswersStatusesEnum.CORRECT;
+    if (!isCorrect) {
+      return activeGame.scoreFirstPlayer;
+    }
+    const addScore = activeGame.scoreFirstPlayer + 1;
+
+    if (isFirstPlayer) {
+      await this.mainPairRepository.setScore(activeGame.id, 'scoreFirstPlayer', addScore);
+    } else if (isSecondPlayer) {
+      await this.mainPairRepository.setScore(activeGame.id, 'scoreSecondPlayer', addScore);
+    }
+    return addScore;
+  }
+
   private checkPlayer(activeGame: PairsEntity, user: UserEntity): { isSecondPlayer: boolean; isFirstPlayer: boolean } {
     const isFirstPlayer = activeGame?.firstPlayer?.id === user.id;
     const isSecondPlayer = activeGame?.secondPlayer?.id === user.id;
@@ -30,16 +46,12 @@ export class CreateAnswerAction {
     return { isFirstPlayer, isSecondPlayer };
   }
 
-  private async additionalScore(pairId: number, answers: PairAnswersEntity[], user: UserEntity) {
-    if (!answers.some((item) => item.status === AnswersStatusesEnum.CORRECT)) {
-      return null;
-    }
-    const pair = await this.repository.getPairByIdWithOutRelations(pairId);
+  private async additionalScore(pair: PairsEntity, user: UserEntity, score: number) {
     const { isFirstPlayer, isSecondPlayer } = this.checkPlayer(pair, user);
     if (isFirstPlayer) {
-      await this.mainPairRepository.setScore(pairId, 'scoreFirstPlayer', pair.scoreFirstPlayer + 1);
+      await this.mainPairRepository.setScore(pair.id, 'scoreFirstPlayer', score + 1);
     } else if (isSecondPlayer) {
-      await this.mainPairRepository.setScore(pairId, 'scoreSecondPlayer', pair.scoreSecondPlayer + 1);
+      await this.mainPairRepository.setScore(pair.id, 'scoreSecondPlayer', score + 1);
     }
   }
 
@@ -54,7 +66,6 @@ export class CreateAnswerAction {
   }
   public async execute(answer: string, user: UserEntity): Promise<AnswerResponse | any> {
     const activeGame = await this.getActiveGame(user);
-    console.log(activeGame, 'activeGame');
     const answersByPairId = await this.answerRepository.getPairById(activeGame.id);
 
     const countOfAnswersPlayer = answersByPairId.filter((item) => item.user.id === user.id).length;
@@ -79,17 +90,9 @@ export class CreateAnswerAction {
 
     const saved = await this.mainAnswerPairRepository.save(userAnswer);
 
-    const { isFirstPlayer, isSecondPlayer } = this.checkPlayer(activeGame, user);
-    const isCorrect = userAnswer.status === AnswersStatusesEnum.CORRECT;
-
-    if (isCorrect && isFirstPlayer) {
-      await this.mainPairRepository.setScore(activeGame.id, 'scoreFirstPlayer', activeGame.scoreFirstPlayer + 1);
-    } else if (isCorrect && isSecondPlayer) {
-      await this.mainPairRepository.setScore(activeGame.id, 'scoreSecondPlayer', activeGame.scoreSecondPlayer + 1);
-    }
-
-    if (countOfAnswersPlayer === 4 && answersByPairId.length < 9) {
-      await this.additionalScore(activeGame.id, [...answersByPairId, saved], user);
+    const playerScore = await this.plusScore(activeGame, user, userAnswer);
+    if (countOfAnswersPlayer === 4 && answersByPairId.length <= 8) {
+      await this.additionalScore(activeGame, user, playerScore);
     }
 
     if ([...answersByPairId, saved].length >= 10) {
