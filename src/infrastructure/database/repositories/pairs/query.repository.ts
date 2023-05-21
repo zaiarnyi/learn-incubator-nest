@@ -14,7 +14,7 @@ export class QueryPairsRepository {
       where: {
         status: PairStatusesEnum.PENDING_SECOND_PLAYER,
       },
-      relations: ['firstPlayer', 'secondPlayer'],
+      relations: ['firstPlayer'],
     });
   }
 
@@ -67,7 +67,7 @@ export class QueryPairsRepository {
       .createQueryBuilder('p')
       .leftJoinAndSelect('p.firstPlayer', 'fp')
       .leftJoinAndSelect('p.secondPlayer', 'sp')
-      .leftJoinAndSelect('p."questions', 'questions')
+      .leftJoinAndSelect('p.questions', 'questions')
       .where('p.id = :id', { id })
       .getOne();
   }
