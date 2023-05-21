@@ -99,7 +99,7 @@ export class CreateAnswerAction {
     return plainToClass(AnswerResponse, {
       addedAt: saved.addedAt,
       answerStatus: saved.status,
-      questionId: saved.question.id.toString(),
+      questionId: currentQuestion.id.toString(),
     });
   }
 }
