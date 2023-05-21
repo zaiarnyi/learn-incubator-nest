@@ -32,6 +32,15 @@ export class QueryPairsRepository {
       .getExists();
   }
 
+  async getActiveGetForSecondPlayer(user: UserEntity): Promise<boolean> {
+    return this.repository
+      .createQueryBuilder('p')
+      .leftJoin('p.secondPlayer', 'sp')
+      .where('p.status = :status', { status: PairStatusesEnum.ACTIVE })
+      .andWhere('sp.id = :id', { id: user.id })
+      .getExists();
+  }
+
   async getUserUnfinishedGame(user: UserEntity): Promise<PairsEntity> {
     return this.repository
       .createQueryBuilder('p')

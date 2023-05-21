@@ -38,8 +38,9 @@ export class CreateAnswerAction {
   }
 
   private checkPlayer(activeGame: PairsEntity, user: UserEntity): { isSecondPlayer: boolean; isFirstPlayer: boolean } {
-    const isFirstPlayer = activeGame?.firstPlayer?.id === user.id;
-    const isSecondPlayer = activeGame?.secondPlayer?.id === user.id;
+    console.log(activeGame, 'activeGame-checkPlayer');
+    const isFirstPlayer = activeGame.firstPlayer.id === user.id;
+    const isSecondPlayer = activeGame.secondPlayer.id === user.id;
 
     return { isFirstPlayer, isSecondPlayer };
   }
