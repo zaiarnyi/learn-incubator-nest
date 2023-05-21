@@ -53,7 +53,7 @@ export class CreateAnswerAction {
     }
 
     const currentQuestion = activeGame.questions[countOfAnswersPlayer];
-    if (!currentQuestion) {
+    if (currentQuestion === undefined) {
       throw new ForbiddenException();
     }
     this.logger.log(currentQuestion, '======');
