@@ -21,9 +21,9 @@ export class QueryPairsRepository {
   async getActiveGameByUserId(user: UserEntity): Promise<PairsEntity> {
     return this.repository
       .createQueryBuilder('p')
-      .leftJoin('p."firstPlayer"', 'fp')
-      .leftJoin('p."secondPlayer"', 'sp')
-      .where('p."status" = :status', { status: PairStatusesEnum.ACTIVE })
+      .leftJoin('p.firstPlayer', 'fp')
+      .leftJoin('p.secondPlayer', 'sp')
+      .where('p.status = :status', { status: PairStatusesEnum.ACTIVE })
       .andWhere(
         new Brackets((qb) => {
           qb.where('fp.id = :id', { id: user.id }).orWhere('sp.id = :id', { id: user.id });
@@ -35,10 +35,10 @@ export class QueryPairsRepository {
   async getUserUnfinishedGame(user: UserEntity): Promise<PairsEntity> {
     return this.repository
       .createQueryBuilder('p')
-      .leftJoinAndSelect('p."firstPlayer"', 'fp')
-      .leftJoinAndSelect('p."secondPlayer"', 'sp')
+      .leftJoinAndSelect('p.firstPlayer', 'fp')
+      .leftJoinAndSelect('p.secondPlayer', 'sp')
       .leftJoinAndSelect('p.questions', 'questions')
-      .where('p."status" <> :status', { status: PairStatusesEnum.FINISH })
+      .where('p.status <> :status', { status: PairStatusesEnum.FINISH })
       .andWhere(
         new Brackets((qb) => {
           qb.where('fp.id = :id', { id: user.id }).orWhere('sp.id = :id', { id: user.id });
@@ -50,11 +50,10 @@ export class QueryPairsRepository {
   async getUserActiveGame(user: UserEntity): Promise<PairsEntity> {
     return this.repository
       .createQueryBuilder('p')
-      .leftJoinAndSelect('p."firstPlayer', 'fp')
-      .leftJoinAndSelect('p."secondPlayer"', 'sp')
+      .leftJoinAndSelect('p.firstPlayer', 'fp')
+      .leftJoinAndSelect('p.secondPlayer', 'sp')
       .leftJoinAndSelect('p.questions', 'questions')
-      .where('p."status" = :status', { status: PairStatusesEnum.ACTIVE })
-      .andWhere('p.startGameDate is not null')
+      .where('p.status = :status', { status: PairStatusesEnum.ACTIVE })
       .andWhere(
         new Brackets((qb) => {
           qb.where('fp.id = :id', { id: user.id }).orWhere('sp.id = :id', { id: user.id });
