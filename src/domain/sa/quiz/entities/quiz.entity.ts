@@ -13,6 +13,6 @@ export class QuizEntity extends BaseEntity {
   @Column('text', { array: true, nullable: false })
   correctAnswers: string[];
 
-  @ManyToMany(() => PairsEntity, (pair) => pair.id, { nullable: true, onDelete: 'SET NULL' })
-  pair: PairsEntity;
+  // @ManyToMany(() => PairsEntity, (pair) => pair.id, { nullable: true, onDelete: 'SET NULL' })
+  // pair: PairsEntity;
 }

@@ -28,6 +28,7 @@ export class ConnectionPairAction {
       this.repository.getPendingRoom(),
       this.repository.getActiveGameByUserId(user),
     ]);
+
     if (hasActiveGame) {
       throw new ForbiddenException();
     }
@@ -44,14 +45,13 @@ export class ConnectionPairAction {
     return this.mainRepository.saveRoom(pair);
   }
 
-  public async execute(user: UserEntity): Promise<GetCurrentPairResponse> {
+  public async execute(user: UserEntity): Promise<GetCurrentPairResponse | any> {
     const hasFirstPlayer = await this.checkPendingStatus(user);
-
+    //
     if (hasFirstPlayer && hasFirstPlayer.status === PairStatusesEnum.ACTIVE) {
       console.log(JSON.stringify(hasFirstPlayer.questions, null, 2), 'hasFirstPlayer.questions');
       return this.mapping.mappingForActiveStatus(hasFirstPlayer);
     }
-
     const createPair = await this.createRoom(user);
     return this.mapping.mappingForPendingStatus(createPair);
   }

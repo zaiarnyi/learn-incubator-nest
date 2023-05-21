@@ -14,7 +14,7 @@ export class QueryPairsRepository {
       where: {
         status: PairStatusesEnum.PENDING_SECOND_PLAYER,
       },
-      relations: ['firstPlayer', 'secondPlayer', 'questions'],
+      relations: ['firstPlayer', 'secondPlayer'],
     });
   }
 

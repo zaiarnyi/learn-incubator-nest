@@ -52,6 +52,7 @@ export class CreateAnswerAction {
   }
   public async execute(answer: string, user: UserEntity): Promise<AnswerResponse | any> {
     const activeGame = await this.getActiveGame(user);
+
     const answersByPairId = await this.answerRepository.getPairById(activeGame.id);
 
     const countOfAnswersPlayer = answersByPairId.filter((item) => item.user.id === user.id).length;
