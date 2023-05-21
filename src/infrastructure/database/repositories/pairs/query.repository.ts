@@ -23,7 +23,7 @@ export class QueryPairsRepository {
       .createQueryBuilder('p')
       .leftJoin('p.firstPlayer', 'fp')
       .leftJoin('p.secondPlayer', 'sp')
-      .where('status = :status', { status: PairStatusesEnum.ACTIVE })
+      .where('p.status = :status', { status: PairStatusesEnum.ACTIVE })
       .andWhere(
         new Brackets((qb) => {
           qb.where('fp.id = :id', { id: user.id }).orWhere('sp.id = :id', { id: user.id });
@@ -38,7 +38,7 @@ export class QueryPairsRepository {
       .leftJoinAndSelect('p.firstPlayer', 'fp')
       .leftJoinAndSelect('p.secondPlayer', 'sp')
       .leftJoinAndSelect('p.questions', 'questions')
-      .where('status <> :status', { status: PairStatusesEnum.FINISH })
+      .where('p.status <> :status', { status: PairStatusesEnum.FINISH })
       .andWhere(
         new Brackets((qb) => {
           qb.where('fp.id = :id', { id: user.id }).orWhere('sp.id = :id', { id: user.id });
@@ -53,7 +53,8 @@ export class QueryPairsRepository {
       .leftJoinAndSelect('p.firstPlayer', 'fp')
       .leftJoinAndSelect('p.secondPlayer', 'sp')
       .leftJoinAndSelect('p.questions', 'questions')
-      .where('status = :status', { status: PairStatusesEnum.ACTIVE })
+      .where('p.status = :status', { status: PairStatusesEnum.ACTIVE })
+      .andWhere('p.startGameDate is not null')
       .andWhere(
         new Brackets((qb) => {
           qb.where('fp.id = :id', { id: user.id }).orWhere('sp.id = :id', { id: user.id });

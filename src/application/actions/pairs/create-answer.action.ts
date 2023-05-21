@@ -24,8 +24,8 @@ export class CreateAnswerAction {
   ) {}
 
   private checkPlayer(activeGame: PairsEntity, user: UserEntity): { isSecondPlayer: boolean; isFirstPlayer: boolean } {
-    const isFirstPlayer = activeGame.firstPlayer.id === user.id;
-    const isSecondPlayer = activeGame.secondPlayer.id === user.id;
+    const isFirstPlayer = activeGame?.firstPlayer?.id === user.id;
+    const isSecondPlayer = activeGame?.secondPlayer?.id === user.id;
 
     return { isFirstPlayer, isSecondPlayer };
   }
@@ -54,7 +54,7 @@ export class CreateAnswerAction {
   }
   public async execute(answer: string, user: UserEntity): Promise<AnswerResponse | any> {
     const activeGame = await this.getActiveGame(user);
-
+    console.log(activeGame, 'activeGame');
     const answersByPairId = await this.answerRepository.getPairById(activeGame.id);
 
     const countOfAnswersPlayer = answersByPairId.filter((item) => item.user.id === user.id).length;
