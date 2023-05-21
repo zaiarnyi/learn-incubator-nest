@@ -1,4 +1,4 @@
-import { ForbiddenException, Inject, Injectable, Logger } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AnswerResponse } from '../../../presentation/responses/pairs/get-current-pair.response';
 import { UserEntity } from '../../../domain/users/entities/user.entity';
 import { QueryPairsRepository } from '../../../infrastructure/database/repositories/pairs/query.repository';
@@ -67,7 +67,7 @@ export class CreateAnswerAction {
     if (!currentQuestion) {
       console.log(countOfAnswersPlayer, 'countOfAnswersPlayer');
       console.log(JSON.stringify(activeGame.questions, null, 2), 'ForbiddenException');
-      throw new ForbiddenException();
+      throw new NotFoundException();
     }
     const isCorrectAnswer = currentQuestion.correctAnswers.includes(answer) ?? false;
 
@@ -99,7 +99,7 @@ export class CreateAnswerAction {
     return plainToClass(AnswerResponse, {
       addedAt: saved.addedAt,
       answerStatus: saved.status,
-      questionId: currentQuestion.id.toString(),
+      questionId: currentQuestion?.id?.toString(),
     });
   }
 }

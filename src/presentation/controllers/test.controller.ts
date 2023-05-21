@@ -28,14 +28,14 @@ export class TestController {
     });
   }
 
-  @Get('/rules')
-  async getAdguardRules() {
-    const arr = await readFile();
-    if (typeof arr === 'string') {
-      return arr
-        .split('\n')
-        .slice(0, -1)
-        .filter((item) => !/^!/.test(item));
-    }
-  }
+  // @Get('/rules')
+  // async getAdguardRules() {
+  //   const arr = await readFile();
+  //   if (typeof arr === 'string') {
+  //     return arr
+  //       .split('\n')
+  //       .slice(0, -1)
+  //       .filter((item) => !/^!/.test(item));
+  //   }
+  // }
 }
