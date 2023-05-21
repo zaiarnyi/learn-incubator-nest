@@ -29,8 +29,7 @@ export class ConnectionPairAction {
     if (!pair) return null;
 
     if (pair.firstPlayer.id === user.id) {
-      console.log(pair.status, 'pair');
-      return pair;
+      throw new ForbiddenException();
     }
 
     pair.secondPlayer = user;
