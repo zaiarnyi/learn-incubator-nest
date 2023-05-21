@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, ManyToMany } from 'typeorm';
 import { BaseEntity } from '../../../../infrastructure/database/base.entity';
 import { PairsEntity } from '../../../pairs/entity/pairs.entity';
 
@@ -13,7 +13,6 @@ export class QuizEntity extends BaseEntity {
   @Column('text', { array: true, nullable: false })
   correctAnswers: string[];
 
-  @ManyToOne(() => PairsEntity, (pair) => pair.id, { nullable: true, onDelete: 'SET NULL' })
-  @JoinColumn()
+  @ManyToMany(() => PairsEntity, (pair) => pair.id, { nullable: true, onDelete: 'SET NULL' })
   pair: PairsEntity;
 }

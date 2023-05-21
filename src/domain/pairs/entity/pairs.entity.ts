@@ -1,4 +1,4 @@
-import { AfterUpdate, Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { AfterUpdate, Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { BaseEntity } from '../../../infrastructure/database/base.entity';
 import { UserEntity } from '../../users/entities/user.entity';
 import { PairStatusesEnum } from '../enums/pair-statuses.enum';
@@ -29,7 +29,7 @@ export class PairsEntity extends BaseEntity {
   @Column({ type: 'float', default: 0 })
   scoreSecondPlayer: number;
 
-  @OneToMany(() => QuizEntity, (quiz) => quiz.pair, { nullable: true })
+  @ManyToMany(() => QuizEntity, (quiz) => quiz.pair, { nullable: true })
   @JoinColumn()
   questions: QuizEntity[];
 
