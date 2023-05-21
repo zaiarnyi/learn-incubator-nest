@@ -51,8 +51,8 @@ export class CreateAnswerAction {
       throw new ForbiddenException();
     }
 
-    const currentQuestion = activeGame.questions[countOfAnswersPlayer];
-    const isCorrectAnswer = currentQuestion.correctAnswers.includes(answer);
+    const currentQuestion = activeGame.questions[countOfAnswersPlayer - 1];
+    const isCorrectAnswer = currentQuestion?.correctAnswers?.includes(answer) ?? false;
 
     const userAnswer = new PairAnswersEntity();
     userAnswer.pair = activeGame;
