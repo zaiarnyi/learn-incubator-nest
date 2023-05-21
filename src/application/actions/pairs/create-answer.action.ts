@@ -50,9 +50,10 @@ export class CreateAnswerAction {
     if (countOfAnswersPlayer >= 5) {
       throw new ForbiddenException();
     }
-
-    const currentQuestion = activeGame.questions[countOfAnswersPlayer];
-    console.log(currentQuestion, countOfAnswersPlayer, activeGame.questions);
+    const index = countOfAnswersPlayer === 0 ? 0 : countOfAnswersPlayer - 1;
+    const currentQuestion = activeGame.questions[index];
+    console.log(currentQuestion, '======', activeGame.questions);
+    console.log(countOfAnswersPlayer, '++++++');
     const isCorrectAnswer = currentQuestion?.correctAnswers?.includes(answer) ?? false;
 
     const userAnswer = new PairAnswersEntity();
