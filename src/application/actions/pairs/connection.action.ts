@@ -28,7 +28,6 @@ export class ConnectionPairAction {
       this.repository.getPendingRoom(),
       this.repository.getActiveGameByUserId(user),
     ]);
-    console.log(hasActiveGame, 'hasActiveGame');
     if (hasActiveGame) {
       throw new ForbiddenException();
     }
