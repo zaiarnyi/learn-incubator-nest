@@ -1,4 +1,4 @@
-import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { AnswerResponse } from '../../../presentation/responses/pairs/get-current-pair.response';
 import { UserEntity } from '../../../domain/users/entities/user.entity';
 import { QueryPairsRepository } from '../../../infrastructure/database/repositories/pairs/query.repository';
@@ -54,7 +54,7 @@ export class CreateAnswerAction {
     const currentQuestion = activeGame.questions[countOfAnswersPlayer];
     console.log(currentQuestion, '======');
     console.log(countOfAnswersPlayer, '++++++');
-    console.log(activeGame.questions, 'activeGame.questions====');
+    console.log(activeGame, 'activeGame.questions=======');
     const isCorrectAnswer = currentQuestion?.correctAnswers?.includes(answer) ?? false;
 
     const userAnswer = new PairAnswersEntity();
