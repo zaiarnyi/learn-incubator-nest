@@ -24,18 +24,15 @@ export class CreateAnswerAction {
   ) {}
 
   private async plusScore(activeGame: PairsEntity, user: UserEntity, userAnswer: PairAnswersEntity): Promise<number> {
-    const { isFirstPlayer, isSecondPlayer } = this.checkPlayer(activeGame, user);
+    const { isFirstPlayer } = this.checkPlayer(activeGame, user);
     const isCorrect = userAnswer.status === AnswersStatusesEnum.CORRECT;
     if (!isCorrect) {
       return activeGame.scoreFirstPlayer;
     }
-    const addScore = activeGame.scoreFirstPlayer + 1;
+    const detectPlayer = isFirstPlayer ? 'scoreFirstPlayer' : 'scoreSecondPlayer';
+    const addScore = activeGame[detectPlayer] + 1;
 
-    if (isFirstPlayer) {
-      await this.mainPairRepository.setScore(activeGame.id, 'scoreFirstPlayer', addScore);
-    } else if (isSecondPlayer) {
-      await this.mainPairRepository.setScore(activeGame.id, 'scoreSecondPlayer', addScore);
-    }
+    await this.mainPairRepository.setScore(activeGame.id, detectPlayer, addScore);
     return addScore;
   }
 
