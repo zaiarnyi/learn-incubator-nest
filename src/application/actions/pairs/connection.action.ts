@@ -37,8 +37,7 @@ export class ConnectionPairAction {
     pair.status = PairStatusesEnum.ACTIVE;
     pair.questions = await this.quizRepository.findAnswerForPair();
 
-    await this.mainRepository.updatePair(pair.id, pair);
-    return pair;
+    return this.mainRepository.saveRoom(pair);
   }
 
   public async execute(user: UserEntity): Promise<GetCurrentPairResponse | any> {
