@@ -11,6 +11,7 @@ import {
 import { UserEntity } from '../../users/entities/user.entity';
 import { PairsEntity } from './pairs.entity';
 import { AnswersStatusesEnum } from '../enums/answers-statuses.enum';
+import { QuizEntity } from '../../sa/quiz/entities/quiz.entity';
 
 @Entity('pair_answers')
 export class PairAnswersEntity {
@@ -25,9 +26,9 @@ export class PairAnswersEntity {
   @JoinColumn()
   pair: PairsEntity;
 
-  // @OneToOne(() => QuizEntity, (quiz) => quiz.id, { nullable: false, onDelete: 'CASCADE' })
-  // @JoinColumn()
-  // question: QuizEntity;
+  @ManyToOne(() => QuizEntity, (quiz) => quiz.id, { nullable: false, onDelete: 'CASCADE' })
+  @JoinColumn()
+  question: QuizEntity;
 
   @Column({ type: 'enum', enum: AnswersStatusesEnum, default: AnswersStatusesEnum.INCORRECT })
   status: AnswersStatusesEnum;

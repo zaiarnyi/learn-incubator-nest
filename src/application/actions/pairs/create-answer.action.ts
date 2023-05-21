@@ -1,4 +1,4 @@
-import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { AnswerResponse } from '../../../presentation/responses/pairs/get-current-pair.response';
 import { UserEntity } from '../../../domain/users/entities/user.entity';
 import { QueryPairsRepository } from '../../../infrastructure/database/repositories/pairs/query.repository';
@@ -13,6 +13,7 @@ import { AnswerPairRepository } from '../../../infrastructure/database/repositor
 
 @Injectable()
 export class CreateAnswerAction {
+  private readonly logger = new Logger(CreateAnswerAction.name);
   constructor(
     @Inject(QueryPairsRepository) protected readonly repository: QueryPairsRepository,
     @Inject(QueryAnswerRepository) private readonly answerRepository: QueryAnswerRepository,
@@ -37,7 +38,7 @@ export class CreateAnswerAction {
   private async getActiveGame(user: UserEntity): Promise<PairsEntity> {
     const findActivePlayers = await this.repository.getUserActiveGame(user);
 
-    if (!findActivePlayers) {
+    if (!findActivePlayers || !findActivePlayers?.questions?.length) {
       throw new ForbiddenException();
     }
     return findActivePlayers;
@@ -52,15 +53,19 @@ export class CreateAnswerAction {
     }
 
     const currentQuestion = activeGame.questions[countOfAnswersPlayer];
-    console.log(currentQuestion, '======');
-    console.log(countOfAnswersPlayer, '++++++');
-    console.log(activeGame, 'activeGame.questions=======');
-    const isCorrectAnswer = currentQuestion?.correctAnswers?.includes(answer) ?? false;
+    if (!currentQuestion) {
+      throw new ForbiddenException();
+    }
+    this.logger.log(currentQuestion, '======');
+    this.logger.log(countOfAnswersPlayer, '++++++');
+    this.logger.log(activeGame, 'activeGame.questions=======', activeGame.questions);
+    const isCorrectAnswer = currentQuestion.correctAnswers.includes(answer) ?? false;
 
     const userAnswer = new PairAnswersEntity();
     userAnswer.pair = activeGame;
     userAnswer.user = user;
     userAnswer.status = isCorrectAnswer ? AnswersStatusesEnum.CORRECT : AnswersStatusesEnum.INCORRECT;
+    userAnswer.question = currentQuestion;
 
     const saved = await this.mainAnswerPairRepository.save(userAnswer);
 
@@ -84,7 +89,7 @@ export class CreateAnswerAction {
     return plainToClass(AnswerResponse, {
       addedAt: saved.addedAt,
       answerStatus: saved.status,
-      questionId: currentQuestion.id.toString(),
+      questionId: saved.question.id.toString(),
     });
   }
 }
