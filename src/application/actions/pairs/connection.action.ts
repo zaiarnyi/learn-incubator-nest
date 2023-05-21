@@ -28,9 +28,9 @@ export class ConnectionPairAction {
 
     if (!pair) return null;
 
-    if (pair.firstPlayer.id === user.id) {
-      throw new ForbiddenException();
-    }
+    // if (pair.firstPlayer.id === user.id) {
+    //   throw new ForbiddenException();
+    // }
 
     pair.secondPlayer = user;
     pair.startGameDate = new Date();
@@ -41,7 +41,7 @@ export class ConnectionPairAction {
   }
 
   public async execute(user: UserEntity): Promise<GetCurrentPairResponse | any> {
-    const hasActiveGame = await this.repository.getActiveGetForSecondPlayer(user);
+    const hasActiveGame = await this.repository.getActiveGameByUserId(user);
     if (hasActiveGame) {
       throw new ForbiddenException();
     }
