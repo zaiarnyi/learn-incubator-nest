@@ -1,4 +1,4 @@
-import { ForbiddenException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, Logger } from '@nestjs/common';
 import { AnswerResponse } from '../../../presentation/responses/pairs/get-current-pair.response';
 import { UserEntity } from '../../../domain/users/entities/user.entity';
 import { QueryPairsRepository } from '../../../infrastructure/database/repositories/pairs/query.repository';
@@ -10,6 +10,7 @@ import { MainPairRepository } from '../../../infrastructure/database/repositorie
 import { PairStatusesEnum } from '../../../domain/pairs/enums/pair-statuses.enum';
 import { plainToClass } from 'class-transformer';
 import { AnswerPairRepository } from '../../../infrastructure/database/repositories/pairs/answer/answer-pair.repository';
+import { QueryQuizRepository } from '../../../infrastructure/database/repositories/sa/quiz/query-quiz.repository';
 
 @Injectable()
 export class CreateAnswerAction {
@@ -19,6 +20,7 @@ export class CreateAnswerAction {
     @Inject(QueryAnswerRepository) private readonly answerRepository: QueryAnswerRepository,
     @Inject(MainPairRepository) private readonly mainPairRepository: MainPairRepository,
     @Inject(AnswerPairRepository) private readonly mainAnswerPairRepository: AnswerPairRepository,
+    @Inject(QueryQuizRepository) private readonly quizRepository: QueryQuizRepository,
   ) {}
 
   private checkPlayer(activeGame: PairsEntity, user: UserEntity): { isSecondPlayer: boolean; isFirstPlayer: boolean } {
@@ -41,6 +43,11 @@ export class CreateAnswerAction {
     if (!findActivePlayers) {
       throw new ForbiddenException();
     }
+
+    // if (findActivePlayers.status === PairStatusesEnum.ACTIVE && !findActivePlayers.questions.length) {
+    //   findActivePlayers.questions = await this.quizRepository.findAnswerForPair();
+    //   await this.mainPairRepository.setQuestions(findActivePlayers.id, findActivePlayers.questions);
+    // }
     return findActivePlayers;
   }
   public async execute(answer: string, user: UserEntity): Promise<AnswerResponse | any> {
@@ -53,6 +60,7 @@ export class CreateAnswerAction {
     }
 
     const currentQuestion = activeGame.questions[countOfAnswersPlayer];
+
     if (!currentQuestion) {
       this.logger.log(countOfAnswersPlayer);
       this.logger.log(activeGame.questions);

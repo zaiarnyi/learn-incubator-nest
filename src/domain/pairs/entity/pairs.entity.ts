@@ -33,10 +33,10 @@ export class PairsEntity extends BaseEntity {
   @JoinColumn()
   questions: QuizEntity[];
 
-  @AfterUpdate()
-  setFinishDate() {
-    if (this.status === PairStatusesEnum.FINISH) {
-      this.finishGameDate = new Date();
-    }
-  }
+  // @AfterUpdate()
+  // setFinishDate() {
+  //   if (this.status === PairStatusesEnum.FINISH) {
+  //     this.finishGameDate = new Date();
+  //   }
+  // }
 }
