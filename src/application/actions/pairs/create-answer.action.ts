@@ -75,7 +75,7 @@ export class CreateAnswerAction {
 
     const currentQuestion = activeGame.questions[countOfAnswersPlayer];
 
-    if (!currentQuestion) {
+    if (!currentQuestion || !Object.keys(currentQuestion).length) {
       console.log(countOfAnswersPlayer, 'countOfAnswersPlayer');
       console.log(JSON.stringify(activeGame.questions, null, 2), 'ForbiddenException');
       throw new NotFoundException();
@@ -101,7 +101,7 @@ export class CreateAnswerAction {
     return plainToClass(AnswerResponse, {
       addedAt: saved.addedAt,
       answerStatus: saved.status,
-      questionId: currentQuestion?.id?.toString(),
+      questionId: currentQuestion.id.toString(),
     });
   }
 }
