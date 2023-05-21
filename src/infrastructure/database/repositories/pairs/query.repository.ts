@@ -18,7 +18,7 @@ export class QueryPairsRepository {
     });
   }
 
-  async getActiveGameByUserId(user: UserEntity): Promise<PairsEntity> {
+  async getActiveGameByUserId(user: UserEntity): Promise<boolean> {
     return this.repository
       .createQueryBuilder('p')
       .leftJoin('p.firstPlayer', 'fp')
@@ -29,7 +29,7 @@ export class QueryPairsRepository {
           qb.where('fp.id = :id', { id: user.id }).orWhere('sp.id = :id', { id: user.id });
         }),
       )
-      .getOne();
+      .getExists();
   }
 
   async getUserUnfinishedGame(user: UserEntity): Promise<PairsEntity> {
