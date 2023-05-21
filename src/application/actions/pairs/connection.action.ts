@@ -34,10 +34,6 @@ export class ConnectionPairAction {
     }
     if (!pair) return null;
 
-    if (pair?.firstPlayer?.id === user.id || pair?.secondPlayer?.id === user.id) {
-      throw new ForbiddenException();
-    }
-
     pair.secondPlayer = user;
     pair.startGameDate = new Date();
     pair.status = PairStatusesEnum.ACTIVE;
