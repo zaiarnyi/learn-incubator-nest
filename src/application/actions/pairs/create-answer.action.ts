@@ -65,8 +65,8 @@ export class CreateAnswerAction {
     const currentQuestion = activeGame.questions[countOfAnswersPlayer];
 
     if (!currentQuestion) {
-      this.logger.warn(countOfAnswersPlayer);
-      this.logger.warn(JSON.stringify(activeGame.questions, null, 2));
+      console.log(countOfAnswersPlayer);
+      console.log(JSON.stringify(activeGame.questions, null, 2));
       throw new ForbiddenException();
     }
     const isCorrectAnswer = currentQuestion.correctAnswers.includes(answer) ?? false;
@@ -95,7 +95,7 @@ export class CreateAnswerAction {
     if ([...answersByPairId, saved].length >= 10) {
       await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
     }
-
+    console.log(JSON.stringify(currentQuestion, null, 2), 'currentQuestion================');
     return plainToClass(AnswerResponse, {
       addedAt: saved.addedAt,
       answerStatus: saved.status,
