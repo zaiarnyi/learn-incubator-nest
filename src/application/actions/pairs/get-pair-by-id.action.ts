@@ -17,6 +17,10 @@ export class GetPairByIdAction extends MappingPlayerAbstract {
       throw new ForbiddenException();
     }
 
+    if (findPairById.firstPlayer.id !== user.id && findPairById.secondPlayer?.id !== user.id) {
+      throw new ForbiddenException();
+    }
+
     if (findPairById.status === PairStatusesEnum.PENDING_SECOND_PLAYER) {
       return this.mappingForPendingStatus(findPairById);
     }
