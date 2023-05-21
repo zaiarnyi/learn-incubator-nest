@@ -44,12 +44,9 @@ export class CreateAnswerAction {
   }
 
   private async additionalScore(pair: PairsEntity, user: UserEntity, score: number) {
-    const { isFirstPlayer, isSecondPlayer } = this.checkPlayer(pair, user);
-    if (isFirstPlayer) {
-      await this.mainPairRepository.setScore(pair.id, 'scoreFirstPlayer', score + 1);
-    } else if (isSecondPlayer) {
-      await this.mainPairRepository.setScore(pair.id, 'scoreSecondPlayer', score + 1);
-    }
+    const { isFirstPlayer } = this.checkPlayer(pair, user);
+    const detectPlayer = isFirstPlayer ? 'scoreFirstPlayer' : 'scoreSecondPlayer';
+    await this.mainPairRepository.setScore(pair.id, detectPlayer, score + 1);
   }
 
   private async getActiveGame(user: UserEntity): Promise<PairsEntity> {
