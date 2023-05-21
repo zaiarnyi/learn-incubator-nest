@@ -8,13 +8,13 @@ import { PairStatusesEnum } from '../../../domain/pairs/enums/pair-statuses.enum
 export class GetMyCurrentAction extends MappingPlayerAbstract {
   public async execute(user: UserEntity): Promise<GetCurrentPairResponse> {
     const findActivePlayer = await this.repository.getUserUnfinishedGame(user);
-    if (!findActivePlayer || findActivePlayer.status !== PairStatusesEnum.ACTIVE) {
+    if (!findActivePlayer) {
       throw new NotFoundException();
     }
 
-    // if (findActivePlayer.status === PairStatusesEnum.PENDING_SECOND_PLAYER) {
-    //   return this.mappingForPendingStatus(findActivePlayer);
-    // }
+    if (findActivePlayer.status === PairStatusesEnum.PENDING_SECOND_PLAYER) {
+      return this.mappingForPendingStatus(findActivePlayer);
+    }
     return this.mappingForActiveStatus(findActivePlayer);
   }
 }

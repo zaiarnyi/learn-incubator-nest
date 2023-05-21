@@ -20,6 +20,20 @@ export class CreateAnswerAction {
     @Inject(AnswerPairRepository) private readonly mainAnswerPairRepository: AnswerPairRepository,
   ) {}
 
+  private checkPlayer(activeGame: PairsEntity, user: UserEntity): { isSecondPlayer: boolean; isFirstPlayer: boolean } {
+    const isFirstPlayer = activeGame.firstPlayer.id === user.id;
+    const isSecondPlayer = activeGame.secondPlayer.id === user.id;
+
+    return { isFirstPlayer, isSecondPlayer };
+  }
+
+  private async additionalScore(pair: PairsEntity, answers: PairAnswersEntity[], user: UserEntity) {
+    if (!answers.some((item) => item.status === AnswersStatusesEnum.CORRECT)) {
+      return null;
+    }
+    const { isFirstPlayer, isSecondPlayer } = this.checkPlayer(pair, user);
+  }
+
   private async getActiveGame(answer: string, user: UserEntity): Promise<PairsEntity> {
     const findActivePlayers = await this.repository.getUserActiveGame(user);
 
@@ -47,13 +61,17 @@ export class CreateAnswerAction {
 
     const saved = await this.mainAnswerPairRepository.save(userAnswer);
 
-    const isFirstPlayer = activeGame.firstPlayer.id === user.id;
-    const isSecondPlayer = activeGame.secondPlayer.id === user.id;
+    const { isFirstPlayer, isSecondPlayer } = this.checkPlayer(activeGame, user);
+    const isCorrect = userAnswer.status === AnswersStatusesEnum.CORRECT;
 
-    if (userAnswer.status === AnswersStatusesEnum.CORRECT && isFirstPlayer) {
+    if (isCorrect && isFirstPlayer) {
       await this.mainPairRepository.setScore(activeGame.id, 'scoreFirstPlayer', activeGame.scoreFirstPlayer + 1);
-    } else if (userAnswer.status === AnswersStatusesEnum.CORRECT && isSecondPlayer) {
+    } else if (isCorrect && isSecondPlayer) {
       await this.mainPairRepository.setScore(activeGame.id, 'scoreSecondPlayer', activeGame.scoreSecondPlayer + 1);
+    }
+
+    if (countOfAnswersPlayer === 4 && answersByPairId.length < 9) {
+      await this.additionalScore(activeGame, [...answersByPairId, saved], user);
     }
 
     if (answersByPairId.length >= 9) {
