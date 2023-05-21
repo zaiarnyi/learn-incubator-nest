@@ -52,6 +52,7 @@ export class CreateAnswerAction {
     }
 
     const currentQuestion = activeGame.questions[countOfAnswersPlayer - 1];
+    console.log(currentQuestion, countOfAnswersPlayer, activeGame.questions);
     const isCorrectAnswer = currentQuestion?.correctAnswers?.includes(answer) ?? false;
 
     const userAnswer = new PairAnswersEntity();
