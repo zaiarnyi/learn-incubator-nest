@@ -65,8 +65,8 @@ export class CreateAnswerAction {
     const currentQuestion = activeGame.questions[countOfAnswersPlayer];
 
     if (!currentQuestion) {
-      console.log(countOfAnswersPlayer);
-      console.log(JSON.stringify(activeGame.questions, null, 2));
+      console.log(countOfAnswersPlayer, 'countOfAnswersPlayer');
+      console.log(JSON.stringify(activeGame.questions, null, 2), 'ForbiddenException');
       throw new ForbiddenException();
     }
     const isCorrectAnswer = currentQuestion.correctAnswers.includes(answer) ?? false;
