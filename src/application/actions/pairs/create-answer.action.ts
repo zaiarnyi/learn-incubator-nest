@@ -95,9 +95,9 @@ export class CreateAnswerAction {
     //   await this.additionalScore(activeGame, user, playerScore);
     // }
 
-    // if ([...answersByPairId, saved].length >= 10) {
-    //   await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
-    // }
+    if ([...answersByPairId, saved].length >= 10) {
+      await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
+    }
     return plainToClass(AnswerResponse, {
       addedAt: saved.addedAt,
       answerStatus: saved.status,
