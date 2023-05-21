@@ -85,9 +85,9 @@ export class CreateAnswerAction {
     const saved = await this.mainAnswerPairRepository.save(userAnswer);
 
     const playerScore = await this.plusScore(activeGame, user, userAnswer);
-    // if (countOfAnswersPlayer === 4 && answersByPairId.length <= 8) {
-    //   await this.additionalScore(activeGame, user, playerScore);
-    // }
+    if (countOfAnswersPlayer === 4 && answersByPairId.length <= 8) {
+      await this.additionalScore(activeGame, user, playerScore);
+    }
 
     if ([...answersByPairId, saved].length >= 10) {
       await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
