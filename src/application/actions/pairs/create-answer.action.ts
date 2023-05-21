@@ -26,10 +26,11 @@ export class CreateAnswerAction {
   private async plusScore(activeGame: PairsEntity, user: UserEntity, userAnswer: PairAnswersEntity): Promise<number> {
     const { isFirstPlayer } = this.checkPlayer(activeGame, user);
     const isCorrect = userAnswer.status === AnswersStatusesEnum.CORRECT;
-    if (!isCorrect) {
-      return activeGame.scoreFirstPlayer;
-    }
     const detectPlayer = isFirstPlayer ? 'scoreFirstPlayer' : 'scoreSecondPlayer';
+
+    if (!isCorrect) {
+      return activeGame[detectPlayer];
+    }
     const addScore = activeGame[detectPlayer] + 1;
 
     await this.mainPairRepository.setScore(activeGame.id, detectPlayer, addScore);
@@ -44,7 +45,9 @@ export class CreateAnswerAction {
   }
 
   private async additionalScore(pair: PairsEntity, user: UserEntity, score: number) {
-    const { isFirstPlayer } = this.checkPlayer(pair, user);
+    const { isFirstPlayer, isSecondPlayer } = this.checkPlayer(pair, user);
+    if (!isFirstPlayer && !isSecondPlayer) return;
+
     const detectPlayer = isFirstPlayer ? 'scoreFirstPlayer' : 'scoreSecondPlayer';
     await this.mainPairRepository.setScore(pair.id, detectPlayer, score + 1);
   }
@@ -85,9 +88,9 @@ export class CreateAnswerAction {
     const saved = await this.mainAnswerPairRepository.save(userAnswer);
 
     const playerScore = await this.plusScore(activeGame, user, userAnswer);
-    // if (countOfAnswersPlayer === 4 && answersByPairId.length <= 8) {
-    //   await this.additionalScore(activeGame, user, playerScore);
-    // }
+    if (countOfAnswersPlayer === 4 && answersByPairId.length <= 8) {
+      await this.additionalScore(activeGame, user, playerScore);
+    }
 
     if ([...answersByPairId, saved].length >= 10) {
       await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
