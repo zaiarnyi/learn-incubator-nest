@@ -29,9 +29,9 @@ export class ConnectionPairAction {
       this.repository.getActiveGameByUserId(user),
     ]);
 
-    if (hasActiveGame) {
-      throw new ForbiddenException();
-    }
+    // if (hasActiveGame) {
+    //   throw new ForbiddenException();
+    // }
     if (!pair) return null;
 
     if (pair?.firstPlayer?.id === user.id || pair?.secondPlayer?.id === user.id) {
