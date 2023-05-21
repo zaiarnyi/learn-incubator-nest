@@ -10,8 +10,8 @@ export class QuizEntity extends BaseEntity {
   @Column({ type: 'boolean', default: false })
   published: boolean;
 
-  @Column('simple-array', { nullable: false })
-  correctAnswers: Array<string | number>;
+  @Column('text', { array: true, nullable: false })
+  correctAnswers: string[];
 
   @ManyToOne(() => PairsEntity, (pair) => pair.id, { nullable: true, onDelete: 'SET NULL' })
   @JoinColumn()

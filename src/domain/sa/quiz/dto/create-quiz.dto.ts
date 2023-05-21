@@ -8,5 +8,5 @@ export class CreateQuizDto {
 
   @IsNotEmpty()
   @IsArray()
-  correctAnswers: Array<string | number>;
+  correctAnswers: string[];
 }

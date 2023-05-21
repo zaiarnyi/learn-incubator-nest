@@ -8,5 +8,5 @@ export class CreateQuizRequest {
 
   @IsNotEmpty()
   @IsArray()
-  correctAnswers: Array<string | number>;
+  correctAnswers: string[];
 }
