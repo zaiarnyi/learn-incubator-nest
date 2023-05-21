@@ -38,7 +38,7 @@ export class CreateAnswerAction {
   private async getActiveGame(user: UserEntity): Promise<PairsEntity> {
     const findActivePlayers = await this.repository.getUserActiveGame(user);
 
-    if (!findActivePlayers || !findActivePlayers?.questions?.length) {
+    if (!findActivePlayers) {
       throw new ForbiddenException();
     }
     return findActivePlayers;
@@ -53,12 +53,11 @@ export class CreateAnswerAction {
     }
 
     const currentQuestion = activeGame.questions[countOfAnswersPlayer];
-    if (currentQuestion === undefined) {
+    if (!currentQuestion) {
+      this.logger.log(countOfAnswersPlayer);
+      this.logger.log(activeGame.questions);
       throw new ForbiddenException();
     }
-    this.logger.log(currentQuestion, '======');
-    this.logger.log(countOfAnswersPlayer, '++++++');
-    this.logger.log(activeGame, 'activeGame.questions=======', activeGame.questions);
     const isCorrectAnswer = currentQuestion.correctAnswers.includes(answer) ?? false;
 
     const userAnswer = new PairAnswersEntity();
