@@ -44,7 +44,10 @@ export class CreateAnswerAction {
     return { isFirstPlayer, isSecondPlayer };
   }
 
-  private async additionalScore(pair: PairsEntity, user: UserEntity, score: number) {
+  private async additionalScore(pair: PairsEntity, user: UserEntity, score: number, answers: PairAnswersEntity[]) {
+    if (!answers.some((a) => a.status === AnswersStatusesEnum.CORRECT)) {
+      return null;
+    }
     const { isFirstPlayer, isSecondPlayer } = this.checkPlayer(pair, user);
     if (!isFirstPlayer && !isSecondPlayer) return;
 
@@ -89,7 +92,7 @@ export class CreateAnswerAction {
 
     const playerScore = await this.plusScore(activeGame, user, userAnswer);
     if (countOfAnswersPlayer === 4 && answersByPairId.length <= 8) {
-      await this.additionalScore(activeGame, user, playerScore);
+      await this.additionalScore(activeGame, user, playerScore, [...answersByPairId, saved]);
     }
 
     if ([...answersByPairId, saved].length >= 10) {
