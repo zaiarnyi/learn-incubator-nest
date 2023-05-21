@@ -13,7 +13,10 @@ export class GetPairByIdAction extends MappingPlayerAbstract {
       throw new BadRequestException([{ message: 'has invalid format', field: 'id' }]);
     }
 
-    if (findPairById.status === PairStatusesEnum.ACTIVE || findPairById?.firstPlayer?.id !== user.id) {
+    if (
+      findPairById.status === PairStatusesEnum.ACTIVE ||
+      (findPairById.firstPlayer.id !== user.id && findPairById?.secondPlayer?.id !== user.id)
+    ) {
       throw new ForbiddenException();
     }
 
