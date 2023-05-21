@@ -95,10 +95,9 @@ export class CreateAnswerAction {
     //   await this.additionalScore(activeGame, user, playerScore);
     // }
 
-    if ([...answersByPairId, saved].length >= 10) {
-      await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
-    }
-    console.log(JSON.stringify(currentQuestion, null, 2), 'currentQuestion================');
+    // if ([...answersByPairId, saved].length >= 10) {
+    //   await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
+    // }
     return plainToClass(AnswerResponse, {
       addedAt: saved.addedAt,
       answerStatus: saved.status,
