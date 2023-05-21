@@ -14,7 +14,15 @@ export class MainPairRepository {
   }
 
   async updatePair(id: number, pair: PairsEntity) {
-    return this.repository.update({ id }, pair);
+    return this.repository.update(
+      { id },
+      {
+        secondPlayer: pair.secondPlayer,
+        status: pair.status,
+        startGameDate: pair.startGameDate,
+        questions: pair.questions,
+      },
+    );
   }
 
   async changeStatus(id: number, status: PairStatusesEnum) {
