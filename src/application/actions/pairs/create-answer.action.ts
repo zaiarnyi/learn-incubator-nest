@@ -63,7 +63,7 @@ export class CreateAnswerAction {
 
     if (!currentQuestion) {
       this.logger.log(countOfAnswersPlayer);
-      this.logger.log(activeGame.questions);
+      this.logger.log(JSON.stringify(activeGame.questions, null, 2));
       throw new ForbiddenException();
     }
     const isCorrectAnswer = currentQuestion.correctAnswers.includes(answer) ?? false;

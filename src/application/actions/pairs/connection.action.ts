@@ -48,7 +48,7 @@ export class ConnectionPairAction {
     const hasFirstPlayer = await this.checkPendingStatus(user);
 
     if (hasFirstPlayer && hasFirstPlayer.status === PairStatusesEnum.ACTIVE) {
-      console.log(hasFirstPlayer.questions, 'hasFirstPlayer.questions');
+      console.log(JSON.stringify(hasFirstPlayer.questions, null, 2), 'hasFirstPlayer.questions');
       return this.mapping.mappingForActiveStatus(hasFirstPlayer);
     }
 
