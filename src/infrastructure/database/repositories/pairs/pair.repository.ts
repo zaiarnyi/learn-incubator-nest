@@ -20,7 +20,7 @@ export class MainPairRepository {
         secondPlayer: pair.secondPlayer,
         status: pair.status,
         startGameDate: pair.startGameDate,
-        questions: pair.questions,
+        ...(pair.questions.length && { questions: pair.questions }),
       },
     );
   }
