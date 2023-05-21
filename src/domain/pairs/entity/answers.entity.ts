@@ -26,7 +26,7 @@ export class PairAnswersEntity {
   @JoinColumn()
   pair: PairsEntity;
 
-  @ManyToOne(() => QuizEntity, (quiz) => quiz.id, { nullable: false, onDelete: 'CASCADE' })
+  @ManyToOne(() => QuizEntity, (quiz) => quiz.id, { nullable: false })
   @JoinColumn()
   question: QuizEntity;
 
