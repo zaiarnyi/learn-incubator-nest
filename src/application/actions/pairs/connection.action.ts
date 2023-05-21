@@ -41,6 +41,7 @@ export class ConnectionPairAction {
     pair.startGameDate = new Date();
     pair.status = PairStatusesEnum.ACTIVE;
     pair.questions = await this.quizRepository.findAnswerForPair();
+    console.log(pair.questions, 'pair.questions');
     return this.mainRepository.saveRoom(pair);
   }
 
