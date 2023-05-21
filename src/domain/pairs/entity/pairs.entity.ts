@@ -29,7 +29,7 @@ export class PairsEntity extends BaseEntity {
   @Column({ type: 'float', default: 0 })
   scoreSecondPlayer: number;
 
-  @OneToMany(() => QuizEntity, (quiz) => quiz.pair, { nullable: true, onDelete: 'SET NULL' })
+  @OneToMany(() => QuizEntity, (quiz) => quiz.pair, { nullable: true })
   @JoinColumn()
   questions: QuizEntity[];
 

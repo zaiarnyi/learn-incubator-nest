@@ -34,7 +34,7 @@ export class CreateAnswerAction {
     const { isFirstPlayer, isSecondPlayer } = this.checkPlayer(pair, user);
   }
 
-  private async getActiveGame(answer: string, user: UserEntity): Promise<PairsEntity> {
+  private async getActiveGame(user: UserEntity): Promise<PairsEntity> {
     const findActivePlayers = await this.repository.getUserActiveGame(user);
 
     if (!findActivePlayers) {
@@ -43,17 +43,18 @@ export class CreateAnswerAction {
     return findActivePlayers;
   }
   public async execute(answer: string, user: UserEntity): Promise<AnswerResponse | any> {
-    const activeGame = await this.getActiveGame(answer, user);
+    const activeGame = await this.getActiveGame(user);
     const answersByPairId = await this.answerRepository.getPairById(activeGame.id);
 
     const countOfAnswersPlayer = answersByPairId.filter((item) => item.user.id === user.id).length;
     if (countOfAnswersPlayer >= 5) {
       throw new ForbiddenException();
     }
-    const index = countOfAnswersPlayer === 0 ? 0 : countOfAnswersPlayer - 1;
-    const currentQuestion = activeGame.questions[index];
-    console.log(currentQuestion, '======', activeGame.questions);
+
+    const currentQuestion = activeGame.questions[countOfAnswersPlayer];
+    console.log(currentQuestion, '======');
     console.log(countOfAnswersPlayer, '++++++');
+    console.log(activeGame.questions, 'activeGame.questions====');
     const isCorrectAnswer = currentQuestion?.correctAnswers?.includes(answer) ?? false;
 
     const userAnswer = new PairAnswersEntity();
@@ -76,7 +77,7 @@ export class CreateAnswerAction {
       await this.additionalScore(activeGame, [...answersByPairId, saved], user);
     }
 
-    if (answersByPairId.length >= 9) {
+    if ([...answersByPairId, saved].length >= 10) {
       await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
     }
 

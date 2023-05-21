@@ -34,6 +34,6 @@ export class QueryQuizRepository {
   }
 
   async findAnswerForPair(): Promise<QuizEntity[]> {
-    return this.repository.find({ take: 5, order: { createdAt: 'asc' } });
+    return this.repository.find({ where: { published: true }, take: 5, order: { createdAt: 'asc' } });
   }
 }
