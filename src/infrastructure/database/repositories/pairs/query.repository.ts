@@ -71,4 +71,8 @@ export class QueryPairsRepository {
       .where('p.id = :id', { id })
       .getOne();
   }
+
+  async getPairByIdWithOutRelations(id: number): Promise<PairsEntity> {
+    return this.repository.findOneBy({ id });
+  }
 }

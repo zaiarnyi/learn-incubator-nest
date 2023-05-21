@@ -30,11 +30,17 @@ export class CreateAnswerAction {
     return { isFirstPlayer, isSecondPlayer };
   }
 
-  private async additionalScore(pair: PairsEntity, answers: PairAnswersEntity[], user: UserEntity) {
+  private async additionalScore(pairId: number, answers: PairAnswersEntity[], user: UserEntity) {
     if (!answers.some((item) => item.status === AnswersStatusesEnum.CORRECT)) {
       return null;
     }
+    const pair = await this.repository.getPairByIdWithOutRelations(pairId);
     const { isFirstPlayer, isSecondPlayer } = this.checkPlayer(pair, user);
+    if (isFirstPlayer) {
+      await this.mainPairRepository.setScore(pairId, 'scoreFirstPlayer', pair.scoreFirstPlayer + 1);
+    } else if (isSecondPlayer) {
+      await this.mainPairRepository.setScore(pairId, 'scoreSecondPlayer', pair.scoreSecondPlayer + 1);
+    }
   }
 
   private async getActiveGame(user: UserEntity): Promise<PairsEntity> {
@@ -44,10 +50,6 @@ export class CreateAnswerAction {
       throw new ForbiddenException();
     }
 
-    // if (findActivePlayers.status === PairStatusesEnum.ACTIVE && !findActivePlayers.questions.length) {
-    //   findActivePlayers.questions = await this.quizRepository.findAnswerForPair();
-    //   await this.mainPairRepository.setQuestions(findActivePlayers.id, findActivePlayers.questions);
-    // }
     return findActivePlayers;
   }
   public async execute(answer: string, user: UserEntity): Promise<AnswerResponse | any> {
@@ -87,7 +89,7 @@ export class CreateAnswerAction {
     }
 
     if (countOfAnswersPlayer === 4 && answersByPairId.length < 9) {
-      await this.additionalScore(activeGame, [...answersByPairId, saved], user);
+      await this.additionalScore(activeGame.id, [...answersByPairId, saved], user);
     }
 
     if ([...answersByPairId, saved].length >= 10) {
