@@ -90,7 +90,7 @@ export class CreateAnswerAction {
 
     const saved = await this.mainAnswerPairRepository.save(userAnswer);
 
-    const playerScore = await this.plusScore(activeGame, user, userAnswer);
+    // const playerScore = await this.plusScore(activeGame, user, userAnswer);
 
     const answers = [...answersByPairId, saved];
     const answersForUser = answers.filter((item) => item.user.id === user.id);
@@ -98,6 +98,13 @@ export class CreateAnswerAction {
     // if (answersForUser.length === 5 && answers.length <= 9) {
     //   await this.additionalScore(activeGame, user, playerScore, answersForUser);
     // }
+    if (
+      answersForUser.length === 5 &&
+      !activeGame.playerFirstFinish &&
+      answersForUser.some((a) => a.status === AnswersStatusesEnum.CORRECT)
+    ) {
+      await this.mainPairRepository.setFinishFirstUser(activeGame.id, user.id);
+    }
 
     if (answers.length >= 10) {
       await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);

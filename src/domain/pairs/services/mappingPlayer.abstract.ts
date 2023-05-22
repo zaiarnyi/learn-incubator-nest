@@ -9,6 +9,7 @@ import { QueryPairsRepository } from '../../../infrastructure/database/repositor
 import { UserEntity } from '../../users/entities/user.entity';
 import { QueryAnswerRepository } from '../../../infrastructure/database/repositories/pairs/answer/query-answer.repository';
 import { QuizEntity } from '../../sa/quiz/entities/quiz.entity';
+import { AnswersStatusesEnum } from '../enums/answers-statuses.enum';
 
 @Injectable()
 export class MappingPlayerAbstract {
@@ -38,7 +39,22 @@ export class MappingPlayerAbstract {
     });
   }
 
+  private scoreResult(answers: AnswerResponse[], isAddAdditionalScore: boolean): number {
+    const counter = answers.filter((item) => item.answerStatus === AnswersStatusesEnum.CORRECT);
+    const additionalScore = isAddAdditionalScore ? 1 : 0;
+
+    return counter.length + additionalScore;
+  }
+
   public async mappingForActiveStatus(pair: PairsEntity): Promise<GetCurrentPairResponse> {
+    const answersForFirstPlayer = await this.mappingAnswers(pair.firstPlayer, pair);
+    const answersForSecondPlayer = await this.mappingAnswers(pair.secondPlayer, pair);
+    const scoreForFirstPlayer = this.scoreResult(answersForFirstPlayer, pair.playerFirstFinish === pair.firstPlayer.id);
+    const scoreForSecondPlayer = this.scoreResult(
+      answersForFirstPlayer,
+      pair.playerFirstFinish === pair.secondPlayer.id,
+    );
+
     return plainToClass(GetCurrentPairResponse, {
       ...pair,
       id: pair.id.toString(),
@@ -47,16 +63,16 @@ export class MappingPlayerAbstract {
           ...pair.firstPlayer,
           id: pair.firstPlayer.id.toString(),
         },
-        score: pair.scoreFirstPlayer,
-        answers: await this.mappingAnswers(pair.firstPlayer, pair),
+        score: scoreForFirstPlayer,
+        answers: answersForFirstPlayer,
       },
       secondPlayerProgress: {
         player: {
           ...pair.secondPlayer,
           id: pair.secondPlayer.id.toString(),
         },
-        score: pair.scoreSecondPlayer,
-        answers: await this.mappingAnswers(pair.secondPlayer, pair),
+        score: scoreForSecondPlayer,
+        answers: answersForSecondPlayer,
       },
       questions: this.mappingQuestions(pair.questions),
       pairCreatedDate: pair.createdAt,
@@ -71,10 +87,10 @@ export class MappingPlayerAbstract {
           ...pair.firstPlayer,
           id: pair.firstPlayer.id.toString(),
         },
-        score: pair.scoreFirstPlayer,
-        answers: await this.mappingAnswers(pair.firstPlayer, pair),
+        score: 0,
+        answers: [],
       },
-      questions: this.mappingQuestions(pair.questions),
+      questions: null,
       secondPlayerProgress: null,
       pairCreatedDate: pair.createdAt,
     });
