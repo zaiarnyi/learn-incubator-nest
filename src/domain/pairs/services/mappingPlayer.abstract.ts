@@ -41,7 +41,8 @@ export class MappingPlayerAbstract {
 
   private scoreResult(answers: AnswerResponse[], isAddAdditionalScore: boolean): number {
     const counter = answers.filter((item) => item.answerStatus === AnswersStatusesEnum.CORRECT);
-    const additionalScore = isAddAdditionalScore ? 1 : 0;
+    // const additionalScore = isAddAdditionalScore ? 1 : 0;
+    const additionalScore = 0;
 
     return counter.length + additionalScore;
   }
