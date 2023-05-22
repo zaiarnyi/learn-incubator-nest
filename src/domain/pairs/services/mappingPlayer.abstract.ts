@@ -44,6 +44,8 @@ export class MappingPlayerAbstract {
     // const additionalScore = isAddAdditionalScore ? 1 : 0;
     const additionalScore = 0;
 
+    console.log(answers, isAddAdditionalScore ? 1 : 0, '======');
+
     return counter.length + additionalScore;
   }
 

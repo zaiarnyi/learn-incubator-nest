@@ -103,6 +103,7 @@ export class CreateAnswerAction {
       !activeGame.playerFirstFinish &&
       answersForUser.some((a) => a.status === AnswersStatusesEnum.CORRECT)
     ) {
+      console.log(JSON.stringify(activeGame, null, 2), 'activeGame');
       await this.mainPairRepository.setFinishFirstUser(activeGame.id, user.id);
     }
 
