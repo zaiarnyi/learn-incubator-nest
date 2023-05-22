@@ -27,7 +27,7 @@ export class CreateAnswerAction {
     const { isFirstPlayer, isSecondPlayer } = this.checkPlayer(activeGame, user);
     const isCorrect = userAnswer.status === AnswersStatusesEnum.CORRECT;
     const detectPlayer = isFirstPlayer ? 'scoreFirstPlayer' : isSecondPlayer ? 'scoreSecondPlayer' : null;
-    if (detectPlayer) return;
+    if (!detectPlayer) return;
 
     if (!isCorrect) {
       return activeGame[detectPlayer];
@@ -46,7 +46,7 @@ export class CreateAnswerAction {
   }
 
   private async additionalScore(pair: PairsEntity, user: UserEntity, score: number, answers: PairAnswersEntity[]) {
-    if (score === null) return;
+    if (!score) return;
     if (!answers.some((a) => a.status === AnswersStatusesEnum.CORRECT)) {
       return null;
     }
