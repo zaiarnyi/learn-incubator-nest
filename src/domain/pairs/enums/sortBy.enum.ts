@@ -4,4 +4,5 @@ export enum SortByEnum {
   START_GAME_DATE = 'startGameDate',
   FINISH_GAME_DATE = 'finishGameDate',
   CREATED_DATE = 'createdAt',
+  ID = 'id',
 }

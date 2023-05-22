@@ -16,15 +16,15 @@ export class GetMyGamesAction extends MappingPlayerAbstract {
     const checkStatusFinish = games.every((g) => g.status === PairStatusesEnum.FINISH);
 
     if (checkStatusActive || checkStatusFinish || checkStatusPending) {
-      payload.sortBy = SortByEnum.CREATED_DATE;
+      payload.sortBy = SortByEnum.ID;
       payload.sortDirection = 'DESC';
     }
 
     if (payload.sortBy === SortByEnum.PAIR_CREATED_DATE) {
-      payload.sortBy = SortByEnum.CREATED_DATE;
+      payload.sortBy = SortByEnum.ID;
     }
   }
-  public async execute(payload: GetMyGamesDto, user: UserEntity): Promise<GetMyGamesResponse | any> {
+  public async execute(payload: GetMyGamesDto, user: UserEntity): Promise<GetMyGamesResponse> {
     const skip = (payload.pageNumber - 1) * payload.pageSize;
     await this.checkOrder(payload, user);
 
