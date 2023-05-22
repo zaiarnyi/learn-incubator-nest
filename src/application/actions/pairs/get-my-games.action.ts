@@ -16,7 +16,10 @@ export class GetMyGamesAction extends MappingPlayerAbstract {
     const checkStatusFinish = games.every((g) => g.status === PairStatusesEnum.FINISH);
 
     if (checkStatusActive || checkStatusFinish || checkStatusPending) {
-      return SortByEnum.FINISH_CREATED_DATE;
+      return SortByEnum.CREATED_DATE;
+    }
+    if (payload.sortBy === SortByEnum.PAIR_CREATED_DATE) {
+      return SortByEnum.CREATED_DATE;
     }
     return payload.sortBy;
   }
