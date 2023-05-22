@@ -59,7 +59,6 @@ export class MappingPlayerAbstract {
       },
       questions: this.mappingQuestions(pair.questions.sort((a, b) => a.id - b.id)),
       pairCreatedDate: pair.createdAt,
-      finishGameDate: pair.finishGameDate ?? new Date(),
     });
   }
   public async mappingForPendingStatus(pair: PairsEntity): Promise<GetCurrentPairResponse> {
