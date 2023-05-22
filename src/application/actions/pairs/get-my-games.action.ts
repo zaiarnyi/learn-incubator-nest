@@ -9,7 +9,7 @@ import { SortByEnum } from '../../../domain/pairs/enums/sortBy.enum';
 
 @Injectable()
 export class GetMyGamesAction extends MappingPlayerAbstract {
-  private async checkOrder(payload: GetMyGamesDto, user: UserEntity): Promise<SortByEnum> {
+  private async checkOrder(payload: GetMyGamesDto, user: UserEntity) {
     const games = await this.repository.getGamesForUser(user);
     const checkStatusPending = games.every((g) => g.status === PairStatusesEnum.PENDING_SECOND_PLAYER);
     const checkStatusActive = games.every((g) => g.status === PairStatusesEnum.ACTIVE);
@@ -18,12 +18,10 @@ export class GetMyGamesAction extends MappingPlayerAbstract {
     if (checkStatusActive || checkStatusFinish || checkStatusPending) {
       payload.sortBy = SortByEnum.CREATED_DATE;
       payload.sortDirection = 'DESC';
-      return;
     }
+
     if (payload.sortBy === SortByEnum.PAIR_CREATED_DATE) {
       payload.sortBy = SortByEnum.CREATED_DATE;
-      payload.sortDirection = 'DESC';
-      return;
     }
   }
   public async execute(payload: GetMyGamesDto, user: UserEntity): Promise<GetMyGamesResponse | any> {
