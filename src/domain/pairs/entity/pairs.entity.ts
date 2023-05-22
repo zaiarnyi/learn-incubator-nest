@@ -20,7 +20,7 @@ export class PairsEntity extends BaseEntity {
   @Column({ type: 'timestamp without time zone', nullable: true })
   finishGameDate: Date;
 
-  @Column({ collation: 'C', type: 'enum', enum: PairStatusesEnum, default: PairStatusesEnum.PENDING_SECOND_PLAYER })
+  @Column({ type: 'enum', enum: PairStatusesEnum, default: PairStatusesEnum.PENDING_SECOND_PLAYER })
   status: PairStatusesEnum;
 
   @Column({ default: 0 })
