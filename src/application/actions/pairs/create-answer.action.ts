@@ -80,6 +80,8 @@ export class CreateAnswerAction {
     //   console.log(JSON.stringify(activeGame.questions, null, 2), 'ForbiddenException');
     //   throw new NotFoundException();
     // }
+    console.log(currentQuestion.correctAnswers, 'currentQuestion.correctAnswers');
+    console.log(answer, 'answer');
     const isCorrectAnswer = currentQuestion.correctAnswers.includes(answer) ?? false;
 
     const userAnswer = new PairAnswersEntity();

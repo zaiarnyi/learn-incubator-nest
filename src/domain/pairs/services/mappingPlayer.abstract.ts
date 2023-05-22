@@ -22,7 +22,7 @@ export class MappingPlayerAbstract {
     if (!questions?.length) return null;
     return questions.map((item) => ({ ...item, id: item.id.toString() }));
   }
-  private async mappingAnswers(user: UserEntity, pair: PairsEntity): Promise<AnswerResponse[] | null> {
+  private async mappingAnswers(user: UserEntity, pair: PairsEntity): Promise<AnswerResponse[]> {
     const answersForUser = await this.answerRepository.getPairByUserAndId(user.id, pair.id);
 
     if (!answersForUser.length) return [];
@@ -40,7 +40,12 @@ export class MappingPlayerAbstract {
     const counter = answers.filter((item) => item.answerStatus === AnswersStatusesEnum.CORRECT);
     const additionalScore = isAddAdditionalScore ? 1 : 0;
 
-    console.log(answers.length, additionalScore, '======scoreResult');
+    console.log(
+      answers.length,
+      additionalScore,
+      '======scoreResult',
+      answers.map((item) => item.answerStatus),
+    );
 
     return counter.length + additionalScore;
   }
