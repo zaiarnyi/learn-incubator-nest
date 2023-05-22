@@ -99,7 +99,6 @@ export class QueryPairsRepository {
         }),
       )
       .orderBy(`p."${payload.sortBy}"`, payload.sortDirection)
-      .addOrderBy(`p."createdAt"`, 'DESC')
       .offset(offset)
       .getManyAndCount();
   }
