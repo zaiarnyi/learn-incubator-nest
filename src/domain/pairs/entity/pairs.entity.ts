@@ -14,10 +14,10 @@ export class PairsEntity extends BaseEntity {
   @JoinColumn()
   secondPlayer: UserEntity;
 
-  @Column({ collation: 'C', type: 'timestamp without time zone', nullable: true })
+  @Column({ type: 'timestamp without time zone', nullable: true })
   startGameDate: Date;
 
-  @Column({ collation: 'C', type: 'timestamp without time zone', nullable: true })
+  @Column({ type: 'timestamp without time zone', nullable: true })
   finishGameDate: Date;
 
   @Column({ collation: 'C', type: 'enum', enum: PairStatusesEnum, default: PairStatusesEnum.PENDING_SECOND_PLAYER })
