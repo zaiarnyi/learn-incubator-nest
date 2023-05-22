@@ -14,11 +14,10 @@ export class GetMyGamesAction extends MappingPlayerAbstract {
     const checkStatusPending = games.every((g) => g.status === PairStatusesEnum.PENDING_SECOND_PLAYER);
     const checkStatusActive = games.every((g) => g.status === PairStatusesEnum.ACTIVE);
     const checkStatusFinish = games.every((g) => g.status === PairStatusesEnum.FINISH);
-    console.log(
-      checkStatusFinish,
-      'checkStatusFinish',
-      games.map((item) => item.status),
-    );
+
+    if (payload.sortBy === SortByEnum.PAIR_CREATED_DATE) {
+      payload.sortBy = SortByEnum.ID;
+    }
     if (payload.sortBy === SortByEnum.STATUS && (checkStatusActive || checkStatusFinish || checkStatusPending)) {
       payload.sortBy = SortByEnum.ID;
       payload.sortDirection = 'DESC';
@@ -27,10 +26,6 @@ export class GetMyGamesAction extends MappingPlayerAbstract {
     if (payload.sortBy === SortByEnum.STATUS && payload.sortDirection === 'ASC') {
       payload.sortBy = SortByEnum.ID;
       payload.sortDirection = 'DESC';
-    }
-
-    if (payload.sortBy === SortByEnum.PAIR_CREATED_DATE) {
-      payload.sortBy = SortByEnum.ID;
     }
   }
   public async execute(payload: GetMyGamesDto, user: UserEntity): Promise<GetMyGamesResponse> {
