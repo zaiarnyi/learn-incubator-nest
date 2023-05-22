@@ -5,7 +5,7 @@ import { Transform, Type } from 'class-transformer';
 export class GetMyGamesDto {
   @IsOptional()
   @IsEnum(SortByEnum)
-  sortBy: SortByEnum;
+  sortBy: SortByEnum = SortByEnum.CREATED_DATE;
 
   @IsOptional()
   @IsEnum(['desc', 'asc', 'DESC', 'ASC'])
