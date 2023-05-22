@@ -74,7 +74,7 @@ export class CreateAnswerAction {
     }
 
     const currentQuestion = activeGame.questions[countOfAnswersPlayer];
-    console.log(countOfAnswersPlayer, '===', currentQuestion);
+
     // if (!currentQuestion || !Object.keys(currentQuestion).length) {
     //   console.log(countOfAnswersPlayer, 'countOfAnswersPlayer');
     //   console.log(JSON.stringify(activeGame.questions, null, 2), 'ForbiddenException');
@@ -100,9 +100,9 @@ export class CreateAnswerAction {
     //   await this.additionalScore(activeGame, user, playerScore, [...answersByPairId, saved]);
     // }
     //
-    // if ([...answersByPairId, saved].length >= 10) {
-    //   await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
-    // }
+    if ([...answersByPairId, saved].length >= 10) {
+      await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
+    }
     return plainToClass(AnswerResponse, {
       addedAt: saved.addedAt,
       answerStatus: saved.status,

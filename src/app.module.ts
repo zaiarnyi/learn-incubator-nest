@@ -56,10 +56,10 @@ import { join } from 'path';
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
     },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: LoggerInterceptor,
-    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: LoggerInterceptor,
+    // },
   ],
 })
 export class AppModule {}
