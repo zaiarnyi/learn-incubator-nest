@@ -29,7 +29,7 @@ export class ConnectionPairAction {
     if (!pair) return null;
 
     if (pair.firstPlayer.id === user.id) {
-      return pair;
+      throw new ForbiddenException();
     }
 
     pair.secondPlayer = user;
@@ -41,12 +41,14 @@ export class ConnectionPairAction {
   }
 
   public async execute(user: UserEntity): Promise<GetCurrentPairResponse | any> {
+    console.log({ user });
     const hasActiveGame = await this.repository.getActiveGameByUserId(user);
+    console.log({ hasActiveGame });
     if (hasActiveGame) {
       throw new ForbiddenException();
     }
     const checkPendingStatus = await this.checkPendingStatus(user);
-
+    console.log({ checkPendingStatus });
     if (checkPendingStatus && checkPendingStatus.status === PairStatusesEnum.ACTIVE) {
       return this.mapping.mappingForActiveStatus(checkPendingStatus);
     }
