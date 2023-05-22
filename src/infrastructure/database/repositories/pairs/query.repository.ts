@@ -78,7 +78,6 @@ export class QueryPairsRepository {
       .createQueryBuilder('p')
       .leftJoinAndSelect('p.firstPlayer', 'fp')
       .leftJoinAndSelect('p.secondPlayer', 'sp')
-      .leftJoinAndSelect('p.questions', 'questions')
       .where(
         new Brackets((qb) => {
           qb.where('fp.id = :id', { id: user.id }).orWhere('sp.id = :id', { id: user.id });

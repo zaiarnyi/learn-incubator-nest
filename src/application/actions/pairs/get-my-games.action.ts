@@ -24,6 +24,11 @@ export class GetMyGamesAction extends MappingPlayerAbstract {
       payload.sortDirection = 'DESC';
     }
 
+    if (payload.sortBy === SortByEnum.STATUS && payload.sortDirection === 'ASC') {
+      payload.sortBy = SortByEnum.ID;
+      payload.sortDirection = 'DESC';
+    }
+
     if (payload.sortBy === SortByEnum.PAIR_CREATED_DATE) {
       payload.sortBy = SortByEnum.ID;
     }
