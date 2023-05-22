@@ -38,7 +38,6 @@ export class CreateAnswerAction {
   }
 
   private checkPlayer(activeGame: PairsEntity, user: UserEntity): { isSecondPlayer: boolean; isFirstPlayer: boolean } {
-    console.log(activeGame, 'activeGame-checkPlayer');
     const isFirstPlayer = activeGame.firstPlayer.id === user.id;
     const isSecondPlayer = activeGame.secondPlayer.id === user.id;
 
@@ -75,12 +74,12 @@ export class CreateAnswerAction {
     }
 
     const currentQuestion = activeGame.questions[countOfAnswersPlayer];
-
-    if (!currentQuestion || !Object.keys(currentQuestion).length) {
-      console.log(countOfAnswersPlayer, 'countOfAnswersPlayer');
-      console.log(JSON.stringify(activeGame.questions, null, 2), 'ForbiddenException');
-      throw new NotFoundException();
-    }
+    console.log(countOfAnswersPlayer, '===', currentQuestion);
+    // if (!currentQuestion || !Object.keys(currentQuestion).length) {
+    //   console.log(countOfAnswersPlayer, 'countOfAnswersPlayer');
+    //   console.log(JSON.stringify(activeGame.questions, null, 2), 'ForbiddenException');
+    //   throw new NotFoundException();
+    // }
     const isCorrectAnswer = currentQuestion.correctAnswers.includes(answer) ?? false;
 
     const userAnswer = new PairAnswersEntity();
@@ -92,13 +91,18 @@ export class CreateAnswerAction {
     const saved = await this.mainAnswerPairRepository.save(userAnswer);
 
     const playerScore = await this.plusScore(activeGame, user, userAnswer);
-    if (countOfAnswersPlayer === 4 && answersByPairId.length <= 8) {
-      await this.additionalScore(activeGame, user, playerScore, [...answersByPairId, saved]);
-    }
 
-    if ([...answersByPairId, saved].length >= 10) {
-      await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
-    }
+    // const answers = [...answersByPairId, saved];
+    // const answersForUser = answers.filter((item) => item.user.id === user.id);
+
+    // if(answersForUser.length === 5 || )
+    // if (countOfAnswersPlayer === 4 && answersByPairId.length <= 8) {
+    //   await this.additionalScore(activeGame, user, playerScore, [...answersByPairId, saved]);
+    // }
+    //
+    // if ([...answersByPairId, saved].length >= 10) {
+    //   await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
+    // }
     return plainToClass(AnswerResponse, {
       addedAt: saved.addedAt,
       answerStatus: saved.status,
