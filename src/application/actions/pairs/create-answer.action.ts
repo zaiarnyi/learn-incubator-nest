@@ -95,9 +95,9 @@ export class CreateAnswerAction {
     const answers = [...answersByPairId, saved];
     const answersForUser = answers.filter((item) => item.user.id === user.id);
 
-    if (answersForUser.length === 5 && answers.length <= 9) {
-      await this.additionalScore(activeGame, user, playerScore, [...answersByPairId, saved]);
-    }
+    // if (answersForUser.length === 5 && answers.length <= 9) {
+    //   await this.additionalScore(activeGame, user, playerScore, answersForUser);
+    // }
 
     if (answers.length >= 10) {
       await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
