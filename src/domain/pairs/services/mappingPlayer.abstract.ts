@@ -26,25 +26,21 @@ export class MappingPlayerAbstract {
     const answersForUser = await this.answerRepository.getPairByUserAndId(user.id, pair.id);
 
     if (!answersForUser.length) return [];
-    const questions = pair.questions.slice(0, answersForUser.length);
 
-    if (!questions.length) return [];
-
-    return questions.map((item, i) => {
+    return answersForUser.map((item, i) => {
       return plainToClass(AnswerResponse, {
-        questionId: item.id.toString(),
-        answerStatus: answersForUser[i].status,
-        addedAt: answersForUser[i].addedAt,
+        questionId: item.question.id.toString(),
+        answerStatus: item.status,
+        addedAt: item.addedAt,
       });
     });
   }
 
   private scoreResult(answers: AnswerResponse[], isAddAdditionalScore: boolean): number {
     const counter = answers.filter((item) => item.answerStatus === AnswersStatusesEnum.CORRECT);
-    // const additionalScore = isAddAdditionalScore ? 1 : 0;
-    const additionalScore = 0;
+    const additionalScore = isAddAdditionalScore ? 1 : 0;
 
-    console.log(answers, isAddAdditionalScore ? 1 : 0, '======');
+    console.log(answers.length, additionalScore, '======scoreResult');
 
     return counter.length + additionalScore;
   }

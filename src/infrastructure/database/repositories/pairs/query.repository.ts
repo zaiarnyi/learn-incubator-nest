@@ -19,7 +19,6 @@ export class QueryPairsRepository {
   }
 
   async getActiveGameByUserId(user: UserEntity): Promise<boolean> {
-    console.log(await this.repository.find({ relations: ['firstPlayer', 'secondPlayer', 'questions'] }), 'all games');
     return this.repository
       .createQueryBuilder('p')
       .leftJoin('p.firstPlayer', 'fp')

@@ -98,6 +98,11 @@ export class CreateAnswerAction {
     // if (answersForUser.length === 5 && answers.length <= 9) {
     //   await this.additionalScore(activeGame, user, playerScore, answersForUser);
     // }
+    console.log(
+      answersForUser.length === 5,
+      !activeGame.playerFirstFinish,
+      answersForUser.some((a) => a.status === AnswersStatusesEnum.CORRECT, '1=1=1=1=1=1=1==1==1'),
+    );
     if (
       answersForUser.length === 5 &&
       !activeGame.playerFirstFinish &&
