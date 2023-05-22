@@ -99,7 +99,7 @@ export class CreateAnswerAction {
     const answers = [...answersByPairId, saved];
     const answersForUser = answers.filter((item) => item.user.id === user.id);
 
-    if (answersForUser.length === 5 && answers.length <= 9) {
+    if (answersForUser.length === 5 && answers.length < 10) {
       await this.additionalScore(activeGame, user, playerScore, answersForUser);
     }
     // console.log(
