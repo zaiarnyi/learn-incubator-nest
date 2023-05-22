@@ -14,13 +14,13 @@ export class PairsEntity extends BaseEntity {
   @JoinColumn()
   secondPlayer: UserEntity;
 
-  @Column({ type: 'timestamp without time zone', nullable: true })
+  @Column({ collation: 'C', type: 'timestamp without time zone', nullable: true })
   startGameDate: Date;
 
-  @Column({ type: 'timestamp without time zone', nullable: true })
+  @Column({ collation: 'C', type: 'timestamp without time zone', nullable: true })
   finishGameDate: Date;
 
-  @Column({ type: 'enum', enum: PairStatusesEnum, default: PairStatusesEnum.PENDING_SECOND_PLAYER })
+  @Column({ collation: 'C', type: 'enum', enum: PairStatusesEnum, default: PairStatusesEnum.PENDING_SECOND_PLAYER })
   status: PairStatusesEnum;
 
   @Column({ default: 0 })
@@ -32,7 +32,4 @@ export class PairsEntity extends BaseEntity {
   @ManyToMany(() => QuizEntity, (quiz) => quiz.id, { nullable: true })
   @JoinTable()
   questions: QuizEntity[];
-
-  @Column({ nullable: true })
-  playerFirstFinish: number;
 }
