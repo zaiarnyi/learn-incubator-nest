@@ -29,7 +29,7 @@ export class ConnectionPairAction {
     if (!pair) return null;
 
     if (pair.firstPlayer.id === user.id) {
-      throw new ForbiddenException();
+      return pair;
     }
 
     pair.secondPlayer = user;
@@ -45,14 +45,14 @@ export class ConnectionPairAction {
     if (hasActiveGame) {
       throw new ForbiddenException();
     }
-    const hasFirstPlayer = await this.checkPendingStatus(user);
+    const checkPendingStatus = await this.checkPendingStatus(user);
 
-    if (hasFirstPlayer && hasFirstPlayer.status === PairStatusesEnum.ACTIVE) {
-      return this.mapping.mappingForActiveStatus(hasFirstPlayer);
+    if (checkPendingStatus && checkPendingStatus.status === PairStatusesEnum.ACTIVE) {
+      return this.mapping.mappingForActiveStatus(checkPendingStatus);
     }
 
-    if (hasFirstPlayer && hasFirstPlayer.status === PairStatusesEnum.PENDING_SECOND_PLAYER) {
-      return this.mapping.mappingForPendingStatus(hasFirstPlayer);
+    if (checkPendingStatus && checkPendingStatus.status === PairStatusesEnum.PENDING_SECOND_PLAYER) {
+      return this.mapping.mappingForPendingStatus(checkPendingStatus);
     }
 
     const createPair = await this.createRoom(user);
