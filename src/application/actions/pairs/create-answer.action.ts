@@ -47,7 +47,7 @@ export class CreateAnswerAction {
 
   private async additionalScore(pair: PairsEntity, user: UserEntity, score: number, answers: PairAnswersEntity[]) {
     if (!score) return;
-    if (!answers.some((a) => a.status === AnswersStatusesEnum.CORRECT)) {
+    if (answers.every((a) => a.status === AnswersStatusesEnum.INCORRECT)) {
       return null;
     }
     const { isFirstPlayer, isSecondPlayer } = this.checkPlayer(pair, user);
