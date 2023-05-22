@@ -14,8 +14,12 @@ export class GetMyGamesAction extends MappingPlayerAbstract {
     const checkStatusPending = games.every((g) => g.status === PairStatusesEnum.PENDING_SECOND_PLAYER);
     const checkStatusActive = games.every((g) => g.status === PairStatusesEnum.ACTIVE);
     const checkStatusFinish = games.every((g) => g.status === PairStatusesEnum.FINISH);
-
-    if (checkStatusActive || checkStatusFinish || checkStatusPending) {
+    console.log(
+      checkStatusFinish,
+      'checkStatusFinish',
+      games.map((item) => item.status),
+    );
+    if (payload.sortBy === SortByEnum.STATUS && (checkStatusActive || checkStatusFinish || checkStatusPending)) {
       payload.sortBy = SortByEnum.ID;
       payload.sortDirection = 'DESC';
     }
