@@ -53,12 +53,13 @@ export class MappingPlayerAbstract {
   public async mappingForActiveStatus(pair: PairsEntity): Promise<GetCurrentPairResponse> {
     const answersForFirstPlayer = await this.mappingAnswers(pair.firstPlayer, pair);
     const answersForSecondPlayer = await this.mappingAnswers(pair.secondPlayer, pair);
-    const scoreForFirstPlayer = this.scoreResult(answersForFirstPlayer, pair.playerFirstFinish === pair.firstPlayer.id);
-    const scoreForSecondPlayer = this.scoreResult(
-      answersForFirstPlayer,
-      pair.playerFirstFinish === pair.secondPlayer.id,
-    );
-
+    // const scoreForFirstPlayer = this.scoreResult(answersForFirstPlayer, pair.playerFirstFinish === pair.firstPlayer.id);
+    // const scoreForSecondPlayer = this.scoreResult(
+    //   answersForFirstPlayer,
+    //   pair.playerFirstFinish === pair.secondPlayer.id,
+    // );
+    console.log(pair.scoreFirstPlayer, 'pair.scoreFirstPlayer');
+    console.log(pair.scoreSecondPlayer, 'pair.scoreSecondPlayer');
     return plainToClass(GetCurrentPairResponse, {
       ...pair,
       id: pair.id.toString(),
@@ -67,7 +68,7 @@ export class MappingPlayerAbstract {
           ...pair.firstPlayer,
           id: pair.firstPlayer.id.toString(),
         },
-        score: scoreForFirstPlayer,
+        score: pair.scoreFirstPlayer,
         answers: answersForFirstPlayer,
       },
       secondPlayerProgress: {
@@ -75,7 +76,7 @@ export class MappingPlayerAbstract {
           ...pair.secondPlayer,
           id: pair.secondPlayer.id.toString(),
         },
-        score: scoreForSecondPlayer,
+        score: pair.scoreSecondPlayer,
         answers: answersForSecondPlayer,
       },
       questions: this.mappingQuestions(pair.questions),

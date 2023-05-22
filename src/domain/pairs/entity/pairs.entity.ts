@@ -23,11 +23,11 @@ export class PairsEntity extends BaseEntity {
   @Column({ type: 'enum', enum: PairStatusesEnum, default: PairStatusesEnum.PENDING_SECOND_PLAYER })
   status: PairStatusesEnum;
 
-  // @Column({ type: 'float', default: 0 })
-  // scoreFirstPlayer: number;
-  //
-  // @Column({ type: 'float', default: 0 })
-  // scoreSecondPlayer: number;
+  @Column({ default: 0 })
+  scoreFirstPlayer: number;
+
+  @Column({ default: 0 })
+  scoreSecondPlayer: number;
 
   @ManyToMany(() => QuizEntity, (quiz) => quiz.id, { nullable: true })
   @JoinTable()

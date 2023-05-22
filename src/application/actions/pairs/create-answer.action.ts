@@ -24,9 +24,10 @@ export class CreateAnswerAction {
   ) {}
 
   private async plusScore(activeGame: PairsEntity, user: UserEntity, userAnswer: PairAnswersEntity): Promise<number> {
-    const { isFirstPlayer } = this.checkPlayer(activeGame, user);
+    const { isFirstPlayer, isSecondPlayer } = this.checkPlayer(activeGame, user);
     const isCorrect = userAnswer.status === AnswersStatusesEnum.CORRECT;
-    const detectPlayer = isFirstPlayer ? 'scoreFirstPlayer' : 'scoreSecondPlayer';
+    const detectPlayer = isFirstPlayer ? 'scoreFirstPlayer' : isSecondPlayer ? 'scoreSecondPlayer' : null;
+    if (detectPlayer) return;
 
     if (!isCorrect) {
       return activeGame[detectPlayer];
@@ -45,6 +46,7 @@ export class CreateAnswerAction {
   }
 
   private async additionalScore(pair: PairsEntity, user: UserEntity, score: number, answers: PairAnswersEntity[]) {
+    if (score === null) return;
     if (!answers.some((a) => a.status === AnswersStatusesEnum.CORRECT)) {
       return null;
     }
@@ -91,28 +93,28 @@ export class CreateAnswerAction {
     userAnswer.question = currentQuestion;
 
     const saved = await this.mainAnswerPairRepository.save(userAnswer);
-
-    // const playerScore = await this.plusScore(activeGame, user, userAnswer);
+    console.log(saved.status, 'new PairAnswersEntity()');
+    const playerScore = await this.plusScore(activeGame, user, userAnswer);
 
     const answers = [...answersByPairId, saved];
     const answersForUser = answers.filter((item) => item.user.id === user.id);
 
-    // if (answersForUser.length === 5 && answers.length <= 9) {
-    //   await this.additionalScore(activeGame, user, playerScore, answersForUser);
-    // }
-    console.log(
-      answersForUser.length === 5,
-      !activeGame.playerFirstFinish,
-      answersForUser.some((a) => a.status === AnswersStatusesEnum.CORRECT, '1=1=1=1=1=1=1==1==1'),
-    );
-    if (
-      answersForUser.length === 5 &&
-      !activeGame.playerFirstFinish &&
-      answersForUser.some((a) => a.status === AnswersStatusesEnum.CORRECT)
-    ) {
-      console.log(JSON.stringify(activeGame, null, 2), 'activeGame');
-      await this.mainPairRepository.setFinishFirstUser(activeGame.id, user.id);
+    if (answersForUser.length === 5 && answers.length <= 9) {
+      await this.additionalScore(activeGame, user, playerScore, answersForUser);
     }
+    // console.log(
+    //   answersForUser.length === 5,
+    //   !activeGame.playerFirstFinish,
+    //   answersForUser.some((a) => a.status === AnswersStatusesEnum.CORRECT, '1=1=1=1=1=1=1==1==1'),
+    // );
+    // if (
+    //   answersForUser.length === 5 &&
+    //   !activeGame.playerFirstFinish &&
+    //   answersForUser.some((a) => a.status === AnswersStatusesEnum.CORRECT)
+    // ) {
+    //   console.log(JSON.stringify(activeGame, null, 2), 'activeGame');
+    //   await this.mainPairRepository.setFinishFirstUser(activeGame.id, user.id);
+    // }
 
     if (answers.length >= 10) {
       await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
