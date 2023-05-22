@@ -27,7 +27,7 @@ export class GetMyGamesAction extends MappingPlayerAbstract {
     const [pairs, totalCount] = await this.repository.getMyGames(payload, user, skip);
     const pagesCount = Math.ceil(totalCount / payload.pageSize);
 
-    const items = pairs.map((item) => {
+    const promises = pairs.map(async (item) => {
       if (item.status === PairStatusesEnum.PENDING_SECOND_PLAYER) {
         return this.mappingForPendingStatus(item);
       }
@@ -38,7 +38,7 @@ export class GetMyGamesAction extends MappingPlayerAbstract {
       page: payload.pageNumber,
       pageSize: payload.pageSize,
       totalCount,
-      items,
+      items: await Promise.all(promises),
     });
   }
 }

@@ -98,7 +98,7 @@ export class QueryPairsRepository {
           qb.where('fp.id = :id', { id: user.id }).orWhere('sp.id = :id', { id: user.id });
         }),
       )
-      .orderBy(`${payload.sortBy}`, payload.sortDirection)
+      .orderBy(`p."${payload.sortBy}"`, payload.sortDirection)
       .offset(offset)
       .getManyAndCount();
   }
