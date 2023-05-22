@@ -27,15 +27,11 @@ export class CreateAnswerAction {
     const { isFirstPlayer, isSecondPlayer } = this.checkPlayer(activeGame, user);
     const isCorrect = userAnswer.status === AnswersStatusesEnum.CORRECT;
     const detectPlayer = isFirstPlayer ? 'scoreFirstPlayer' : isSecondPlayer ? 'scoreSecondPlayer' : null;
-    if (!detectPlayer) return;
+    if (!detectPlayer || !isCorrect) return;
 
-    if (!isCorrect) {
-      return activeGame[detectPlayer];
-    }
     const addScore = activeGame[detectPlayer] + 1;
 
     await this.mainPairRepository.setScore(activeGame.id, detectPlayer, addScore);
-    return addScore;
   }
 
   private checkPlayer(activeGame: PairsEntity, user: UserEntity): { isSecondPlayer: boolean; isFirstPlayer: boolean } {
@@ -78,8 +74,6 @@ export class CreateAnswerAction {
 
     const currentQuestion = activeGame.questions[countOfAnswersPlayer];
 
-    console.log(currentQuestion.correctAnswers, 'currentQuestion.correctAnswers');
-    console.log(answer, 'answer');
     const isCorrectAnswer = currentQuestion.correctAnswers.includes(answer) ?? false;
 
     const userAnswer = new PairAnswersEntity();
@@ -89,18 +83,15 @@ export class CreateAnswerAction {
     userAnswer.question = currentQuestion;
 
     const saved = await this.mainAnswerPairRepository.save(userAnswer);
-    console.log(saved.status, 'new PairAnswersEntity()');
-    const playerScore = await this.plusScore(activeGame, user, userAnswer);
+    await this.plusScore(activeGame, user, userAnswer);
 
     const answers = [...answersByPairId, saved];
 
-    // if (answersForUser.length === 5 && answers.length < 10) {
-    //   await this.additionalScore(activeGame, user, playerScore, answersForUser);
-    // }
-
     if (answers.length >= 10) {
-      await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
-      await this.additionalScore(user, answers, activeGame);
+      await Promise.all([
+        this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH),
+        this.additionalScore(user, answers, activeGame),
+      ]);
     }
     return plainToClass(AnswerResponse, {
       addedAt: saved.addedAt,

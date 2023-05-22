@@ -9,7 +9,6 @@ import { QueryPairsRepository } from '../../../infrastructure/database/repositor
 import { UserEntity } from '../../users/entities/user.entity';
 import { QueryAnswerRepository } from '../../../infrastructure/database/repositories/pairs/answer/query-answer.repository';
 import { QuizEntity } from '../../sa/quiz/entities/quiz.entity';
-import { AnswersStatusesEnum } from '../enums/answers-statuses.enum';
 
 @Injectable()
 export class MappingPlayerAbstract {
@@ -36,30 +35,9 @@ export class MappingPlayerAbstract {
     });
   }
 
-  private scoreResult(answers: AnswerResponse[], isAddAdditionalScore: boolean): number {
-    const counter = answers.filter((item) => item.answerStatus === AnswersStatusesEnum.CORRECT);
-    const additionalScore = isAddAdditionalScore ? 1 : 0;
-
-    console.log(
-      answers.length,
-      additionalScore,
-      '======scoreResult',
-      answers.map((item) => item.answerStatus),
-    );
-
-    return counter.length + additionalScore;
-  }
-
   public async mappingForActiveStatus(pair: PairsEntity): Promise<GetCurrentPairResponse> {
     const answersForFirstPlayer = await this.mappingAnswers(pair.firstPlayer, pair);
     const answersForSecondPlayer = await this.mappingAnswers(pair.secondPlayer, pair);
-    // const scoreForFirstPlayer = this.scoreResult(answersForFirstPlayer, pair.playerFirstFinish === pair.firstPlayer.id);
-    // const scoreForSecondPlayer = this.scoreResult(
-    //   answersForFirstPlayer,
-    //   pair.playerFirstFinish === pair.secondPlayer.id,
-    // );
-    console.log(pair.scoreFirstPlayer, 'pair.scoreFirstPlayer');
-    console.log(pair.scoreSecondPlayer, 'pair.scoreSecondPlayer');
     return plainToClass(GetCurrentPairResponse, {
       ...pair,
       id: pair.id.toString(),

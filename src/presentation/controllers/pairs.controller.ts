@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -8,6 +7,7 @@ import {
   NotFoundException,
   Param,
   Post,
+  Query,
   Req,
   UseGuards,
 } from '@nestjs/common';
@@ -18,6 +18,9 @@ import { UserEntity } from '../../domain/users/entities/user.entity';
 import { GetMyCurrentAction } from '../../application/actions/pairs/get-my-current.action';
 import { GetPairByIdAction } from '../../application/actions/pairs/get-pair-by-id.action';
 import { CreateAnswerAction } from '../../application/actions/pairs/create-answer.action';
+import { GetMyGamesRequest } from '../requests/pairs/get-my-games.request';
+import { GetMyGamesResponse } from '../responses/pairs/get-my-games.response';
+import { GetMyGamesAction } from '../../application/actions/pairs/get-my-games.action';
 
 @Controller('pair-game-quiz/pairs')
 @UseGuards(JwtAuthGuard)
@@ -27,7 +30,17 @@ export class PairsController {
     @Inject(GetMyCurrentAction) private readonly getMyCurrentAction: GetMyCurrentAction,
     @Inject(GetPairByIdAction) private readonly getPairByIdAction: GetPairByIdAction,
     @Inject(CreateAnswerAction) private readonly createAnswerAction: CreateAnswerAction,
+    @Inject(GetMyGamesAction) private readonly getMyGamesAction: GetMyGamesAction,
   ) {}
+
+  @Get('my')
+  async getMyGames(
+    @Query() query: GetMyGamesRequest,
+    @Req() req: Request & { user: UserEntity },
+  ): Promise<GetMyGamesResponse> {
+    return this.getMyGamesAction.execute(query, req.user);
+  }
+
   @Get('my-current')
   async getMyCurrent(@Req() req: Request & { user: UserEntity }): Promise<GetCurrentPairResponse> {
     return this.getMyCurrentAction.execute(req.user);

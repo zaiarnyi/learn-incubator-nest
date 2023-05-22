@@ -4,6 +4,7 @@ import { PairsEntity } from '../../../../domain/pairs/entity/pairs.entity';
 import { Brackets, Repository } from 'typeorm';
 import { PairStatusesEnum } from '../../../../domain/pairs/enums/pair-statuses.enum';
 import { UserEntity } from '../../../../domain/users/entities/user.entity';
+import { GetMyGamesDto } from '../../../../domain/pairs/dto/get-my-games.dto';
 
 @Injectable()
 export class QueryPairsRepository {
@@ -29,15 +30,6 @@ export class QueryPairsRepository {
           qb.where('fp.id = :id', { id: user.id }).orWhere('sp.id = :id', { id: user.id });
         }),
       )
-      .getExists();
-  }
-
-  async getActiveGetForSecondPlayer(user: UserEntity): Promise<boolean> {
-    return this.repository
-      .createQueryBuilder('p')
-      .leftJoin('p.secondPlayer', 'sp')
-      .where('p.status = :status', { status: PairStatusesEnum.ACTIVE })
-      .andWhere('sp.id = :id', { id: user.id })
       .getExists();
   }
 
@@ -81,7 +73,33 @@ export class QueryPairsRepository {
       .getOne();
   }
 
-  async getPairByIdWithOutRelations(id: number): Promise<PairsEntity> {
-    return this.repository.findOneBy({ id });
+  async getGamesForUser(user: UserEntity): Promise<PairsEntity[]> {
+    return this.repository
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.firstPlayer', 'fp')
+      .leftJoinAndSelect('p.secondPlayer', 'sp')
+      .leftJoinAndSelect('p.questions', 'questions')
+      .where(
+        new Brackets((qb) => {
+          qb.where('fp.id = :id', { id: user.id }).orWhere('sp.id = :id', { id: user.id });
+        }),
+      )
+      .getMany();
+  }
+
+  async getMyGames(payload: GetMyGamesDto, user: UserEntity, offset: number): Promise<[PairsEntity[], number]> {
+    return this.repository
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.firstPlayer', 'fp')
+      .leftJoinAndSelect('p.secondPlayer', 'sp')
+      .leftJoinAndSelect('p.questions', 'questions')
+      .where(
+        new Brackets((qb) => {
+          qb.where('fp.id = :id', { id: user.id }).orWhere('sp.id = :id', { id: user.id });
+        }),
+      )
+      .orderBy(`${payload.sortBy}`, payload.sortDirection)
+      .offset(offset)
+      .getManyAndCount();
   }
 }

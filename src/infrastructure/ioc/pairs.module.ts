@@ -13,6 +13,7 @@ import { CreateAnswerAction } from '../../application/actions/pairs/create-answe
 import { QueryAnswerRepository } from '../database/repositories/pairs/answer/query-answer.repository';
 import { AnswerPairRepository } from '../database/repositories/pairs/answer/answer-pair.repository';
 import { MappingPlayerAbstract } from '../../domain/pairs/services/mappingPlayer.abstract';
+import { GetMyGamesAction } from '../../application/actions/pairs/get-my-games.action';
 
 @Module({
   imports: [TypeOrmModule.forFeature([PairsEntity, PairAnswersEntity]), SaQuizModule],
@@ -27,6 +28,7 @@ import { MappingPlayerAbstract } from '../../domain/pairs/services/mappingPlayer
     CreateAnswerAction,
     QueryAnswerRepository,
     AnswerPairRepository,
+    GetMyGamesAction,
   ],
 })
 export class PairsModule {}
