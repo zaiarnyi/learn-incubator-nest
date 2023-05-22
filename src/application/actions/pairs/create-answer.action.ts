@@ -1,4 +1,4 @@
-import { ForbiddenException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, Logger } from '@nestjs/common';
 import { AnswerResponse } from '../../../presentation/responses/pairs/get-current-pair.response';
 import { UserEntity } from '../../../domain/users/entities/user.entity';
 import { QueryPairsRepository } from '../../../infrastructure/database/repositories/pairs/query.repository';
@@ -45,15 +45,16 @@ export class CreateAnswerAction {
     return { isFirstPlayer, isSecondPlayer };
   }
 
-  private async additionalScore(pair: PairsEntity, user: UserEntity, score: number, answers: PairAnswersEntity[]) {
-    if (!score) return;
-    if (answers.every((a) => a.status === AnswersStatusesEnum.INCORRECT)) {
+  private async additionalScore(user: UserEntity, answers: PairAnswersEntity[], pair: PairsEntity) {
+    const answersForUser = answers.filter((item) => item.user.id !== user.id);
+    if (answersForUser.every((a) => a.status === AnswersStatusesEnum.INCORRECT)) {
       return null;
     }
     const { isFirstPlayer, isSecondPlayer } = this.checkPlayer(pair, user);
     if (!isFirstPlayer && !isSecondPlayer) return;
 
-    const detectPlayer = isFirstPlayer ? 'scoreFirstPlayer' : 'scoreSecondPlayer';
+    const detectPlayer = !isFirstPlayer ? 'scoreFirstPlayer' : 'scoreSecondPlayer';
+    const score = pair[detectPlayer];
     await this.mainPairRepository.setScore(pair.id, detectPlayer, score + 1);
   }
 
@@ -77,11 +78,6 @@ export class CreateAnswerAction {
 
     const currentQuestion = activeGame.questions[countOfAnswersPlayer];
 
-    // if (!currentQuestion || !Object.keys(currentQuestion).length) {
-    //   console.log(countOfAnswersPlayer, 'countOfAnswersPlayer');
-    //   console.log(JSON.stringify(activeGame.questions, null, 2), 'ForbiddenException');
-    //   throw new NotFoundException();
-    // }
     console.log(currentQuestion.correctAnswers, 'currentQuestion.correctAnswers');
     console.log(answer, 'answer');
     const isCorrectAnswer = currentQuestion.correctAnswers.includes(answer) ?? false;
@@ -97,27 +93,14 @@ export class CreateAnswerAction {
     const playerScore = await this.plusScore(activeGame, user, userAnswer);
 
     const answers = [...answersByPairId, saved];
-    const answersForUser = answers.filter((item) => item.user.id === user.id);
 
-    if (answersForUser.length === 5 && answers.length < 10) {
-      await this.additionalScore(activeGame, user, playerScore, answersForUser);
-    }
-    // console.log(
-    //   answersForUser.length === 5,
-    //   !activeGame.playerFirstFinish,
-    //   answersForUser.some((a) => a.status === AnswersStatusesEnum.CORRECT, '1=1=1=1=1=1=1==1==1'),
-    // );
-    // if (
-    //   answersForUser.length === 5 &&
-    //   !activeGame.playerFirstFinish &&
-    //   answersForUser.some((a) => a.status === AnswersStatusesEnum.CORRECT)
-    // ) {
-    //   console.log(JSON.stringify(activeGame, null, 2), 'activeGame');
-    //   await this.mainPairRepository.setFinishFirstUser(activeGame.id, user.id);
+    // if (answersForUser.length === 5 && answers.length < 10) {
+    //   await this.additionalScore(activeGame, user, playerScore, answersForUser);
     // }
 
     if (answers.length >= 10) {
       await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
+      await this.additionalScore(user, answers, activeGame);
     }
     return plainToClass(AnswerResponse, {
       addedAt: saved.addedAt,
