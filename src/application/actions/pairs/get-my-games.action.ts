@@ -25,7 +25,8 @@ export class GetMyGamesAction extends MappingPlayerAbstract {
   }
   public async execute(payload: GetMyGamesDto, user: UserEntity): Promise<GetMyGamesResponse | any> {
     const skip = (payload.pageNumber - 1) * payload.pageSize;
-    payload.sortBy = await this.checkOrder(payload, user);
+    // payload.sortBy = await this.checkOrder(payload, user);
+    payload.sortBy = payload.sortBy === SortByEnum.PAIR_CREATED_DATE ? SortByEnum.CREATED_DATE : payload.sortBy;
 
     const [pairs, totalCount] = await this.repository.getMyGames(payload, user, skip);
     const pagesCount = Math.ceil(totalCount / payload.pageSize);
