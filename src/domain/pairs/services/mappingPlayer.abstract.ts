@@ -58,7 +58,7 @@ export class MappingPlayerAbstract {
         answers: answersForSecondPlayer,
       },
       questions: this.mappingQuestions(pair.questions),
-      pairCreatedDate: pair.createdAt,
+      pairCreatedDate: pair.createdAt ?? new Date(),
     });
   }
   public async mappingForPendingStatus(pair: PairsEntity): Promise<GetCurrentPairResponse> {
