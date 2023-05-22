@@ -92,15 +92,14 @@ export class CreateAnswerAction {
 
     const playerScore = await this.plusScore(activeGame, user, userAnswer);
 
-    // const answers = [...answersByPairId, saved];
-    // const answersForUser = answers.filter((item) => item.user.id === user.id);
+    const answers = [...answersByPairId, saved];
+    const answersForUser = answers.filter((item) => item.user.id === user.id);
 
-    // if(answersForUser.length === 5 || )
-    // if (countOfAnswersPlayer === 4 && answersByPairId.length <= 8) {
-    //   await this.additionalScore(activeGame, user, playerScore, [...answersByPairId, saved]);
-    // }
-    //
-    if ([...answersByPairId, saved].length >= 10) {
+    if (answersForUser.length === 5 && answers.length <= 9) {
+      await this.additionalScore(activeGame, user, playerScore, [...answersByPairId, saved]);
+    }
+
+    if (answers.length >= 10) {
       await this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH);
     }
     return plainToClass(AnswerResponse, {
