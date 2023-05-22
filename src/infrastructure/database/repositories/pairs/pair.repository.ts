@@ -19,8 +19,4 @@ export class MainPairRepository {
   async setScore(id: number, player: string, score: number) {
     return this.repository.update({ id }, { [player]: score });
   }
-
-  async setFinishFirstUser(id: number, userId: number) {
-    return this.repository.update({ id }, { playerFirstFinish: userId });
-  }
 }
