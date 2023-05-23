@@ -19,7 +19,7 @@ export class GetMyStatisticsAction {
   }
 
   private detectDiffPlayer(user: UserEntity, game: PairsEntity): DetectScorePlayerEnum {
-    if (game.secondPlayer.id === user.id) {
+    if (game.secondPlayer.id !== user.id) {
       return DetectScorePlayerEnum.SCORE_SECOND_PLAYER;
     }
     return DetectScorePlayerEnum.SCORE_FIRST_PLAYER;
@@ -49,6 +49,7 @@ export class GetMyStatisticsAction {
       } else if (item.status === PairStatusesEnum.FINISH && condition === ConditionStatistic.LOSSES) {
         return item[myPlayer] < item[diffPlayer];
       } else if (item.status === PairStatusesEnum.FINISH && condition === ConditionStatistic.DRAW) {
+        console.log(item[myPlayer], item[diffPlayer], myPlayer, diffPlayer);
         return item[myPlayer] === item[diffPlayer];
       }
     });
@@ -59,14 +60,14 @@ export class GetMyStatisticsAction {
 
     const sumScore = this.getSumScoreCurrentUser(user, games);
     const gamesCount = games.length;
-    const avgScores = parseFloat((sumScore / gamesCount).toFixed(2).replace(/\.00$/, ''));
+    const avgScore = parseFloat((sumScore / gamesCount).toFixed(2).replace(/\.00$/, ''));
     const winsCount = this.checkResultGame(user, games, ConditionStatistic.WIN);
     const lossesCount = this.checkResultGame(user, games, ConditionStatistic.LOSSES);
     const drawsCount = this.checkResultGame(user, games, ConditionStatistic.DRAW);
     console.log(
       {
         sumScore,
-        avgScores,
+        avgScore,
         gamesCount,
         winsCount,
         lossesCount,
@@ -76,7 +77,7 @@ export class GetMyStatisticsAction {
     );
     return plainToClass(GetMyStatisticsResponse, {
       sumScore,
-      avgScores,
+      avgScore,
       gamesCount,
       winsCount,
       lossesCount,
