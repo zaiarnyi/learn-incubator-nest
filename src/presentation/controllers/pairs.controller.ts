@@ -21,8 +21,10 @@ import { CreateAnswerAction } from '../../application/actions/pairs/create-answe
 import { GetMyGamesRequest } from '../requests/pairs/get-my-games.request';
 import { GetMyGamesResponse } from '../responses/pairs/get-my-games.response';
 import { GetMyGamesAction } from '../../application/actions/pairs/get-my-games.action';
+import { GetMyStatisticsResponse } from '../responses/pairs/get-my-statistics.response';
+import { GetMyStatisticsAction } from '../../application/actions/pairs/get-my-statistics.action';
 
-@Controller('pair-game-quiz/pairs')
+@Controller('pair-game-quiz')
 @UseGuards(JwtAuthGuard)
 export class PairsController {
   constructor(
@@ -31,9 +33,10 @@ export class PairsController {
     @Inject(GetPairByIdAction) private readonly getPairByIdAction: GetPairByIdAction,
     @Inject(CreateAnswerAction) private readonly createAnswerAction: CreateAnswerAction,
     @Inject(GetMyGamesAction) private readonly getMyGamesAction: GetMyGamesAction,
+    @Inject(GetMyStatisticsAction) private readonly getMyStatisticsAction: GetMyStatisticsAction,
   ) {}
 
-  @Get('my')
+  @Get('/pairs/my')
   async getMyGames(
     @Query() query: GetMyGamesRequest,
     @Req() req: Request & { user: UserEntity },
@@ -41,12 +44,12 @@ export class PairsController {
     return this.getMyGamesAction.execute(query, req.user);
   }
 
-  @Get('my-current')
+  @Get('/pairs/my-current')
   async getMyCurrent(@Req() req: Request & { user: UserEntity }): Promise<GetCurrentPairResponse> {
     return this.getMyCurrentAction.execute(req.user);
   }
 
-  @Get(':id')
+  @Get('/pairs/:id')
   async getPaisById(
     @Param('id') id: string,
     @Req() req: Request & { user: UserEntity },
@@ -57,13 +60,18 @@ export class PairsController {
     return this.getPairByIdAction.execute(Number(id), req.user);
   }
 
-  @Post('connection')
+  @Get('/users/my-statistic')
+  async getMyStatistic(@Req() req: Request & { user: UserEntity }): Promise<GetMyStatisticsResponse> {
+    return this.getMyStatisticsAction.execute(req.user);
+  }
+
+  @Post('/pairs/connection')
   @HttpCode(200)
   async connection(@Req() req: Request & { user: UserEntity }): Promise<GetCurrentPairResponse> {
     return this.connectionAction.execute(req.user);
   }
 
-  @Post('my-current/answers')
+  @Post('/pairs/my-current/answers')
   @HttpCode(200)
   async answersMyCurrentPair(
     @Body('answer') answer: string,
