@@ -5,6 +5,7 @@ import { QueryPairsRepository } from '../../../infrastructure/database/repositor
 import { plainToClass } from 'class-transformer';
 import { PairsEntity } from '../../../domain/pairs/entity/pairs.entity';
 import { ConditionStatistic, DetectScorePlayerEnum } from '../../../domain/pairs/enums/detectScorePlayer.enum';
+import { PairStatusesEnum } from '../../../domain/pairs/enums/pair-statuses.enum';
 
 @Injectable()
 export class GetMyStatisticsAction {
@@ -42,12 +43,13 @@ export class GetMyStatisticsAction {
       const myPlayer = this.detectPlayer(user, item);
       const diffPlayer = this.detectDiffPlayer(user, item);
 
-      if (condition === ConditionStatistic.WIN) {
+      if (item.status === PairStatusesEnum.FINISH && condition === ConditionStatistic.WIN) {
         return item[myPlayer] > item[diffPlayer];
-      } else if (condition === ConditionStatistic.LOSSES) {
+      } else if (item.status === PairStatusesEnum.FINISH && condition === ConditionStatistic.LOSSES) {
         return item[myPlayer] < item[diffPlayer];
+      } else if (item.status === PairStatusesEnum.PENDING_SECOND_PLAYER) {
+        return item;
       }
-      return item[myPlayer] === item[diffPlayer];
     });
     return result.length;
   }
@@ -56,7 +58,7 @@ export class GetMyStatisticsAction {
 
     const sumScore = this.getSumScoreCurrentUser(user, games);
     const gamesCount = games.length;
-    const avgScores = parseFloat((sumScore / gamesCount).toFixed(2).replace(/\.00/, ''));
+    const avgScores = parseFloat((sumScore / gamesCount).toFixed(2).replace(/\.00$/, ''));
     const winsCount = this.checkResultGame(user, games, ConditionStatistic.WIN);
     const lossesCount = this.checkResultGame(user, games, ConditionStatistic.LOSSES);
     const drawsCount = this.checkResultGame(user, games, ConditionStatistic.DRAW);
