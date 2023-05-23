@@ -19,10 +19,10 @@ export class GetMyStatisticsAction {
   }
 
   private detectDiffPlayer(user: UserEntity, game: PairsEntity): DetectScorePlayerEnum {
-    if (game.firstPlayer.id !== user.id) {
-      return DetectScorePlayerEnum.SCORE_FIRST_PLAYER;
+    if (game.secondPlayer.id === user.id) {
+      return DetectScorePlayerEnum.SCORE_SECOND_PLAYER;
     }
-    return DetectScorePlayerEnum.SCORE_SECOND_PLAYER;
+    return DetectScorePlayerEnum.SCORE_FIRST_PLAYER;
   }
 
   private getSumScoreCurrentUser(user: UserEntity, games: PairsEntity[]): number {
