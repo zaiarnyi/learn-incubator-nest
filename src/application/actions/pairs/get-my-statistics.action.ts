@@ -42,7 +42,7 @@ export class GetMyStatisticsAction {
     const result = games.filter((item) => {
       const myPlayer = this.detectPlayer(user, item);
       const diffPlayer = this.detectDiffPlayer(user, item);
-
+      console.log(myPlayer, diffPlayer, 'score players');
       if (item.status === PairStatusesEnum.FINISH && condition === ConditionStatistic.WIN) {
         return item[myPlayer] > item[diffPlayer];
       } else if (item.status === PairStatusesEnum.FINISH && condition === ConditionStatistic.LOSSES) {
@@ -62,7 +62,17 @@ export class GetMyStatisticsAction {
     const winsCount = this.checkResultGame(user, games, ConditionStatistic.WIN);
     const lossesCount = this.checkResultGame(user, games, ConditionStatistic.LOSSES);
     const drawsCount = this.checkResultGame(user, games, ConditionStatistic.DRAW);
-
+    console.log(
+      {
+        sumScore,
+        avgScores,
+        gamesCount,
+        winsCount,
+        lossesCount,
+        drawsCount,
+      },
+      '=====',
+    );
     return plainToClass(GetMyStatisticsResponse, {
       sumScore,
       avgScores,
