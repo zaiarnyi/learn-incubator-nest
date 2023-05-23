@@ -3,10 +3,10 @@ import { Exclude, Expose } from 'class-transformer';
 @Exclude()
 export class GetMyStatisticsResponse {
   @Expose()
-  subScore: number;
+  sumScore: number;
 
   @Expose()
-  avgScore: number;
+  avgScores: number;
 
   @Expose()
   gamesCount: number;

@@ -49,7 +49,6 @@ export class GetMyStatisticsAction {
       } else if (item.status === PairStatusesEnum.FINISH && condition === ConditionStatistic.LOSSES) {
         return item[myPlayer] < item[diffPlayer];
       } else if (item.status === PairStatusesEnum.FINISH && condition === ConditionStatistic.DRAW) {
-        console.log(item[myPlayer], item[diffPlayer], myPlayer, diffPlayer);
         return item[myPlayer] === item[diffPlayer];
       }
     });
@@ -60,24 +59,13 @@ export class GetMyStatisticsAction {
 
     const sumScore = this.getSumScoreCurrentUser(user, games);
     const gamesCount = games.length;
-    const avgScore = parseFloat((sumScore / gamesCount).toFixed(2).replace(/\.00$/, ''));
+    const avgScores = parseFloat((sumScore / gamesCount).toFixed(2).replace(/\.00$/, ''));
     const winsCount = this.checkResultGame(user, games, ConditionStatistic.WIN);
     const lossesCount = this.checkResultGame(user, games, ConditionStatistic.LOSSES);
     const drawsCount = this.checkResultGame(user, games, ConditionStatistic.DRAW);
-    console.log(
-      {
-        sumScore,
-        avgScore,
-        gamesCount,
-        winsCount,
-        lossesCount,
-        drawsCount,
-      },
-      '=====',
-    );
     return plainToClass(GetMyStatisticsResponse, {
       sumScore,
-      avgScore,
+      avgScores,
       gamesCount,
       winsCount,
       lossesCount,
