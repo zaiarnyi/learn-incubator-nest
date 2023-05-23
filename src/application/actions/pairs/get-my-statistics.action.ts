@@ -47,8 +47,8 @@ export class GetMyStatisticsAction {
         return item[myPlayer] > item[diffPlayer];
       } else if (item.status === PairStatusesEnum.FINISH && condition === ConditionStatistic.LOSSES) {
         return item[myPlayer] < item[diffPlayer];
-      } else if (item.status === PairStatusesEnum.PENDING_SECOND_PLAYER) {
-        return item;
+      } else if (item.status === PairStatusesEnum.FINISH && condition === ConditionStatistic.DRAW) {
+        return item[myPlayer] === item[diffPlayer];
       }
     });
     return result.length;
