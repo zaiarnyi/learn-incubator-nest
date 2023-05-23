@@ -27,6 +27,7 @@ export class GetMyStatisticsAction {
 
   private getSumScoreCurrentUser(user: UserEntity, games: PairsEntity[]): number {
     return games.reduce((acc, item) => {
+      console.log(item[this.detectPlayer(user, item)], this.detectPlayer(user, item), 'getSumScoreCurrentUser');
       acc += item[this.detectPlayer(user, item)];
       return acc;
     }, 0);
