@@ -23,8 +23,7 @@ export class GetUsersTopDto {
 }
 
 export class PayloadQueryDto {
-  sortBy: string;
-  sortDirection: 'ASC' | 'DESC';
+  sort: string[];
   limit: number;
-  offser: number;
+  offset: number;
 }

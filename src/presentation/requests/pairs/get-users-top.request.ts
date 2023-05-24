@@ -8,7 +8,7 @@ export class GetUsersTopRequest {
     if (Array.isArray(value)) return value;
     return [value];
   })
-  sort: string[];
+  sort: string[] = ['avgScores desc', 'sumScore desc'];
 
   @Type(() => Number)
   @IsInt()

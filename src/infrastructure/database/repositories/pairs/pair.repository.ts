@@ -34,6 +34,10 @@ export class MainPairRepository {
       .createQueryBuilder('t')
       .update(PairResultsEntity)
       .set({
+        avgScores: () =>
+          `sumScore / ((winCount + ${Number(isWin)}) + (drawCount + ${Number(isDraw)}) + (lossesCount + ${Number(
+            isLosses,
+          )})`,
         winCount: () => `winCount + ${Number(isWin)}`,
         drawCount: () => `drawCount + ${Number(isDraw)}`,
         lossesCount: () => `lossesCount + ${Number(isLosses)}`,

@@ -19,4 +19,7 @@ export class PairResultsEntity extends BaseEntity {
 
   @Column({ nullable: false, default: 0 })
   sumScore: number;
+
+  @Column({ nullable: false, default: 0 })
+  avgScores: number;
 }
