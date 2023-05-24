@@ -27,7 +27,6 @@ export class GetMyStatisticsAction {
 
   private getSumScoreCurrentUser(user: UserEntity, games: PairsEntity[]): number {
     return games.reduce((acc, item) => {
-      console.log(item[this.detectPlayer(user, item)], this.detectPlayer(user, item), 'getSumScoreCurrentUser');
       acc += item[this.detectPlayer(user, item)];
       return acc;
     }, 0);
@@ -43,7 +42,7 @@ export class GetMyStatisticsAction {
     const result = games.filter((item) => {
       const myPlayer = this.detectPlayer(user, item);
       const diffPlayer = this.detectDiffPlayer(user, item);
-      console.log(myPlayer, diffPlayer, 'score players');
+
       if (item.status === PairStatusesEnum.FINISH && condition === ConditionStatistic.WIN) {
         return item[myPlayer] > item[diffPlayer];
       } else if (item.status === PairStatusesEnum.FINISH && condition === ConditionStatistic.LOSSES) {

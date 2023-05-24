@@ -73,6 +73,15 @@ export class QueryPairsRepository {
       .getOne();
   }
 
+  async getPairsById(id: number): Promise<PairsEntity> {
+    return this.repository
+      .createQueryBuilder('p')
+      .leftJoinAndSelect('p.firstPlayer', 'fp')
+      .leftJoinAndSelect('p.secondPlayer', 'sp')
+      .where('p.id = :id', { id })
+      .getOne();
+  }
+
   async getGamesForUser(user: UserEntity): Promise<PairsEntity[]> {
     return this.repository
       .createQueryBuilder('p')

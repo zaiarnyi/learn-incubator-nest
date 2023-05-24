@@ -1,4 +1,3 @@
-import { CreateUserVo } from '../../../../domain/users/vo/create-user.vo';
 import { UserEntity } from '../../../../domain/users/entities/user.entity';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';

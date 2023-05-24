@@ -15,9 +15,11 @@ import { AnswerPairRepository } from '../database/repositories/pairs/answer/answ
 import { MappingPlayerAbstract } from '../../domain/pairs/services/mappingPlayer.abstract';
 import { GetMyGamesAction } from '../../application/actions/pairs/get-my-games.action';
 import { GetMyStatisticsAction } from '../../application/actions/pairs/get-my-statistics.action';
+import { GetUsersTopAction } from '../../application/actions/pairs/get-users-top.action';
+import { PairResultsEntity } from '../../domain/pairs/entity/pairResults.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PairsEntity, PairAnswersEntity]), SaQuizModule],
+  imports: [TypeOrmModule.forFeature([PairsEntity, PairAnswersEntity, PairResultsEntity]), SaQuizModule],
   controllers: [PairsController],
   providers: [
     MappingPlayerAbstract,
@@ -31,6 +33,8 @@ import { GetMyStatisticsAction } from '../../application/actions/pairs/get-my-st
     AnswerPairRepository,
     GetMyGamesAction,
     GetMyStatisticsAction,
+    GetUsersTopAction,
   ],
+  exports: [MainPairRepository],
 })
 export class PairsModule {}

@@ -20,6 +20,7 @@ import { BasicStrategy } from '../../domain/auth/strategies/basic.strategy';
 import { SecurityModule } from './security.module';
 import { InvalidTokensModule } from './invalidTokens.module';
 import { SaUsersModule } from './sa/users/sa-users.module';
+import { PairsModule } from './pairs.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { SaUsersModule } from './sa/users/sa-users.module';
     SecurityModule,
     InvalidTokensModule,
     forwardRef(() => SaUsersModule),
+    PairsModule,
   ],
   controllers: [AuthController],
   providers: [

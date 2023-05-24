@@ -11,6 +11,7 @@ import { PairStatusesEnum } from '../../../domain/pairs/enums/pair-statuses.enum
 import { plainToClass } from 'class-transformer';
 import { AnswerPairRepository } from '../../../infrastructure/database/repositories/pairs/answer/answer-pair.repository';
 import { QueryQuizRepository } from '../../../infrastructure/database/repositories/sa/quiz/query-quiz.repository';
+import { PairResultsEntity } from '../../../domain/pairs/entity/pairResults.entity';
 
 @Injectable()
 export class CreateAnswerAction {
@@ -39,6 +40,31 @@ export class CreateAnswerAction {
     const isSecondPlayer = activeGame.secondPlayer.id === user.id;
 
     return { isFirstPlayer, isSecondPlayer };
+  }
+
+  private async updatePairResult(pairId: number) {
+    const game = await this.repository.getPairsById(pairId);
+
+    const winIsFirstPlayer = game.scoreFirstPlayer > game.scoreSecondPlayer;
+    const drawPlayers = game.scoreFirstPlayer === game.scoreSecondPlayer;
+    const lossesIsFirstPlayers = game.scoreFirstPlayer < game.scoreSecondPlayer;
+
+    await Promise.all([
+      this.mainPairRepository.updatePlayerResults(
+        game.firstPlayer,
+        winIsFirstPlayer,
+        drawPlayers,
+        lossesIsFirstPlayers,
+        game.scoreFirstPlayer,
+      ),
+      this.mainPairRepository.updatePlayerResults(
+        game.secondPlayer,
+        !winIsFirstPlayer,
+        drawPlayers,
+        !lossesIsFirstPlayers,
+        game.scoreSecondPlayer,
+      ),
+    ]);
   }
 
   private async additionalScore(user: UserEntity, answers: PairAnswersEntity[], pair: PairsEntity) {
@@ -92,6 +118,7 @@ export class CreateAnswerAction {
         this.mainPairRepository.changeStatus(activeGame.id, PairStatusesEnum.FINISH),
         this.additionalScore(user, answers, activeGame),
       ]);
+      await this.updatePairResult(activeGame.id);
     }
     return plainToClass(AnswerResponse, {
       addedAt: saved.addedAt,

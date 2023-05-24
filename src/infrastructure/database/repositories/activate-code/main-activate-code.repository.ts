@@ -22,12 +22,12 @@ export class MainActivateCodeRepository {
     return this.repository.insert({ code, expireAt, user, type });
   }
 
-  async getUserIdByCode(code: string, type: string): Promise<number> {
+  async getUserIdByCode(code: string, type: string): Promise<UserEntity> {
     const find = await this.repository.findOne({
       where: { code, type },
       relations: ['user'],
     });
-    return find?.user?.id ?? null;
+    return find?.user ?? null;
   }
 
   async getItemByCode(code: string, type: string): Promise<ActivateEmailsCodeEntity> {
