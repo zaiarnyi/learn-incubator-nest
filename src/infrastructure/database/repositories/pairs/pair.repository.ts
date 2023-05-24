@@ -43,7 +43,7 @@ export class MainPairRepository {
         lossesCount: () => `lossesCount + ${Number(isLosses)}`,
         sumScore: () => `sumScore + ${sum}`,
       })
-      .where('t.player.id = :id', { id: user.id })
+      .where('t.user.id = :id', { id: user.id })
       .execute();
   }
 }
