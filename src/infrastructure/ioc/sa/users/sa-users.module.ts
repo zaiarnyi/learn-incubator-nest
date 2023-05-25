@@ -12,6 +12,7 @@ import { CommentsModule } from '../../comments.module';
 import { PostsModule } from '../../posts.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserBannedEntity } from '../../../../domain/sa/users/entities/user-bans.entity';
+import { PairsModule } from '../../pairs.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { UserBannedEntity } from '../../../../domain/sa/users/entities/user-bans
     forwardRef(() => BlogsModule),
     forwardRef(() => CommentsModule),
     forwardRef(() => PostsModule),
+    PairsModule,
   ],
   controllers: [SaUserController],
   providers: [

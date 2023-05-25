@@ -30,20 +30,26 @@ export class MainPairRepository {
   }
 
   async updatePlayerResults(user: UserEntity, isWin: boolean, isDraw: boolean, isLosses: boolean, sum: number) {
-    return this.topUserRepository
-      .createQueryBuilder('t')
-      .update(PairResultsEntity)
-      .set({
-        avgScores: () =>
-          `sumScore / ((winCount + ${Number(isWin)}) + (drawCount + ${Number(isDraw)}) + (lossesCount + ${Number(
-            isLosses,
-          )})`,
-        winCount: () => `winCount + ${Number(isWin)}`,
-        drawCount: () => `drawCount + ${Number(isDraw)}`,
-        lossesCount: () => `lossesCount + ${Number(isLosses)}`,
-        sumScore: () => `sumScore + ${sum}`,
-      })
-      .where('t.user.id = :id', { id: user.id })
-      .execute();
+    console.log(user.id, 'user.id');
+    return (
+      this.topUserRepository
+        .createQueryBuilder('t')
+        .update(PairResultsEntity)
+        // .set({
+        //   avgScores: () =>
+        //     `sumScore / ((winCount + ${Number(isWin)}) + (drawCount + ${Number(isDraw)}) + (lossesCount + ${Number(
+        //       isLosses,
+        //     )})`,
+        //   winCount: () => `winCount + ${Number(isWin)}`,
+        //   drawCount: () => `drawCount + ${Number(isDraw)}`,
+        //   lossesCount: () => `lossesCount + ${Number(isLosses)}`,
+        //   sumScore: () => `sumScore + ${sum}`,
+        // })
+        .set({
+          avgScores: 2,
+          winCount: () => `winCount + ${Number(isWin)}`,
+        })
+        .where('userId = :id', { id: user.id })
+    );
   }
 }

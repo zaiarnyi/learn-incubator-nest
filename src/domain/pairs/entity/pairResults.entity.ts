@@ -8,6 +8,9 @@ export class PairResultsEntity extends BaseEntity {
   @JoinColumn()
   user: UserEntity;
 
+  @Column({ nullable: false })
+  userId: number;
+
   @Column({ nullable: false, default: 0 })
   winCount: number;
 

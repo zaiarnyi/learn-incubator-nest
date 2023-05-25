@@ -28,6 +28,14 @@ export class TestController {
     });
   }
 
+  @Delete('pair')
+  @HttpCode(204)
+  async deletePairAndUser() {
+    await this.userRepository.deletePairAndUser().catch((e) => {
+      this.logger.error(`Error when deleting users test data. ${JSON.stringify(e, null, 2)}`);
+    });
+  }
+
   @Get('/rules')
   async getAdguardRules() {
     const arr = await readFile();
