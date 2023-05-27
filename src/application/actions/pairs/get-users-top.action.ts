@@ -20,7 +20,7 @@ export class GetUsersTopAction {
     const pagesCount = Math.ceil(totalCount / payload.pageSize);
 
     const mappingUser = users.map((item) => {
-      const gamesCount = item.drawCount + item.lossesCount + item.winCount;
+      const gamesCount = item.drawCount + item.lossesCount + item.winsCount;
       return {
         ...item,
         gamesCount,
