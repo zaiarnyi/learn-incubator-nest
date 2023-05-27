@@ -8,7 +8,7 @@ import { plainToClass } from 'class-transformer';
 export class GetUsersTopAction {
   constructor(@Inject(QueryPairsRepository) protected readonly repository: QueryPairsRepository) {}
 
-  public async execute(payload: GetUsersTopDto): Promise<GetUsersTopResponse | any> {
+  public async execute(payload: GetUsersTopDto): Promise<GetUsersTopResponse> {
     const offset = (payload.pageNumber - 1) * payload.pageSize;
 
     const body = new PayloadQueryDto();
@@ -31,7 +31,7 @@ export class GetUsersTopAction {
       };
     });
 
-    return plainToClass(QueryPairsRepository, {
+    return plainToClass(GetUsersTopResponse, {
       pagesCount,
       page: payload.pageNumber,
       pageSize: payload.pageSize,
