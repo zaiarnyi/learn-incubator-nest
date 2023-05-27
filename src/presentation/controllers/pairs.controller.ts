@@ -28,7 +28,6 @@ import { GetUsersTopAction } from '../../application/actions/pairs/get-users-top
 import { GetUsersTopResponse } from '../responses/pairs/get-users-top.response';
 
 @Controller('pair-game-quiz')
-@UseGuards(JwtAuthGuard)
 export class PairsController {
   constructor(
     @Inject(ConnectionPairAction) private readonly connectionAction: ConnectionPairAction,
@@ -40,6 +39,7 @@ export class PairsController {
     @Inject(GetUsersTopAction) private readonly getUsersTopAction: GetUsersTopAction,
   ) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get('/pairs/my')
   async getMyGames(
     @Query() query: GetMyGamesRequest,
@@ -48,11 +48,13 @@ export class PairsController {
     return this.getMyGamesAction.execute(query, req.user);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/pairs/my-current')
   async getMyCurrent(@Req() req: Request & { user: UserEntity }): Promise<GetCurrentPairResponse> {
     return this.getMyCurrentAction.execute(req.user);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/pairs/:id')
   async getPaisById(
     @Param('id') id: string,
@@ -64,6 +66,7 @@ export class PairsController {
     return this.getPairByIdAction.execute(Number(id), req.user);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('/users/my-statistic')
   async getMyStatistic(@Req() req: Request & { user: UserEntity }): Promise<GetMyStatisticsResponse> {
     return this.getMyStatisticsAction.execute(req.user);
@@ -74,12 +77,14 @@ export class PairsController {
     return this.getUsersTopAction.execute(query);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('/pairs/connection')
   @HttpCode(200)
   async connection(@Req() req: Request & { user: UserEntity }): Promise<GetCurrentPairResponse> {
     return this.connectionAction.execute(req.user);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('/pairs/my-current/answers')
   @HttpCode(200)
   async answersMyCurrentPair(
