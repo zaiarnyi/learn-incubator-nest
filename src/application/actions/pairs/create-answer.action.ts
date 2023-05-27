@@ -56,25 +56,25 @@ export class CreateAnswerAction {
 
     const firstPlayerResult = new PairResultsEntity();
     firstPlayerResult.winsCount = firstPlayer.winsCount + Number(winIsFirstPlayer);
-    firstPlayerResult.drawCount = firstPlayer.drawCount + Number(drawPlayers);
+    firstPlayerResult.drawsCount = firstPlayer.drawsCount + Number(drawPlayers);
     firstPlayerResult.lossesCount = firstPlayer.lossesCount + Number(lossesIsFirstPlayers);
     firstPlayerResult.sumScore = firstPlayer.sumScore + game.scoreFirstPlayer;
     firstPlayerResult.avgScores = parseFloat(
       (
         firstPlayerResult.sumScore /
-        (firstPlayerResult.winsCount + firstPlayerResult.drawCount + firstPlayerResult.lossesCount)
+        (firstPlayerResult.winsCount + firstPlayerResult.drawsCount + firstPlayerResult.lossesCount)
       ).toFixed(2),
     );
 
     const secondPlayerResult = new PairResultsEntity();
     secondPlayerResult.winsCount = secondPlayer.winsCount + Number(!winIsFirstPlayer);
-    secondPlayerResult.drawCount = secondPlayer.drawCount + Number(drawPlayers);
+    secondPlayerResult.drawsCount = secondPlayer.drawsCount + Number(drawPlayers);
     secondPlayerResult.lossesCount = secondPlayer.lossesCount + Number(!lossesIsFirstPlayers);
     secondPlayerResult.sumScore = secondPlayer.sumScore + game.scoreSecondPlayer;
     secondPlayerResult.avgScores = parseFloat(
       (
         secondPlayerResult.sumScore /
-        (secondPlayerResult.winsCount + secondPlayerResult.drawCount + secondPlayerResult.lossesCount)
+        (secondPlayerResult.winsCount + secondPlayerResult.drawsCount + secondPlayerResult.lossesCount)
       ).toFixed(2),
     );
 

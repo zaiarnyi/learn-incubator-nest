@@ -18,5 +18,5 @@ export class GetMyStatisticsResponse {
   lossesCount: number;
 
   @Expose()
-  drawCount: number;
+  drawsCount: number;
 }

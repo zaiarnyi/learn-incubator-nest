@@ -36,7 +36,7 @@ export class MainPairRepository {
         avgScores: result.avgScores,
         sumScore: result.sumScore,
         lossesCount: result.lossesCount,
-        drawCount: result.drawCount,
+        drawsCount: result.drawsCount,
         winsCount: result.winsCount,
       },
     );

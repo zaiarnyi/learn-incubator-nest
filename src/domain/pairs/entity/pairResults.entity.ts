@@ -15,7 +15,7 @@ export class PairResultsEntity extends BaseEntity {
   winsCount: number;
 
   @Column({ nullable: false, default: 0 })
-  drawCount: number;
+  drawsCount: number;
 
   @Column({ nullable: false, default: 0 })
   lossesCount: number;
