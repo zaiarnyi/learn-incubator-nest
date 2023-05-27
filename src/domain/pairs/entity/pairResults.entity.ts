@@ -12,7 +12,7 @@ export class PairResultsEntity extends BaseEntity {
   userId: number;
 
   @Column({ nullable: false, default: 0 })
-  winCount: number;
+  winsCount: number;
 
   @Column({ nullable: false, default: 0 })
   drawCount: number;
@@ -23,6 +23,6 @@ export class PairResultsEntity extends BaseEntity {
   @Column({ nullable: false, default: 0 })
   sumScore: number;
 
-  @Column({ nullable: false, default: 0 })
+  @Column({ nullable: false, default: 0.0, type: 'float' })
   avgScores: number;
 }

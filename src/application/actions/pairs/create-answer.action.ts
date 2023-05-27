@@ -45,25 +45,50 @@ export class CreateAnswerAction {
   private async updatePairResult(pairId: number) {
     const game = await this.repository.getPairsById(pairId);
 
+    const [firstPlayer, secondPlayer] = await Promise.all([
+      this.repository.getPlayerResult(game.firstPlayer),
+      this.repository.getPlayerResult(game.secondPlayer),
+    ]);
+
     const winIsFirstPlayer = game.scoreFirstPlayer > game.scoreSecondPlayer;
     const drawPlayers = game.scoreFirstPlayer === game.scoreSecondPlayer;
     const lossesIsFirstPlayers = game.scoreFirstPlayer < game.scoreSecondPlayer;
 
+    const firstPlayerResult = new PairResultsEntity();
+    firstPlayerResult.winsCount = firstPlayer.winsCount + Number(winIsFirstPlayer);
+    firstPlayerResult.drawCount = firstPlayer.drawCount + Number(drawPlayers);
+    firstPlayerResult.lossesCount = firstPlayer.lossesCount + Number(lossesIsFirstPlayers);
+    firstPlayerResult.sumScore = firstPlayer.sumScore + game.scoreFirstPlayer;
+    firstPlayerResult.avgScores = parseFloat(
+      (
+        firstPlayerResult.sumScore /
+        (firstPlayerResult.winsCount + firstPlayerResult.drawCount + firstPlayerResult.lossesCount)
+      ).toFixed(2),
+    );
+
+    const secondPlayerResult = new PairResultsEntity();
+    secondPlayerResult.winsCount = secondPlayer.winsCount + Number(!winIsFirstPlayer);
+    secondPlayerResult.drawCount = secondPlayer.drawCount + Number(drawPlayers);
+    secondPlayerResult.lossesCount = secondPlayer.lossesCount + Number(!lossesIsFirstPlayers);
+    secondPlayerResult.sumScore = secondPlayer.sumScore + game.scoreSecondPlayer;
+    secondPlayerResult.avgScores = parseFloat(
+      (
+        secondPlayerResult.sumScore /
+        (secondPlayerResult.winsCount + secondPlayerResult.drawCount + secondPlayerResult.lossesCount)
+      ).toFixed(2),
+    );
+
+    if (isNaN(secondPlayerResult.avgScores)) {
+      secondPlayerResult.avgScores = 0;
+    }
+
+    if (isNaN(firstPlayerResult.avgScores)) {
+      firstPlayerResult.avgScores = 0;
+    }
+
     await Promise.all([
-      this.mainPairRepository.updatePlayerResults(
-        game.firstPlayer,
-        winIsFirstPlayer,
-        drawPlayers,
-        lossesIsFirstPlayers,
-        game.scoreFirstPlayer,
-      ),
-      this.mainPairRepository.updatePlayerResults(
-        game.secondPlayer,
-        !winIsFirstPlayer,
-        drawPlayers,
-        !lossesIsFirstPlayers,
-        game.scoreSecondPlayer,
-      ),
+      this.mainPairRepository.updatePlayerResults(game.firstPlayer, firstPlayerResult),
+      this.mainPairRepository.updatePlayerResults(game.secondPlayer, secondPlayerResult),
     ]);
   }
 

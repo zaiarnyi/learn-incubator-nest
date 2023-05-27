@@ -134,4 +134,7 @@ export class QueryPairsRepository {
     query.limit(payload.limit).offset(payload.offset);
     return query.getManyAndCount();
   }
+  async getPlayerResult(user: UserEntity): Promise<PairResultsEntity> {
+    return this.resultRepository.findOneBy({ userId: user.id });
+  }
 }
