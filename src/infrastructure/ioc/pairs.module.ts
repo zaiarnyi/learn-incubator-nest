@@ -17,9 +17,18 @@ import { GetMyGamesAction } from '../../application/actions/pairs/get-my-games.a
 import { GetMyStatisticsAction } from '../../application/actions/pairs/get-my-statistics.action';
 import { GetUsersTopAction } from '../../application/actions/pairs/get-users-top.action';
 import { PairResultsEntity } from '../../domain/pairs/entity/pairResults.entity';
+import { BullModule } from '@nestjs/bull';
+import { PiarsConsumer } from '../../domain/pairs/consumers/piars.consumer';
+import { PairProcess } from '../../domain/pairs/services/pair.process';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([PairsEntity, PairAnswersEntity, PairResultsEntity]), SaQuizModule],
+  imports: [
+    TypeOrmModule.forFeature([PairsEntity, PairAnswersEntity, PairResultsEntity]),
+    SaQuizModule,
+    BullModule.registerQueue({
+      name: 'pairs',
+    }),
+  ],
   controllers: [PairsController],
   providers: [
     MappingPlayerAbstract,
@@ -34,6 +43,8 @@ import { PairResultsEntity } from '../../domain/pairs/entity/pairResults.entity'
     GetMyGamesAction,
     GetMyStatisticsAction,
     GetUsersTopAction,
+    PiarsConsumer,
+    PairProcess,
   ],
   exports: [MainPairRepository],
 })

@@ -9,6 +9,9 @@ import { QueryPairsRepository } from '../../../infrastructure/database/repositor
 import { UserEntity } from '../../users/entities/user.entity';
 import { QueryAnswerRepository } from '../../../infrastructure/database/repositories/pairs/answer/query-answer.repository';
 import { QuizEntity } from '../../sa/quiz/entities/quiz.entity';
+import { PairAnswersEntity } from '../entity/answers.entity';
+import { AnswersStatusesEnum } from '../enums/answers-statuses.enum';
+import { PairStatusesEnum } from '../enums/pair-statuses.enum';
 
 @Injectable()
 export class MappingPlayerAbstract {
@@ -22,9 +25,24 @@ export class MappingPlayerAbstract {
     return questions.map((item) => ({ ...item, id: item.id.toString() }));
   }
   private async mappingAnswers(user: UserEntity, pair: PairsEntity): Promise<AnswerResponse[]> {
-    const answersForUser = await this.answerRepository.getPairByUserAndId(user.id, pair.id);
+    let answersForUser = await this.answerRepository.getPairByUserAndId(user.id, pair.id);
 
     if (!answersForUser.length) return [];
+
+    if (pair.status === PairStatusesEnum.FINISH) {
+      const count = 5 - answersForUser.length;
+
+      answersForUser = [
+        ...answersForUser,
+        ...Array.from({ length: count }, (_, i) => {
+          const answer = new PairAnswersEntity();
+          answer.status = AnswersStatusesEnum.INCORRECT;
+          answer.addedAt = pair.finishGameDate;
+          answer.question = pair.questions[answersForUser.length + i];
+          return answer;
+        }),
+      ];
+    }
 
     return answersForUser.map((item, i) => {
       return plainToClass(AnswerResponse, {

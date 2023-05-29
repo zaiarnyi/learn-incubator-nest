@@ -12,6 +12,8 @@ import { plainToClass } from 'class-transformer';
 import { AnswerPairRepository } from '../../../infrastructure/database/repositories/pairs/answer/answer-pair.repository';
 import { QueryQuizRepository } from '../../../infrastructure/database/repositories/sa/quiz/query-quiz.repository';
 import { PairResultsEntity } from '../../../domain/pairs/entity/pairResults.entity';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class CreateAnswerAction {
@@ -22,6 +24,7 @@ export class CreateAnswerAction {
     @Inject(MainPairRepository) private readonly mainPairRepository: MainPairRepository,
     @Inject(AnswerPairRepository) private readonly mainAnswerPairRepository: AnswerPairRepository,
     @Inject(QueryQuizRepository) private readonly quizRepository: QueryQuizRepository,
+    @InjectQueue('pairs') private pairsQueue: Queue,
   ) {}
 
   private async plusScore(activeGame: PairsEntity, user: UserEntity, userAnswer: PairAnswersEntity): Promise<number> {
@@ -146,6 +149,20 @@ export class CreateAnswerAction {
         this.additionalScore(user, answers, activeGame),
       ]);
       await this.updatePairResult(activeGame.id);
+    }
+    if (countOfAnswersPlayer === 4 && answers.length < 10) {
+      await this.pairsQueue.add(
+        'finish',
+        { pairId: activeGame.id },
+        {
+          delay: 10 * 1000,
+          attempts: 1,
+          timeout: 1000 * 60 * 5,
+          backoff: 0,
+          removeOnComplete: true,
+          removeOnFail: true,
+        },
+      );
     }
     return plainToClass(AnswerResponse, {
       addedAt: saved.addedAt,

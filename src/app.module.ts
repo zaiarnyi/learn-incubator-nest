@@ -19,6 +19,8 @@ import { PostgresqlConfigDatabase } from './infrastructure/database/configs/data
 import { PairsModule } from './infrastructure/ioc/pairs.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { BullModule } from '@nestjs/bull';
+import { RedisConfig } from './infrastructure/database/configs/redis.config';
 
 @Module({
   imports: [
@@ -35,6 +37,9 @@ import { join } from 'path';
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'client'),
+    }),
+    BullModule.forRootAsync({
+      useClass: RedisConfig,
     }),
     BloggerModule,
     UsersModule,

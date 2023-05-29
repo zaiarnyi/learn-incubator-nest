@@ -125,20 +125,29 @@ describe('AppController (e2e)', () => {
       .post('/pair-game-quiz/pairs/connection')
       .set({ Authorization: `Bearer ${loginUser2.body.accessToken}` });
 
-    await Promise.all([
-      setAnswers(app, loginUser1.body.accessToken, answers[randomInteger(0, answers.length)]),
-      setAnswers(app, loginUser1.body.accessToken, answers[randomInteger(0, answers.length) - 1]),
-      setAnswers(app, loginUser1.body.accessToken, answers[randomInteger(0, answers.length)]),
-      setAnswers(app, loginUser1.body.accessToken, answers[randomInteger(0, answers.length) - 3]),
-    ]);
-    await Promise.all([
-      setAnswers(app, loginUser2.body.accessToken, answers[randomInteger(0, answers.length)]),
-      setAnswers(app, loginUser2.body.accessToken, answers[randomInteger(0, answers.length) - 1]),
-      setAnswers(app, loginUser2.body.accessToken, answers[randomInteger(0, answers.length)]),
-      setAnswers(app, loginUser2.body.accessToken, answers[randomInteger(0, answers.length)]),
-    ]);
-    await setAnswers(app, loginUser2.body.accessToken, answers[randomInteger(0, answers.length) - 2]);
-    await setAnswers(app, loginUser1.body.accessToken, answers[randomInteger(0, answers.length)]);
+    await setAnswers(app, loginUser1.body.accessToken, answers[1]);
+    await setAnswers(app, loginUser1.body.accessToken, answers[2]);
+    await setAnswers(app, loginUser1.body.accessToken, answers[3]);
+    await setAnswers(app, loginUser1.body.accessToken, answers[4]);
+
+    await setAnswers(app, loginUser2.body.accessToken, answers[1]);
+    await setAnswers(app, loginUser2.body.accessToken, answers[2]);
+    await setAnswers(app, loginUser2.body.accessToken, answers[3]);
+
+    // await Promise.all([
+    //   setAnswers(app, loginUser1.body.accessToken, answers[1]),
+    //   setAnswers(app, loginUser1.body.accessToken, answers[2]),
+    //   setAnswers(app, loginUser1.body.accessToken, answers[3]),
+    //   setAnswers(app, loginUser1.body.accessToken, answers[4]),
+    // ]);
+    // await Promise.all([
+    //   setAnswers(app, loginUser2.body.accessToken, answers[1]),
+    //   setAnswers(app, loginUser2.body.accessToken, answers[2]),
+    //   setAnswers(app, loginUser2.body.accessToken, answers[3]),
+    // setAnswers(app, loginUser2.body.accessToken, answers[randomInteger(0, answers.length)]),
+    // ]);
+    // await setAnswers(app, loginUser2.body.accessToken, answers[randomInteger(0, answers.length) - 2]);
+    // await setAnswers(app, loginUser1.body.accessToken, answers[randomInteger(0, answers.length)]);
 
     const connection3 = await request(app.getHttpServer())
       .get('/pair-game-quiz/pairs/1')
