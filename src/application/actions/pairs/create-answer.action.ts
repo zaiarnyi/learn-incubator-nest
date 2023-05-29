@@ -155,7 +155,7 @@ export class CreateAnswerAction {
         'finish',
         { pairId: activeGame.id, userId: user.id },
         {
-          delay: 10 * 1000,
+          delay: 9 * 1000,
           attempts: 1,
           timeout: 1000 * 60 * 5,
           backoff: 0,
