@@ -30,7 +30,7 @@ const secondUser = {
 const userAgent =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36';
 
-const answers = ['string', 'string1', 'string1', 'strng1', 'string1r'];
+const answers = ['string1', 'string1', 'string1', 'string1', 'string1'];
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
@@ -128,10 +128,13 @@ describe('AppController (e2e)', () => {
     await setAnswers(app, loginUser1.body.accessToken, answers[1]);
     await setAnswers(app, loginUser1.body.accessToken, answers[2]);
     await setAnswers(app, loginUser1.body.accessToken, answers[3]);
-    await setAnswers(app, loginUser1.body.accessToken, answers[4]);
+    // await setAnswers(app, loginUser1.body.accessToken, answers[4]);
+    // await setAnswers(app, loginUser1.body.accessToken, answers[4]);
 
     await setAnswers(app, loginUser2.body.accessToken, answers[1]);
     await setAnswers(app, loginUser2.body.accessToken, answers[2]);
+    await setAnswers(app, loginUser2.body.accessToken, answers[3]);
+    await setAnswers(app, loginUser2.body.accessToken, answers[3]);
     await setAnswers(app, loginUser2.body.accessToken, answers[3]);
 
     // await Promise.all([
@@ -153,6 +156,14 @@ describe('AppController (e2e)', () => {
       .get('/pair-game-quiz/pairs/1')
       .set({ Authorization: `Bearer ${loginUser2.body.accessToken}` });
     console.log(connection3.body, 'connection1');
+
+    await new Promise((resolve) => {
+      setTimeout(resolve, 12 * 1000);
+    });
+    const connection4 = await request(app.getHttpServer())
+      .get('/pair-game-quiz/pairs/1')
+      .set({ Authorization: `Bearer ${loginUser2.body.accessToken}` });
+    console.log(connection4.body, 'connection4');
   });
 
   afterAll(async () => {

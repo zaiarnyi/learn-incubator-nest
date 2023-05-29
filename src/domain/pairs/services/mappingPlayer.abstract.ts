@@ -44,7 +44,7 @@ export class MappingPlayerAbstract {
       ];
     }
 
-    return answersForUser.map((item, i) => {
+    return answersForUser.map((item) => {
       return plainToClass(AnswerResponse, {
         questionId: item.question.id.toString(),
         answerStatus: item.status,

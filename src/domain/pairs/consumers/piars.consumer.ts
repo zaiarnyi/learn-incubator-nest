@@ -42,7 +42,7 @@ export class PiarsConsumer {
   }
 
   @Process({ name: 'finish' })
-  async finish(job: Job<{ pairId: number }>) {
+  async finish(job: Job<{ pairId: number; userId: number }>) {
     await this.process.execute(job.data);
   }
 }

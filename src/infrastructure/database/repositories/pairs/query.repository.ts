@@ -6,7 +6,7 @@ import { PairStatusesEnum } from '../../../../domain/pairs/enums/pair-statuses.e
 import { UserEntity } from '../../../../domain/users/entities/user.entity';
 import { GetMyGamesDto } from '../../../../domain/pairs/dto/get-my-games.dto';
 import { PairResultsEntity } from '../../../../domain/pairs/entity/pairResults.entity';
-import { GetUsersTopDto, PayloadQueryDto } from '../../../../domain/pairs/dto/get-users-top.dto';
+import { PayloadQueryDto } from '../../../../domain/pairs/dto/get-users-top.dto';
 import { GetSortAndDirectionHelper } from '../../../../domain/pairs/helpers/get-sort-and-direction.helper';
 
 @Injectable()
@@ -136,5 +136,12 @@ export class QueryPairsRepository {
   }
   async getPlayerResult(user: UserEntity): Promise<PairResultsEntity> {
     return this.resultRepository.findOneBy({ userId: user.id });
+  }
+
+  async getActiveGame(pairId: number): Promise<PairsEntity> {
+    return this.repository.findOne({
+      where: { id: pairId, status: PairStatusesEnum.ACTIVE },
+      relations: ['firstPlayer', 'secondPlayer'],
+    });
   }
 }

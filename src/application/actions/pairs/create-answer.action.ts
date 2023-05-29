@@ -153,7 +153,7 @@ export class CreateAnswerAction {
     if (countOfAnswersPlayer === 4 && answers.length < 10) {
       await this.pairsQueue.add(
         'finish',
-        { pairId: activeGame.id },
+        { pairId: activeGame.id, userId: user.id },
         {
           delay: 10 * 1000,
           attempts: 1,
