@@ -3,11 +3,6 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 
-function randomInteger(min, max) {
-  const rand = min + Math.random() * (max + 1 - min);
-  return Math.floor(rand);
-}
-
 async function setAnswers(app, token, answer) {
   return request(app.getHttpServer())
     .post('/pair-game-quiz/pairs/my-current/answers')
@@ -118,18 +113,16 @@ describe('AppController (e2e)', () => {
         .set('user-agent', userAgent),
     ]);
 
-    const connection1 = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/pair-game-quiz/pairs/connection')
       .set({ Authorization: `Bearer ${loginUser1.body.accessToken}` });
-    const connection2 = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/pair-game-quiz/pairs/connection')
       .set({ Authorization: `Bearer ${loginUser2.body.accessToken}` });
 
     await setAnswers(app, loginUser1.body.accessToken, answers[1]);
     await setAnswers(app, loginUser1.body.accessToken, answers[2]);
     await setAnswers(app, loginUser1.body.accessToken, answers[3]);
-    // await setAnswers(app, loginUser1.body.accessToken, answers[4]);
-    // await setAnswers(app, loginUser1.body.accessToken, answers[4]);
 
     await setAnswers(app, loginUser2.body.accessToken, answers[1]);
     await setAnswers(app, loginUser2.body.accessToken, answers[2]);
@@ -137,36 +130,8 @@ describe('AppController (e2e)', () => {
     await setAnswers(app, loginUser2.body.accessToken, answers[3]);
     await setAnswers(app, loginUser2.body.accessToken, answers[3]);
 
-    // await Promise.all([
-    //   setAnswers(app, loginUser1.body.accessToken, answers[1]),
-    //   setAnswers(app, loginUser1.body.accessToken, answers[2]),
-    //   setAnswers(app, loginUser1.body.accessToken, answers[3]),
-    //   setAnswers(app, loginUser1.body.accessToken, answers[4]),
-    // ]);
-    // await Promise.all([
-    //   setAnswers(app, loginUser2.body.accessToken, answers[1]),
-    //   setAnswers(app, loginUser2.body.accessToken, answers[2]),
-    //   setAnswers(app, loginUser2.body.accessToken, answers[3]),
-    // setAnswers(app, loginUser2.body.accessToken, answers[randomInteger(0, answers.length)]),
-    // ]);
-    // await setAnswers(app, loginUser2.body.accessToken, answers[randomInteger(0, answers.length) - 2]);
-    // await setAnswers(app, loginUser1.body.accessToken, answers[randomInteger(0, answers.length)]);
-
-    const connection3 = await request(app.getHttpServer())
-      .get('/pair-game-quiz/pairs/1')
-      .set({ Authorization: `Bearer ${loginUser2.body.accessToken}` });
-    console.log(connection3.body, 'connection1');
-
-    await new Promise((resolve) => {
-      setTimeout(resolve, 12 * 1000);
+    afterAll(async () => {
+      await app.close();
     });
-    const connection4 = await request(app.getHttpServer())
-      .get('/pair-game-quiz/pairs/1')
-      .set({ Authorization: `Bearer ${loginUser2.body.accessToken}` });
-    console.log(connection4.body, 'connection4');
-  });
-
-  afterAll(async () => {
-    await app.close();
   });
 });

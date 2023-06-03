@@ -1,17 +1,23 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
+  FileTypeValidator,
   Get,
   HttpCode,
   Inject,
+  MaxFileSizeValidator,
   NotFoundException,
   Param,
+  ParseFilePipe,
   Post,
   Put,
   Query,
   Req,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../../domain/auth/guards/jwt-auth.guard';
 import { GetAllBlogsAction } from '../../application/actions/blogs/get-all-blogs.action';
@@ -35,6 +41,22 @@ import { GetCommentsByBlogsAction } from '../../application/actions/blogger/get-
 import { GetBannedUserAction } from '../../application/actions/blogger/users/get-banned-user.action';
 import { GetBannedUserByBloggerRequest } from '../requests/blogger/get-banned-user-by-blogger.request';
 import { BannedUserByBloggerAction } from '../../application/actions/blogger/users/banned-user-by-blogger.action';
+import { FileInterceptor } from '@nestjs/platform-express';
+
+// const filePipe = new ParseFilePipe({
+//   validators: [
+//     new MaxFileSizeValidator({ maxSize: 1_000_000 }),
+//     new FileTypeValidator({ fileType: /(jpg|jpeg|png)$/ }),
+//   ],
+//   exceptionFactory: (error) => {
+//     throw new BadRequestException([
+//       {
+//         field: 'file',
+//         message: error,
+//       },
+//     ]);
+//   },
+// });
 
 @UseGuards(JwtAuthGuard)
 @Controller('blogger')
@@ -86,6 +108,32 @@ export class BloggerController {
     }
     return this.createPostService.execute({ ...body, blogId: Number(id) }, req?.user);
   }
+
+  @Post('blogs/:blogId/images/wallpaper')
+  @UseInterceptors(FileInterceptor('file'))
+  async imagesWallpaperSave(
+    @Param('blogId') id: string,
+    // @UploadedFile(filePipe)
+    // file: Express.Multer.File,
+    @Req() req: any,
+  ) {}
+
+  @Post('blogs/:blogId/images/main')
+  @UseInterceptors(FileInterceptor('file'))
+  async imagesMainSave(
+    @Param('blogId') id: string,
+    // @UploadedFile(filePipe) file: Express.Multer.File,
+    @Req() req: any,
+  ) {}
+
+  @Post('blogs/:blogId/posts/:postId/images/main')
+  @UseInterceptors(FileInterceptor('file'))
+  async imagesMainForPostSave(
+    @Param('blogId') blogId: string,
+    @Param('postId') postId: string,
+    // @UploadedFile(filePipe) file: Express.Multer.File,
+    @Req() req: any,
+  ) {}
 
   @Put('blogs/:id')
   @HttpCode(204)
