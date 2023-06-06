@@ -2,12 +2,12 @@
 # BUILD FOR LOCAL DEVELOPMENT
 ###################
 
-FROM node:18.16-alpine3.17 AS development
+FROM node:16-bullseye-slim AS development
 
 WORKDIR /usr/src/app
 
 COPY --chown=node:node package*.json ./
-RUN npm ci
+RUN npm install --arch=arm64 --platform=linuxmusl sharp
 COPY --chown=node:node . .
 
 USER node
@@ -16,7 +16,7 @@ USER node
 # BUILD FOR PRODUCTION
 ###################
 
-FROM node:18.16-alpine3.17 AS build
+FROM node:16-bullseye-slim AS build
 
 WORKDIR /usr/src/app
 
@@ -35,7 +35,7 @@ USER node
 # PRODUCTION
 ###################
 
-FROM node:18.16-alpine3.17 as production
+FROM --platform=linux/amd64 node:16-bullseye as production
 
 RUN apk --no-cache add curl
 COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
