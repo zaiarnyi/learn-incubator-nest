@@ -27,7 +27,7 @@ export class BlogEntity {
   @Column({ type: 'boolean', default: false })
   isMembership: boolean;
 
-  @ManyToOne(() => UserEntity, (user) => user.id, { onDelete: 'CASCADE' })
+  @ManyToOne(() => UserEntity, (user) => user.id)
   @JoinColumn()
   user: UserEntity;
 

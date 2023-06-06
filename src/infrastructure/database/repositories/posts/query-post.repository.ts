@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PostEntity } from '../../../../domain/posts/entities/post.entity';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { PostImagesEntity } from '../../../../domain/posts/entities/post-images.entity';
 
 @Injectable()
 export class QueryPostRepository {
   constructor(
-    @InjectDataSource() private readonly dataSource: DataSource,
     @InjectRepository(PostEntity) private readonly repository: Repository<PostEntity>,
+    @InjectRepository(PostImagesEntity) private readonly postImageRepository: Repository<PostImagesEntity>,
   ) {}
 
   async getPost(limit: number, offset: number, sortBy: string, direction: string): Promise<[PostEntity[], number]> {
@@ -49,5 +50,9 @@ export class QueryPostRepository {
       .offset(skip)
       .limit(limit)
       .getManyAndCount();
+  }
+
+  async getPostImages(id: number): Promise<PostImagesEntity[]> {
+    return this.postImageRepository.findBy({ id });
   }
 }

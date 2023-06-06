@@ -42,37 +42,49 @@ import { GetBannedUserAction } from '../../application/actions/blogger/users/get
 import { GetBannedUserByBloggerRequest } from '../requests/blogger/get-banned-user-by-blogger.request';
 import { BannedUserByBloggerAction } from '../../application/actions/blogger/users/banned-user-by-blogger.action';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { FileValidator } from '@nestjs/common/pipes/file/file-validator.interface';
+import { ImageSizeValidator } from '../../infrastructure/validators/image-size.validator';
+import { SaveWallpaperAction } from '../../application/actions/blogger/save-wallpaper.action';
+import { SaveBlogMainImageAction } from '../../application/actions/blogger/save-blog-main-image.action';
+import { SavePostMainImageAction } from '../../application/actions/blogger/save-post-main-image.action';
+import { FileInformationDto } from '../../domain/blogger/dto/file-information.dto';
+import { CreateImageResponse, CreateImagesResponse } from '../requests/blogger/create-images.response';
 
-// const filePipe = new ParseFilePipe({
-//   validators: [
-//     new MaxFileSizeValidator({ maxSize: 1_000_000 }),
-//     new FileTypeValidator({ fileType: /(jpg|jpeg|png)$/ }),
-//   ],
-//   exceptionFactory: (error) => {
-//     throw new BadRequestException([
-//       {
-//         field: 'file',
-//         message: error,
-//       },
-//     ]);
-//   },
-// });
+const filePipe = (validatorFiles: FileValidator = null) =>
+  new ParseFilePipe({
+    validators: [
+      new MaxFileSizeValidator({ maxSize: 100_000 }),
+      new FileTypeValidator({ fileType: /(jpg|jpeg|png)$/ }),
+      validatorFiles,
+    ],
+    exceptionFactory: (error) => {
+      throw new BadRequestException([
+        {
+          field: 'file',
+          message: error,
+        },
+      ]);
+    },
+  });
 
 @UseGuards(JwtAuthGuard)
 @Controller('blogger')
 export class BloggerController {
   constructor(
-    @Inject(GetAllBlogsAction) private readonly getBlogsService: GetAllBlogsAction,
-    @Inject(CreateBlogAction) private readonly createBlogService: CreateBlogAction,
-    @Inject(CreatePostAction) private readonly createPostService: CreatePostAction,
-    @Inject(UpdateBlogAction) private readonly updateService: UpdateBlogAction,
-    @Inject(DeleteBlogByIdAction) private readonly deleteService: DeleteBlogByIdAction,
-    @Inject(UserQueryRepository) private readonly queryUserRepository: UserQueryRepository,
-    @Inject(DeletePostByBlogIdAction) private readonly deletePostAction: DeletePostByBlogIdAction,
-    @Inject(UpdatePostByBlogAction) private readonly updatePostByBlogAction: UpdatePostByBlogAction,
-    @Inject(GetCommentsByBlogsAction) private readonly getCommentsAction: GetCommentsByBlogsAction,
-    @Inject(GetBannedUserAction) private readonly getBannedUserAction: GetBannedUserAction,
-    @Inject(BannedUserByBloggerAction) private readonly changeBannedStatusUserAction: BannedUserByBloggerAction,
+    private readonly getBlogsService: GetAllBlogsAction,
+    private readonly createBlogService: CreateBlogAction,
+    private readonly createPostService: CreatePostAction,
+    private readonly updateService: UpdateBlogAction,
+    private readonly deleteService: DeleteBlogByIdAction,
+    private readonly queryUserRepository: UserQueryRepository,
+    private readonly deletePostAction: DeletePostByBlogIdAction,
+    private readonly updatePostByBlogAction: UpdatePostByBlogAction,
+    private readonly getCommentsAction: GetCommentsByBlogsAction,
+    private readonly getBannedUserAction: GetBannedUserAction,
+    private readonly changeBannedStatusUserAction: BannedUserByBloggerAction,
+    private readonly saveWallpaperAction: SaveWallpaperAction,
+    private readonly saveBlogMainImageAction: SaveBlogMainImageAction,
+    private readonly savePostMainImageAction: SavePostMainImageAction,
   ) {}
   @Get('blogs')
   async getBlogs(@Query() query: GetBlogsRequestWithSearch, @Req() req: any): Promise<GetAllBlogsResponse> {
@@ -113,27 +125,48 @@ export class BloggerController {
   @UseInterceptors(FileInterceptor('file'))
   async imagesWallpaperSave(
     @Param('blogId') id: string,
-    // @UploadedFile(filePipe)
-    // file: Express.Multer.File,
+    @UploadedFile(filePipe(new ImageSizeValidator({ width: 1028, height: 312 })))
+    file: Express.Multer.File,
     @Req() req: any,
-  ) {}
+  ): Promise<CreateImagesResponse> {
+    if (isNaN(Number(id))) {
+      throw new NotFoundException();
+    }
+    return this.saveWallpaperAction.execute(Number(id), file.buffer, file.originalname, req.user);
+  }
 
   @Post('blogs/:blogId/images/main')
   @UseInterceptors(FileInterceptor('file'))
   async imagesMainSave(
     @Param('blogId') id: string,
-    // @UploadedFile(filePipe) file: Express.Multer.File,
+    @UploadedFile(filePipe(new ImageSizeValidator({ width: 156, height: 156 }))) file: Express.Multer.File,
     @Req() req: any,
-  ) {}
+  ): Promise<CreateImagesResponse> {
+    if (isNaN(Number(id))) {
+      throw new NotFoundException();
+    }
+    return this.saveBlogMainImageAction.execute(Number(id), file.buffer, file.originalname, req.user);
+  }
 
   @Post('blogs/:blogId/posts/:postId/images/main')
   @UseInterceptors(FileInterceptor('file'))
   async imagesMainForPostSave(
     @Param('blogId') blogId: string,
     @Param('postId') postId: string,
-    // @UploadedFile(filePipe) file: Express.Multer.File,
+    @UploadedFile(filePipe(new ImageSizeValidator({ width: 156, height: 156 }))) file: Express.Multer.File,
     @Req() req: any,
-  ) {}
+  ): Promise<CreateImageResponse> {
+    if (isNaN(Number(blogId)) || isNaN(Number(postId))) {
+      throw new NotFoundException();
+    }
+    return this.savePostMainImageAction.execute(
+      Number(blogId),
+      Number(postId),
+      file.buffer,
+      file.originalname,
+      req.user,
+    );
+  }
 
   @Put('blogs/:id')
   @HttpCode(204)

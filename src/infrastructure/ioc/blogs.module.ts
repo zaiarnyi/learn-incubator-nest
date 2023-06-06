@@ -9,9 +9,10 @@ import { GetPostByBlogIdAction } from '../../application/actions/blogs/getPostBy
 import { UsersModule } from './users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BlogEntity } from '../../domain/blogs/entities/blog.entity';
+import { BlogImagesEntity } from '../../domain/blogs/entities/blog-images.entity';
 
 @Module({
-  imports: [forwardRef(() => PostsModule), UsersModule, TypeOrmModule.forFeature([BlogEntity])],
+  imports: [forwardRef(() => PostsModule), UsersModule, TypeOrmModule.forFeature([BlogEntity, BlogImagesEntity])],
   controllers: [BlogsController],
   providers: [MainBlogsRepository, GetBlogByIdAction, QueryBlogsRepository, GetAllBlogsAction, GetPostByBlogIdAction],
   exports: [QueryBlogsRepository, MainBlogsRepository, GetAllBlogsAction],

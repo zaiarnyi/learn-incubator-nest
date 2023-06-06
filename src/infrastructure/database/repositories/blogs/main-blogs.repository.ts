@@ -4,10 +4,15 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserEntity } from '../../../../domain/users/entities/user.entity';
+import { BlogImagesEntity } from '../../../../domain/blogs/entities/blog-images.entity';
+import { BlogImagesTypeEnum } from '../../../../domain/blogs/enums/blog-images-type.enum';
 
 @Injectable()
 export class MainBlogsRepository {
-  constructor(@InjectRepository(BlogEntity) private readonly repository: Repository<BlogEntity>) {}
+  constructor(
+    @InjectRepository(BlogEntity) private readonly repository: Repository<BlogEntity>,
+    @InjectRepository(BlogImagesEntity) private readonly blogImagesEntityRepository: Repository<BlogImagesEntity>,
+  ) {}
   async createBlog(blog: BlogEntity): Promise<BlogEntity> {
     return this.repository.save(blog);
   }
@@ -35,5 +40,13 @@ export class MainBlogsRepository {
   async changeBannedStatusByBlogId(blogId: number, isBanned: boolean): Promise<any> {
     const banDate = isBanned ? new Date().toISOString() : null;
     return this.repository.update({ id: blogId }, { isBanned, banDate });
+  }
+
+  async deleteImageForBlog(id: number, type: BlogImagesTypeEnum): Promise<void> {
+    await this.blogImagesEntityRepository.delete({ id, type });
+  }
+
+  async saveImageForBlog(blog: BlogImagesEntity): Promise<BlogImagesEntity> {
+    return this.blogImagesEntityRepository.save(blog);
   }
 }

@@ -4,13 +4,35 @@ import { GetBlogsDto } from '../../../domain/blogs/dto/get-blogs.dto';
 import { GetAllBlogsResponse } from '../../../presentation/responses/blogger/get-all-blogs.response';
 import { plainToClass } from 'class-transformer';
 import { CreateBlogResponse } from '../../../presentation/responses/blogger/create-blog.response';
+import { BlogImagesTypeEnum } from '../../../domain/blogs/enums/blog-images-type.enum';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class GetAllBlogsAction {
   constructor(
     @Inject(QueryBlogsRepository)
     private readonly queryRepository: QueryBlogsRepository,
+    private readonly configService: ConfigService,
   ) {}
+
+  private async prepareImages(blogId: number): Promise<CreateBlogResponse> {
+    const [wallpaper, main] = await Promise.all([
+      this.queryRepository.getBlogImages(blogId, BlogImagesTypeEnum.WALLPAPER),
+      this.queryRepository.getBlogImages(blogId, BlogImagesTypeEnum.MAIN),
+    ]);
+    return plainToClass(CreateBlogResponse, {
+      wallpaper: {
+        ...wallpaper,
+        url: this.configService.get('AWS_LINK') + wallpaper[0].path,
+      },
+      main: main.map((item) => {
+        return {
+          ...item,
+          url: this.configService.get('AWS_LINK') + item.path,
+        };
+      }),
+    });
+  }
 
   public async execute(query: GetBlogsDto, userId?: number): Promise<GetAllBlogsResponse> {
     const skip = (query.pageNumber - 1) * query.pageSize;
@@ -27,17 +49,21 @@ export class GetAllBlogsAction {
 
     const pagesCount = Math.ceil(totalCount / query.pageSize);
 
+    const promises = blogs.map(async (item) => {
+      const images = await this.prepareImages(item.id);
+      return plainToClass(CreateBlogResponse, {
+        ...item,
+        id: item.id.toString(),
+        images,
+      });
+    });
+
     return {
       pagesCount,
       page: query.pageNumber,
       pageSize: query.pageSize,
       totalCount,
-      items: blogs.map((item) =>
-        plainToClass(CreateBlogResponse, {
-          ...item,
-          id: item.id.toString(),
-        }),
-      ),
+      items: await Promise.all(promises),
     };
   }
 }

@@ -1,6 +1,8 @@
 import { MetaResponse } from '../meta.response';
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { ExtendedLikesInfo } from '../extendedLikesInfo.response';
+import { CreateImageResponse } from '../../requests/blogger/create-images.response';
+import { ValidateNested } from 'class-validator';
 
 @Exclude()
 class newestLikePost {
@@ -45,6 +47,11 @@ export class PostByBlogItem {
 
   @Expose()
   extendedLikesInfo: ExtendedLikesInfoPost;
+
+  @Expose()
+  @ValidateNested()
+  @Type(() => CreateImageResponse)
+  images: CreateImageResponse;
 }
 
 @Exclude()

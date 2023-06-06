@@ -23,6 +23,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PostEntity } from '../../domain/posts/entities/post.entity';
 import { CommentsEntity } from '../../domain/comments/entities/comment.entity';
 import { PostLikesEntity } from '../../domain/posts/like-status/entity/like-status-posts.entity';
+import { PostImagesEntity } from '../../domain/posts/entities/post-images.entity';
 
 @Module({
   imports: [
@@ -30,7 +31,7 @@ import { PostLikesEntity } from '../../domain/posts/like-status/entity/like-stat
     UsersModule,
     CommentsModule,
     BlogsModule,
-    TypeOrmModule.forFeature([PostEntity, CommentsEntity, PostLikesEntity]),
+    TypeOrmModule.forFeature([PostEntity, CommentsEntity, PostLikesEntity, PostImagesEntity]),
   ],
   controllers: [PostsController],
   providers: [

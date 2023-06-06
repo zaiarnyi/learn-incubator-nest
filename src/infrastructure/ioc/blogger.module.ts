@@ -15,6 +15,11 @@ import { CommentsModule } from './comments.module';
 import { BannedUserByBloggerAction } from '../../application/actions/blogger/users/banned-user-by-blogger.action';
 import { SaUsersModule } from './sa/users/sa-users.module';
 import { GetBannedUserAction } from '../../application/actions/blogger/users/get-banned-user.action';
+import { SaveWallpaperAction } from '../../application/actions/blogger/save-wallpaper.action';
+import { SaveBlogMainImageAction } from '../../application/actions/blogger/save-blog-main-image.action';
+import { SavePostMainImageAction } from '../../application/actions/blogger/save-post-main-image.action';
+import { S3Module } from './s3.module';
+import { ImagesModule } from './images.module';
 
 @Module({
   imports: [
@@ -26,6 +31,8 @@ import { GetBannedUserAction } from '../../application/actions/blogger/users/get
     }),
     CommentsModule,
     SaUsersModule,
+    S3Module,
+    ImagesModule,
   ],
   controllers: [BloggerController],
   providers: [
@@ -37,6 +44,9 @@ import { GetBannedUserAction } from '../../application/actions/blogger/users/get
     GetCommentsByBlogsAction,
     BannedUserByBloggerAction,
     GetBannedUserAction,
+    SaveWallpaperAction,
+    SaveBlogMainImageAction,
+    SavePostMainImageAction,
   ],
 })
 export class BloggerModule {}

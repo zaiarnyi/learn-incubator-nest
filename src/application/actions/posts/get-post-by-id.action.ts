@@ -5,16 +5,26 @@ import { plainToClass } from 'class-transformer';
 import { GetLikesInfoForPostService } from '../../services/posts/get-likes-info-for-post.service';
 import { QueryUserBannedRepository } from '../../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
 import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
+import { CreateImageResponse } from '../../../presentation/requests/blogger/create-images.response';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class GetPostByIdAction {
   logger = new Logger(GetPostByIdAction.name);
   constructor(
-    @Inject(QueryPostRepository) private readonly queryRepository: QueryPostRepository,
-    @Inject(QueryBlogsRepository) private readonly queryBlogRepository: QueryBlogsRepository,
-    @Inject(GetLikesInfoForPostService) private readonly likesInfoService: GetLikesInfoForPostService,
-    @Inject(QueryUserBannedRepository) private readonly queryUserBannedRepository: QueryUserBannedRepository,
+    private readonly queryRepository: QueryPostRepository,
+    private readonly queryBlogRepository: QueryBlogsRepository,
+    private readonly likesInfoService: GetLikesInfoForPostService,
+    private readonly queryUserBannedRepository: QueryUserBannedRepository,
+    private readonly configService: ConfigService,
   ) {}
+
+  private async prepareImages(postId: number): Promise<CreateImageResponse> {
+    const images = await this.queryRepository.getPostImages(postId);
+    return plainToClass(CreateImageResponse, {
+      main: images.map((item) => ({ ...item, url: this.configService.get('AWS_LINK') + item.path })),
+    });
+  }
 
   private async validateIsUserBanned(userId: number) {
     if (!userId) return;
@@ -40,6 +50,7 @@ export class GetPostByIdAction {
       blogName: postById.blog.name,
       createdAt: postById.createdAt,
       extendedLikesInfo: await this.likesInfoService.likesInfo(id, userId),
+      images: await this.prepareImages(id),
     });
   }
 }

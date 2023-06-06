@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PostEntity } from '../../../../domain/posts/entities/post.entity';
 import { CreatePostDto } from '../../../../domain/posts/dto/create-post.dto';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { PostImagesEntity } from '../../../../domain/posts/entities/post-images.entity';
 
 @Injectable()
 export class MainPostRepository {
   constructor(
-    @InjectDataSource() private readonly dataSource: DataSource,
     @InjectRepository(PostEntity) private readonly repository: Repository<PostEntity>,
+    @InjectRepository(PostImagesEntity) private readonly postImageRepository: Repository<PostImagesEntity>,
   ) {}
 
   async createPost(post: PostEntity): Promise<PostEntity> {
@@ -28,5 +29,9 @@ export class MainPostRepository {
 
   async changeBannedStatusByBlogger(userId: number, blogId: number, isBanned: boolean): Promise<any> {
     return this.repository.update({ user: { id: userId }, blog: { id: blogId } }, { isBanned });
+  }
+
+  async savePostImage(image: PostImagesEntity): Promise<PostImagesEntity> {
+    return this.postImageRepository.save(image);
   }
 }

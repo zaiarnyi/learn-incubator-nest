@@ -1,4 +1,6 @@
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
+import { CreateImagesResponse } from '../../requests/blogger/create-images.response';
+import { ValidateNested } from 'class-validator';
 
 @Exclude()
 export class CreateBlogResponse {
@@ -19,4 +21,9 @@ export class CreateBlogResponse {
 
   @Expose()
   isMembership: boolean;
+
+  @Expose()
+  @Type(() => CreateImagesResponse)
+  @ValidateNested()
+  images: CreateImagesResponse;
 }

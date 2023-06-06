@@ -1,14 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { BlogEntity } from '../../../../domain/blogs/entities/blog.entity';
-import { PostEntity } from '../../../../domain/posts/entities/post.entity';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { BlogImagesEntity } from '../../../../domain/blogs/entities/blog-images.entity';
+import { BlogImagesTypeEnum } from '../../../../domain/blogs/enums/blog-images-type.enum';
 
 @Injectable()
 export class QueryBlogsRepository {
   constructor(
-    @InjectDataSource() private readonly dataSource: DataSource,
     @InjectRepository(BlogEntity) private readonly repository: Repository<BlogEntity>,
+    @InjectRepository(BlogImagesEntity) private readonly blogImagesEntityRepository: Repository<BlogImagesEntity>,
   ) {}
 
   async getBlogs(
@@ -54,13 +55,6 @@ export class QueryBlogsRepository {
     return this.repository.findOne({ where: { id }, relations: ['user'] });
   }
 
-  async getPostsCount(blogId: number): Promise<number> {
-    const count = await this.dataSource.query(`SELECT COUNT(*) FROM posts WHERE "blog" = $1 AND "is_banned" = FALSE`, [
-      blogId,
-    ]);
-    return +count[0].count;
-  }
-
   async getBlogsByBlogger(userId: number): Promise<number[]> {
     const blogs = await this.repository.find({ where: { user: { id: userId } }, relations: ['user'] });
     return blogs.map((item) => item.id);
@@ -68,5 +62,9 @@ export class QueryBlogsRepository {
 
   async getBlogsByBloggerWithUser(blogId: number): Promise<BlogEntity> {
     return this.repository.findOne({ where: { id: blogId, isBanned: false }, relations: ['user'] });
+  }
+
+  async getBlogImages(id: number, type: BlogImagesTypeEnum): Promise<BlogImagesEntity[]> {
+    return this.blogImagesEntityRepository.find({ where: { id, type } });
   }
 }
