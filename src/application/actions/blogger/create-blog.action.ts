@@ -28,6 +28,10 @@ export class CreateBlogAction {
     return plainToClass(CreateBlogResponse, {
       ...createdBlog,
       id: createdBlog.id.toString(),
+      images: {
+        main: [],
+        wallpaper: null,
+      },
     });
   }
 }
