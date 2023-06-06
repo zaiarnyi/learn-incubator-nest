@@ -27,7 +27,7 @@ COPY --chown=node:node --from=development /usr/src/app/node_modules ./node_modul
 COPY --chown=node:node . .
 
 RUN npm run build
-RUN npm ci --only=production --ignore-scripts --arch=arm64 --platform=linuxmusl sharp && npm cache clean --force
+RUN npm ci --only=production --ignore-scripts  && npm cache clean --force
 
 USER node
 
