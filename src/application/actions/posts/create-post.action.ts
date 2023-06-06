@@ -64,6 +64,10 @@ export class CreatePostAction {
         blogName: blog.name,
       }),
       extendedLikesInfo: this.getLikesInfo(),
+      images: {
+        wallpaper: null,
+        main: [],
+      },
     };
   }
 }
