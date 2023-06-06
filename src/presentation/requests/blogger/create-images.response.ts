@@ -21,7 +21,7 @@ export class CreateImageResponse {
   @Expose()
   @ValidateNested()
   @Type(() => CreateImageItem)
-  main: CreateImageItem[];
+  main: CreateImageItem[] = [];
 }
 
 @Exclude()
@@ -29,5 +29,5 @@ export class CreateImagesResponse extends CreateImageResponse {
   @Expose()
   @ValidateNested()
   @Type(() => CreateImageItem)
-  wallpaper: CreateImageItem;
+  wallpaper: CreateImageItem = null;
 }
