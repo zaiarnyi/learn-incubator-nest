@@ -30,7 +30,7 @@ export class SaveBlogMainImageAction {
     user: UserEntity,
   ): Promise<CreateImagesResponse> {
     const blog = await this.queryBlogRepository.getBlogById(blogId);
-    if (blog) {
+    if (!blog) {
       throw new NotFoundException();
     }
 
