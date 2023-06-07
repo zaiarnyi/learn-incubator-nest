@@ -52,7 +52,7 @@ export class SaveBlogMainImageAction {
     ]);
 
     return plainToClass(CreateImagesResponse, {
-      wallpaper: wallpaperImage,
+      wallpaper: wallpaperImage.length ? wallpaperImage : null,
       main: [
         {
           url: mainLink,
