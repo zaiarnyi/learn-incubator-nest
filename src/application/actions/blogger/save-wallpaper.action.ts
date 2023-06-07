@@ -30,7 +30,7 @@ export class SaveWallpaperAction {
     user: UserEntity,
   ): Promise<CreateImagesResponse> {
     const blog = await this.queryBlogRepository.getBlogById(blogId);
-    if (blog) {
+    if (!blog) {
       throw new NotFoundException();
     }
     const wallpaperPath = this.preparePath('wallpaper', user.id, blogId, filename.replace(/\s/g, '_'));
