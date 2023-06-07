@@ -5,6 +5,7 @@ import { CreateBlogResponse } from '../../../presentation/responses/blogger/crea
 import { BlogImagesTypeEnum } from '../../../domain/blogs/enums/blog-images-type.enum';
 import { ConfigService } from '@nestjs/config';
 import { BlogImagesEntity } from '../../../domain/blogs/entities/blog-images.entity';
+import { CreateImagesResponse } from '../../../presentation/requests/blogger/create-images.response';
 
 @Injectable()
 export class GetBlogByIdAction {
@@ -19,12 +20,12 @@ export class GetBlogByIdAction {
     };
   }
 
-  private async prepareImages(blogId: number): Promise<CreateBlogResponse> {
+  private async prepareImages(blogId: number): Promise<CreateImagesResponse> {
     const [wallpaper, main] = await Promise.all([
       this.queryRepository.getBlogImages(blogId, BlogImagesTypeEnum.WALLPAPER),
       this.queryRepository.getBlogImages(blogId, BlogImagesTypeEnum.MAIN),
     ]);
-    return plainToClass(CreateBlogResponse, {
+    return {
       wallpaper: this.prepareWallpaper(wallpaper),
       main: main.map((item) => {
         return {
@@ -32,7 +33,7 @@ export class GetBlogByIdAction {
           url: this.configService.get('AWS_LINK') + item.path,
         };
       }),
-    });
+    };
   }
 
   async execute(id: number): Promise<CreateBlogResponse> {
