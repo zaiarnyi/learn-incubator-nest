@@ -54,7 +54,6 @@ export class SaveBlogMainImageAction {
       this.queryBlogRepository.getBlogImages(blogId, BlogImagesTypeEnum.WALLPAPER),
       this.blogRepository.saveImageForBlog(blogImage),
     ]);
-    console.log(wallpaperImage, 'wallpaperImage');
 
     return plainToClass(CreateImagesResponse, {
       wallpaper: wallpaperImage.length ? wallpaperImage : null,
