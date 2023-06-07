@@ -39,7 +39,7 @@ export class SaveBlogMainImageAction {
 
     const blogImage = new BlogImagesEntity();
     blogImage.blog = blog;
-    blogImage.type = BlogImagesTypeEnum.WALLPAPER;
+    blogImage.type = BlogImagesTypeEnum.MAIN;
     blogImage.width = mainSize.width;
     blogImage.height = mainSize.height;
     blogImage.fileSize = mainSize.size;
@@ -47,9 +47,10 @@ export class SaveBlogMainImageAction {
 
     const [mainLink, wallpaperImage] = await Promise.all([
       this.s3Service.uploadToS3(buffer, mainPath),
-      this.queryBlogRepository.getBlogImages(blogId, BlogImagesTypeEnum.MAIN),
+      this.queryBlogRepository.getBlogImages(blogId, BlogImagesTypeEnum.WALLPAPER),
       this.blogRepository.saveImageForBlog(blogImage),
     ]);
+    console.log(wallpaperImage, 'wallpaperImage');
 
     return plainToClass(CreateImagesResponse, {
       wallpaper: wallpaperImage.length ? wallpaperImage : null,
