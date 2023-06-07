@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { S3Service } from '../../../infrastructure/external/modules/s3/s3.service';
 import { ImageService } from '../../../infrastructure/external/modules/images/image.service';
 import { join } from 'path';
@@ -32,6 +32,10 @@ export class SaveBlogMainImageAction {
     const blog = await this.queryBlogRepository.getBlogById(blogId);
     if (!blog) {
       throw new NotFoundException();
+    }
+
+    if (blog.user.id !== user.id) {
+      throw new ForbiddenException();
     }
 
     const mainPath = this.preparePath('main', user.id, blogId, filename.replace(/\s/g, '_'));
