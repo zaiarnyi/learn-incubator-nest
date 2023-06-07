@@ -19,6 +19,7 @@ export class GetAllBlogsAction {
 
   private prepareWallpaper(wallpaper: BlogImagesEntity[]): CreateImageItem {
     if (!wallpaper.length) return null;
+
     return {
       ...wallpaper[0],
       url: this.configService.get('AWS_LINK') + wallpaper[0].path,
