@@ -153,7 +153,7 @@ export class BloggerController {
   async imagesMainForPostSave(
     @Param('blogId') blogId: string,
     @Param('postId') postId: string,
-    @UploadedFile(filePipe(new ImageSizeValidator({ width: 156, height: 156 }))) file: Express.Multer.File,
+    @UploadedFile(filePipe(new ImageSizeValidator({ width: 940, height: 432 }))) file: Express.Multer.File,
     @Req() req: any,
   ): Promise<CreateImageResponse> {
     if (isNaN(Number(blogId)) || isNaN(Number(postId))) {
