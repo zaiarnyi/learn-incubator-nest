@@ -31,7 +31,7 @@ export class MainPostRepository {
     return this.repository.update({ user: { id: userId }, blog: { id: blogId } }, { isBanned });
   }
 
-  async savePostImage(image: PostImagesEntity): Promise<PostImagesEntity> {
-    return this.postImageRepository.save(image);
+  async savePostImage(images: PostImagesEntity[]): Promise<PostImagesEntity[]> {
+    return this.postImageRepository.save(images);
   }
 }

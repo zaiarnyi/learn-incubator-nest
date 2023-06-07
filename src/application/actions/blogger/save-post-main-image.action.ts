@@ -8,6 +8,8 @@ import { ImageService } from '../../../infrastructure/external/modules/images/im
 import { PostImagesEntity } from '../../../domain/posts/entities/post-images.entity';
 import { S3Service } from '../../../infrastructure/external/modules/s3/s3.service';
 import { plainToClass } from 'class-transformer';
+import { PostEntity } from '../../../domain/posts/entities/post.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SavePostMainImageAction {
@@ -16,10 +18,28 @@ export class SavePostMainImageAction {
     private readonly mainPostRepository: MainPostRepository,
     private readonly imagesService: ImageService,
     private readonly s3Service: S3Service,
+    private readonly configService: ConfigService,
   ) {}
 
-  private preparePath(userId: number, blogId: number, postId: number, filename = ''): string {
-    return join('incubator', userId.toString(), 'blogs', blogId.toString(), 'posts', postId.toString(), filename);
+  private prepareImagesSizes(
+    post: PostEntity,
+    width: number,
+    height: number,
+    size: number,
+    path: string,
+  ): PostImagesEntity {
+    const posImage = new PostImagesEntity();
+    posImage.post = post;
+    posImage.height = height;
+    posImage.width = width;
+    posImage.fileSize = size;
+    posImage.path = path;
+
+    return posImage;
+  }
+
+  private preparePath(userId: number, blogId: number, postId: number, size: string, filename = ''): string {
+    return join('incubator', userId.toString(), 'blogs', blogId.toString(), 'posts', postId.toString(), size, filename);
   }
   public async execute(
     blogId: number,
@@ -37,20 +57,33 @@ export class SavePostMainImageAction {
     if (post.blog.user.id !== user.id) {
       throw new ForbiddenException();
     }
-    const path = this.preparePath(user.id, blogId, postId, fileName.replace(/\s/g, '_'));
-    const mainSize = await this.imagesService.detectSize(buffer);
+    const pathOriginal = this.preparePath(user.id, blogId, postId, '940x432', fileName.replace(/\s/g, '_'));
+    const pathMedium = this.preparePath(user.id, blogId, postId, '300x180', fileName.replace(/\s/g, '_'));
+    const pathSmall = this.preparePath(user.id, blogId, postId, '149x96', fileName.replace(/\s/g, '_'));
 
-    const posImage = new PostImagesEntity();
-    posImage.post = post;
-    posImage.height = mainSize.height;
-    posImage.width = mainSize.width;
-    posImage.fileSize = mainSize.size;
-    posImage.path = path;
+    const mainMiddleImage = await this.imagesService.toSize(buffer, 300, 180);
+    const mainSmallImage = await this.imagesService.toSize(buffer, 149, 96);
 
-    await Promise.all([this.s3Service.uploadToS3(buffer, path), this.mainPostRepository.savePostImage(posImage)]);
+    const mainSizeOriginal = await this.imagesService.detectSize(buffer);
+    const mainSizeMiddle = await this.imagesService.detectSize(mainMiddleImage);
+    const mainSizeSmall = await this.imagesService.detectSize(mainSmallImage);
 
-    const mainImages = await this.postRepository.getPostImages(postId);
+    const imageOriginal = this.prepareImagesSizes(post, 940, 432, mainSizeOriginal.size, pathOriginal);
+    const imageMedium = this.prepareImagesSizes(post, 300, 180, mainSizeMiddle.size, pathMedium);
+    const imageSmall = this.prepareImagesSizes(post, 149, 96, mainSizeSmall.size, pathSmall);
 
-    return plainToClass(CreateImageResponse, { main: mainImages });
+    const [images] = await Promise.all([
+      this.mainPostRepository.savePostImage([imageOriginal, imageMedium, imageSmall]),
+      this.s3Service.uploadToS3(buffer, pathOriginal),
+      this.s3Service.uploadToS3(buffer, pathMedium),
+      this.s3Service.uploadToS3(buffer, pathSmall),
+    ]);
+
+    return plainToClass(CreateImageResponse, {
+      main: images.map((item) => ({
+        ...item,
+        url: this.configService.get('AWS_LINK') + item.path,
+      })),
+    });
   }
 }
