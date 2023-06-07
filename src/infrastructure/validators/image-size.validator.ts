@@ -13,11 +13,11 @@ export class ImageSizeValidator extends FileValidator<ImageSizeValidatorType> {
       return false;
     }
 
-    if (metadata.width > this.validationOptions.width) {
+    if (metadata.width !== this.validationOptions.width) {
       return false;
     }
 
-    return metadata.height <= this.validationOptions.height;
+    return metadata.height === this.validationOptions.height;
   }
 
   buildErrorMessage(file: any): string {
