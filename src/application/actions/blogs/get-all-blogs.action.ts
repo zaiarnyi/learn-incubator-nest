@@ -6,6 +6,8 @@ import { plainToClass } from 'class-transformer';
 import { CreateBlogResponse } from '../../../presentation/responses/blogger/create-blog.response';
 import { BlogImagesTypeEnum } from '../../../domain/blogs/enums/blog-images-type.enum';
 import { ConfigService } from '@nestjs/config';
+import { CreateImageItem, CreateImagesResponse } from '../../../presentation/requests/blogger/create-images.response';
+import { BlogImagesEntity } from '../../../domain/blogs/entities/blog-images.entity';
 
 @Injectable()
 export class GetAllBlogsAction {
@@ -15,23 +17,28 @@ export class GetAllBlogsAction {
     private readonly configService: ConfigService,
   ) {}
 
-  private async prepareImages(blogId: number): Promise<CreateBlogResponse> {
+  private prepareWallpaper(wallpaper: BlogImagesEntity[]): CreateImageItem {
+    if (!wallpaper.length) return null;
+    return {
+      ...wallpaper[0],
+      url: this.configService.get('AWS_LINK') + wallpaper[0].path,
+    };
+  }
+
+  private async prepareImages(blogId: number): Promise<CreateImagesResponse> {
     const [wallpaper, main] = await Promise.all([
       this.queryRepository.getBlogImages(blogId, BlogImagesTypeEnum.WALLPAPER),
       this.queryRepository.getBlogImages(blogId, BlogImagesTypeEnum.MAIN),
     ]);
-    return plainToClass(CreateBlogResponse, {
-      wallpaper: {
-        ...wallpaper,
-        url: this.configService.get('AWS_LINK') + wallpaper[0].path,
-      },
+    return {
+      wallpaper: this.prepareWallpaper(wallpaper),
       main: main.map((item) => {
         return {
           ...item,
           url: this.configService.get('AWS_LINK') + item.path,
         };
       }),
-    });
+    };
   }
 
   public async execute(query: GetBlogsDto, userId?: number): Promise<GetAllBlogsResponse> {
