@@ -57,11 +57,10 @@ export class GetAllBlogsAction {
     const pagesCount = Math.ceil(totalCount / query.pageSize);
 
     const promises = blogs.map(async (item) => {
-      const images = await this.prepareImages(item.id);
       return plainToClass(CreateBlogResponse, {
         ...item,
         id: item.id.toString(),
-        images,
+        images: await this.prepareImages(item.id),
       });
     });
 
