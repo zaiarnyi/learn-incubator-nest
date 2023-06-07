@@ -1,14 +1,23 @@
-import { Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 import { plainToClass } from 'class-transformer';
 import { CreateBlogResponse } from '../../../presentation/responses/blogger/create-blog.response';
 import { BlogImagesTypeEnum } from '../../../domain/blogs/enums/blog-images-type.enum';
 import { ConfigService } from '@nestjs/config';
+import { BlogImagesEntity } from '../../../domain/blogs/entities/blog-images.entity';
 
 @Injectable()
 export class GetBlogByIdAction {
   logger = new Logger(GetBlogByIdAction.name);
   constructor(private readonly queryRepository: QueryBlogsRepository, private readonly configService: ConfigService) {}
+
+  private prepareWallpaper(wallpaper: BlogImagesEntity[]) {
+    if (!wallpaper.length) return null;
+    return {
+      ...wallpaper[0],
+      url: this.configService.get('AWS_LINK') + wallpaper[0].path,
+    };
+  }
 
   private async prepareImages(blogId: number): Promise<CreateBlogResponse> {
     const [wallpaper, main] = await Promise.all([
@@ -16,10 +25,7 @@ export class GetBlogByIdAction {
       this.queryRepository.getBlogImages(blogId, BlogImagesTypeEnum.MAIN),
     ]);
     return plainToClass(CreateBlogResponse, {
-      wallpaper: {
-        ...wallpaper,
-        url: this.configService.get('AWS_LINK') + wallpaper[0].path,
-      },
+      wallpaper: this.prepareWallpaper(wallpaper),
       main: main.map((item) => {
         return {
           ...item,
