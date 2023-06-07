@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { UserEntity } from '../../../domain/users/entities/user.entity';
 import { S3Service } from '../../../infrastructure/external/modules/s3/s3.service';
 import { join } from 'path';
@@ -33,6 +33,11 @@ export class SaveWallpaperAction {
     if (!blog) {
       throw new NotFoundException();
     }
+
+    if (blog.user.id !== user.id) {
+      throw new ForbiddenException();
+    }
+
     const wallpaperPath = this.preparePath('wallpaper', user.id, blogId, filename.replace(/\s/g, '_'));
     const wallpaperSize = await this.imagesService.detectSize(buffer);
 
