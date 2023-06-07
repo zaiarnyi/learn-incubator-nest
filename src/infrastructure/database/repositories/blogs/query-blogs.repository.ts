@@ -65,6 +65,6 @@ export class QueryBlogsRepository {
   }
 
   async getBlogImages(id: number, type: BlogImagesTypeEnum): Promise<BlogImagesEntity[]> {
-    return this.blogImagesEntityRepository.find({ where: { id, type } });
+    return this.blogImagesEntityRepository.find({ where: { blog: { id }, type }, relations: ['blog'] });
   }
 }
