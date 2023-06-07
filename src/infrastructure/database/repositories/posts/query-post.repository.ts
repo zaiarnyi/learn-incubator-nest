@@ -53,6 +53,6 @@ export class QueryPostRepository {
   }
 
   async getPostImages(id: number): Promise<PostImagesEntity[]> {
-    return this.postImageRepository.findBy({ id });
+    return this.postImageRepository.find({ where: { post: { id } }, relations: ['post'] });
   }
 }
