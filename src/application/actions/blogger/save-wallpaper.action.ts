@@ -41,10 +41,10 @@ export class SaveWallpaperAction {
     const wallpaperPath = this.preparePath('wallpaper', user.id, blogId, filename.replace(/\s/g, '_'));
     const wallpaperSize = await this.imagesService.detectSize(buffer);
 
-    await Promise.all([
-      this.s3Service.deleteObject(wallpaperPath),
-      this.blogRepository.deleteImageForBlog(blogId, BlogImagesTypeEnum.WALLPAPER),
-    ]);
+    // await Promise.all([
+    //   this.s3Service.deleteObject(wallpaperPath),
+    //   this.blogRepository.deleteImageForBlog(blogId, BlogImagesTypeEnum.WALLPAPER),
+    // ]);
 
     const blogImage = new BlogImagesEntity();
     blogImage.blog = blog;

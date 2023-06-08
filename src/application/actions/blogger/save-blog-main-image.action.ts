@@ -9,6 +9,7 @@ import { MainBlogsRepository } from '../../../infrastructure/database/repositori
 import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 import { BlogImagesTypeEnum } from '../../../domain/blogs/enums/blog-images-type.enum';
 import { BlogImagesEntity } from '../../../domain/blogs/entities/blog-images.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class SaveBlogMainImageAction {
@@ -17,6 +18,7 @@ export class SaveBlogMainImageAction {
     private readonly imagesService: ImageService,
     private readonly blogRepository: MainBlogsRepository,
     private readonly queryBlogRepository: QueryBlogsRepository,
+    private readonly configService: ConfigService,
   ) {}
 
   private preparePath(type: string, userId: number, blogId: number, filename: string): string {
@@ -49,17 +51,19 @@ export class SaveBlogMainImageAction {
     blogImage.fileSize = mainSize.size;
     blogImage.path = mainPath;
 
-    const [mainLink, wallpaperImage] = await Promise.all([
-      this.s3Service.uploadToS3(buffer, mainPath),
+    const [wallpaperImage] = await Promise.all([
       this.queryBlogRepository.getBlogImages(blogId, BlogImagesTypeEnum.WALLPAPER),
+      this.s3Service.uploadToS3(buffer, mainPath),
       this.blogRepository.saveImageForBlog(blogImage),
     ]);
 
     return plainToClass(CreateImagesResponse, {
-      wallpaper: wallpaperImage.length ? wallpaperImage : null,
+      wallpaper: wallpaperImage.length
+        ? { ...wallpaperImage, url: this.configService.get('AWS_LINK') + wallpaperImage[0].path }
+        : null,
       main: [
         {
-          url: mainLink,
+          url: this.configService.get('AWS_LINK') + mainPath,
           width: mainSize.width,
           height: mainSize.height,
           fileSize: mainSize.size,

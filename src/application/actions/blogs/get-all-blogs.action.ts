@@ -28,6 +28,7 @@ export class GetAllBlogsAction {
   }
 
   private async prepareImages(blogId: number): Promise<CreateImagesResponse> {
+    console.log(blogId, 'blogId===============');
     const [wallpaper, main] = await Promise.all([
       this.queryRepository.getBlogImages(blogId, BlogImagesTypeEnum.WALLPAPER),
       this.queryRepository.getBlogImages(blogId, BlogImagesTypeEnum.MAIN),
