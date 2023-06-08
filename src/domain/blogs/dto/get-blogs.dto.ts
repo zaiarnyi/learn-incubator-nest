@@ -22,7 +22,7 @@ export class GetBlogsDto {
   @IsString()
   @IsOptional()
   @IsEnum(BlogSortDirection)
-  sortDirection: BlogSortDirection = BlogSortDirection.DESC;
+  sortDirection: BlogSortDirection = BlogSortDirection.ASC;
 
   @IsString()
   @IsOptional()
