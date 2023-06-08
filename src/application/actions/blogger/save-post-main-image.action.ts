@@ -75,8 +75,8 @@ export class SavePostMainImageAction {
     const [images] = await Promise.all([
       this.mainPostRepository.savePostImage([imageOriginal, imageMedium, imageSmall]),
       this.s3Service.uploadToS3(buffer, pathOriginal),
-      this.s3Service.uploadToS3(buffer, pathMedium),
-      this.s3Service.uploadToS3(buffer, pathSmall),
+      this.s3Service.uploadToS3(mainMiddleImage, pathMedium),
+      this.s3Service.uploadToS3(mainSmallImage, pathSmall),
     ]);
 
     return plainToClass(CreateImageResponse, {
