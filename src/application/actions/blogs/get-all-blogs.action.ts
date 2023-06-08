@@ -18,6 +18,7 @@ export class GetAllBlogsAction {
   ) {}
 
   private prepareWallpaper(wallpaper: BlogImagesEntity[]): CreateImageItem {
+    console.log(wallpaper, 'wallpaper');
     if (!wallpaper.length) return null;
 
     return {
@@ -43,6 +44,7 @@ export class GetAllBlogsAction {
   }
 
   public async execute(query: GetBlogsDto, userId?: number): Promise<GetAllBlogsResponse> {
+    console.log(query, 'query');
     const skip = (query.pageNumber - 1) * query.pageSize;
     const [blogs, totalCount] = await this.queryRepository.getBlogs(
       query.searchNameTerm,
