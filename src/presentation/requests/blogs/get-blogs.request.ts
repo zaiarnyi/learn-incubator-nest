@@ -22,7 +22,7 @@ export class GetBlogsRequest {
   @IsString()
   @IsOptional()
   // @IsEnum(BlogSortDirection)
-  sortDirection: BlogSortDirection = BlogSortDirection.ASC;
+  sortDirection: BlogSortDirection = BlogSortDirection.DESC;
 }
 
 export class GetBlogsRequestWithSearch extends GetBlogsRequest {

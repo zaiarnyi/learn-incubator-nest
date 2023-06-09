@@ -47,12 +47,12 @@ export class RegistrationConfirmationAction {
       this.logger.error(
         `Confirmation status change error for the user - ${user.id}. Code -  ${code}. Error: ${JSON.stringify(e)}`,
       );
-      throw new BadRequestException([
-        {
-          message: 'User not found',
-          field: 'code',
-        },
-      ]);
+      // throw new BadRequestException([
+      //   {
+      //     message: 'User not found',
+      //     field: 'code',
+      //   },
+      // ]);
     });
   }
 }
