@@ -11,6 +11,8 @@ import { useContainer } from 'class-validator';
 import rateLimit from 'express-rate-limit';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as express from 'express';
 
 async function bootstrap() {
   try {
@@ -59,6 +61,28 @@ async function bootstrap() {
       }),
     );
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
+
+    const config = new DocumentBuilder()
+      .setTitle('Ты лучший')
+      .setDescription('ТЫ скоро устроишься на работу')
+      .setVersion('1.0')
+      .addTag('auth', 'All methods for user')
+      .addTag('blogs', 'All methods for blogs')
+      .addTag('posts', 'All methods for posts')
+      .addTag('comments', 'All methods for comments')
+      .addTag('pair/quiz', 'All methods for quiz')
+      .addTag('security', 'All methods for security')
+      .addTag('blogger/blogs', 'All methods for blogger')
+      .addTag('blogger/users', 'All methods for blogger/users')
+      .addBearerAuth({ type: 'http' })
+      .addCookieAuth('refreshToken')
+      .addBasicAuth({ type: 'http' })
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api', app, document);
+
+    app.use(express.static('public'));
+    SwaggerModule.setup('api', app, document);
     await app.listen(PORT);
 
     Logger.log(`Server is listening on port ${PORT}`, 'Bootstrap');

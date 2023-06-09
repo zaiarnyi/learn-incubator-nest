@@ -38,8 +38,24 @@ import { Throttle } from '@nestjs/throttler';
 import { JwtService } from '@nestjs/jwt';
 import { InvalidUserTokensService } from '../../application/services/invalid-tokens/invalid-user-tokens.service';
 import { QueryUserBannedRepository } from '../../infrastructure/database/repositories/sa/users/query-user-banned.repository';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiBody,
+  ApiCookieAuth,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+  ApiTooManyRequestsResponse,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { BadRequestResponse } from '../responses/badRequest.response';
+import { LoginResponse } from '../responses/auth/login.response';
 
 @Controller('auth')
+@ApiBadRequestResponse({ type: BadRequestResponse })
+@ApiTooManyRequestsResponse({ description: 'More than 5 attempts from one IP-address during 10 seconds' })
+@ApiTags('auth')
 export class AuthController {
   private logger = new Logger(AuthController.name);
   httpOnly = true;
@@ -65,12 +81,17 @@ export class AuthController {
     this.secure = this.configService.get<string>('SECURITY_COOKIE') === 'true';
     this.isDev = this.configService.get<string>('NODE_ENV') === 'development';
   }
-  @Post('password-recovery') // TODO Done
+  @Post('password-recovery')
+  @ApiOperation({ summary: `Password recovery method. Rate limit: 5 req per 10 sec` })
+  @ApiBody({ type: CheckEmail })
+  @ApiUnauthorizedResponse({ description: 'If the password or login is wrong' })
   @HttpCode(204)
   async passwordRecovery(@Body() body: CheckEmail): Promise<any> {
     return this.recoveryService.execute(body.email);
   }
-  @Post('new-password') // TODO Done
+  @Post('new-password')
+  @ApiOperation({ summary: `Add a new password for your user` })
+  @ApiBody({ type: NewPasswordRequest })
   @HttpCode(204)
   async createNewPassword(@Body() body: NewPasswordRequest): Promise<void> {
     return this.newPasswordService.execute(body);
@@ -78,6 +99,8 @@ export class AuthController {
   // @Throttle(5, 10)
   @UseGuards(LocalAuthGuard)
   @Post('login')
+  @ApiBody({ type: LoginResponse })
+  @ApiOperation({ summary: `Sign in to your account. Rate limit: 5 req per 10 sec` })
   async login(@Req() req: any, @Res({ passthrough: true }) response: Response, @Body() body: LoginRequest) {
     const devicePrepare = new DeviceDto();
     devicePrepare.ip = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || req.socket.remoteAddress || null;
@@ -93,6 +116,9 @@ export class AuthController {
   }
 
   @Post('refresh-token')
+  @ApiOperation({ summary: `Refresh the token` })
+  @ApiBody({ type: LoginResponse })
+  @ApiCookieAuth()
   async createRefreshToken(@Cookies('refreshToken') token: string, @Res({ passthrough: true }) response: Response) {
     if (!token?.length) {
       throw new UnauthorizedException();
@@ -128,15 +154,19 @@ export class AuthController {
     response.status(200).json({ accessToken });
   }
 
-  @Throttle(5, 10) //TODO Done
+  @Throttle(5, 10)
   @Post('registration-confirmation')
+  @ApiOperation({ summary: `Confirmation of registration. Rate limit: 5 req per 10 sec` })
+  @ApiBody({ type: RegistrationConfirmationRequest })
   @HttpCode(204)
   async registrationConfirmation(@Body() body: RegistrationConfirmationRequest) {
     await this.confirmationService.execute(body.code);
   }
 
-  @Throttle(5, 10) //TODO Done
+  @Throttle(5, 10)
   @Post('registration')
+  @ApiOperation({ summary: ` New user registration. Rate limit: 5 req per 10 sec` })
+  @ApiBody({ type: RegistrationRequest })
   async registration(@Body() body: RegistrationRequest, @Res() res: Response) {
     const detectUser = await this.queryUserRepository.getUserByEmailOrLogin(body.login, body.email);
     if (detectUser) {
@@ -154,6 +184,9 @@ export class AuthController {
   @Throttle(5, 10)
   @Post('registration-email-resending')
   @HttpCode(204)
+  @ApiOperation({ summary: `Repeat the confirmation code. Rate limit: 5 req per 10 sec` })
+  @ApiTooManyRequestsResponse({ description: 'More than 5 attempts from one IP-address during 10 seconds' })
+  @ApiBody({ type: CheckEmail })
   async registrationEmailResending(@Body() body: CheckEmail): Promise<void> {
     const detectUser = await this.queryUserRepository.getUserByEmail(body.email);
 
@@ -164,6 +197,8 @@ export class AuthController {
   }
 
   @Post('logout')
+  @ApiCookieAuth()
+  @ApiOperation({ summary: `Signing out of an account` })
   async logout(@Res() response: Response, @Cookies('refreshToken') token?: string) {
     if (!token?.length) {
       throw new UnauthorizedException();
@@ -191,6 +226,9 @@ export class AuthController {
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
+  @ApiBearerAuth()
+  @ApiOperation({ summary: `Getting information about the user` })
+  @ApiOkResponse({ type: MeResponse })
   async me(@Req() req): Promise<MeResponse> {
     return plainToClass(MeResponse, {
       ...req.user,
