@@ -32,6 +32,7 @@ import {
 import { BadRequestResponse } from '../responses/badRequest.response';
 import { SubscriptionBlogAction } from '../../application/actions/blogs/subscription-blog.action';
 import { UnsubscriptionBlogAction } from '../../application/actions/blogs/unsubscription-blog.action';
+import { JwtAuthGuard } from '../../domain/auth/guards/jwt-auth.guard';
 
 @Controller('blogs')
 @ApiTags('blogs')
@@ -82,6 +83,7 @@ export class BlogsController {
 
   @Post('/:id/subscription')
   @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiOperation({ summary: 'Subscribe user to blog. Notifications about new posts will be send to Telegram Bot' })
   @ApiNotFoundResponse({ description: 'If specificied blog is not exists' })
@@ -97,6 +99,7 @@ export class BlogsController {
 
   @Delete('/:id/subscription')
   @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiOperation({
     summary: 'Unsubscribe user from blog. Notifications about new posts will not be send to Telegram Bot',
