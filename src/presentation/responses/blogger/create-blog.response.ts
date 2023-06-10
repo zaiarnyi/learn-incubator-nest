@@ -2,6 +2,7 @@ import { Exclude, Expose, Type } from 'class-transformer';
 import { CreateImagesResponse } from '../../requests/blogger/create-images.response';
 import { ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { SubscriptionStatusEnum } from '../../../domain/blogs/enums/subscription-status.enum';
 
 @Exclude()
 export class CreateBlogResponse {
@@ -38,4 +39,18 @@ export class CreateBlogResponse {
   @ValidateNested()
   @ApiProperty({ type: CreateImagesResponse })
   images: CreateImagesResponse;
+
+  @Expose()
+  @ApiProperty({
+    type: 'enum',
+    enum: SubscriptionStatusEnum,
+    default: SubscriptionStatusEnum.NONE,
+    nullable: false,
+    required: true,
+  })
+  currentUserSubscriptionStatus: SubscriptionStatusEnum;
+
+  @Expose()
+  @ApiProperty({ type: Number, example: 42, default: 0 })
+  subscribersCount: 0;
 }

@@ -2,6 +2,7 @@ import { IsEnum, IsInt, IsOptional, IsString, Max } from 'class-validator';
 import { Type } from 'class-transformer';
 import { PostSortByEnum, PostSortDirection } from '../../../domain/posts/enums/sort.enum';
 import { ApiProperty } from '@nestjs/swagger';
+import { SubscriptionStatusPostEnum } from '../../../domain/posts/enums/subscription-status-post.enum';
 
 export class GetPostsRequest {
   @Type(() => Number)
@@ -42,4 +43,17 @@ export class GetPostsRequest {
     required: false,
   })
   sortDirection: PostSortDirection = PostSortDirection.DESC;
+
+  @IsOptional()
+  @IsEnum(SubscriptionStatusPostEnum)
+  @ApiProperty({
+    type: 'enum',
+    enum: SubscriptionStatusPostEnum,
+    default: SubscriptionStatusPostEnum.ALL,
+    example: SubscriptionStatusPostEnum.ALL,
+    description: 'Returns posts from all blogs or only from blogs on which user subscribed Default: all',
+    nullable: false,
+    required: false,
+  })
+  subscriptionStatus: SubscriptionStatusPostEnum = SubscriptionStatusPostEnum.ALL;
 }

@@ -21,6 +21,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { BullModule } from '@nestjs/bull';
 import { RedisConfig } from './infrastructure/database/configs/redis.config';
+import { IntegrationModule } from './infrastructure/ioc/integration.module';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { RedisConfig } from './infrastructure/database/configs/redis.config';
     SecurityModule,
     SaModule,
     PairsModule,
+    IntegrationModule,
   ],
   controllers: [TestController],
   providers: [

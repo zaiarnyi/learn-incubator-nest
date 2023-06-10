@@ -8,6 +8,7 @@ import { BlogImagesTypeEnum } from '../../../domain/blogs/enums/blog-images-type
 import { ConfigService } from '@nestjs/config';
 import { CreateImageItem, CreateImagesResponse } from '../../../presentation/requests/blogger/create-images.response';
 import { BlogImagesEntity } from '../../../domain/blogs/entities/blog-images.entity';
+import { SubscriptionStatusEnum } from '../../../domain/blogs/enums/subscription-status.enum';
 
 @Injectable()
 export class GetAllBlogsAction {
@@ -45,7 +46,6 @@ export class GetAllBlogsAction {
   }
 
   public async execute(query: GetBlogsDto, userId?: number): Promise<GetAllBlogsResponse> {
-    console.log(query, 'query');
     const skip = (query.pageNumber - 1) * query.pageSize;
     const [blogs, totalCount] = await this.queryRepository.getBlogs(
       query.searchNameTerm,
@@ -61,10 +61,16 @@ export class GetAllBlogsAction {
     const pagesCount = Math.ceil(totalCount / query.pageSize);
 
     const promises = blogs.map(async (item) => {
+      const [countSubscription, mySubscription] = await Promise.all([
+        this.queryRepository.getCountSubscriptionForBlog(item.id),
+        userId && this.queryRepository.statusSubscriptionForUser(userId),
+      ]);
       return plainToClass(CreateBlogResponse, {
         ...item,
         id: item.id.toString(),
         images: await this.prepareImages(item.id),
+        currentUserSubscriptionStatus: mySubscription?.status ?? SubscriptionStatusEnum.NONE,
+        subscribersCount: countSubscription ?? 0,
       });
     });
 

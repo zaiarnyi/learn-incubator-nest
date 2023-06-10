@@ -10,11 +10,26 @@ import { UsersModule } from './users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BlogEntity } from '../../domain/blogs/entities/blog.entity';
 import { BlogImagesEntity } from '../../domain/blogs/entities/blog-images.entity';
+import { SubscriptionBlogAction } from '../../application/actions/blogs/subscription-blog.action';
+import { UnsubscriptionBlogAction } from '../../application/actions/blogs/unsubscription-blog.action';
+import { SubscriptionUsersBlogsEntity } from '../../domain/blogs/entities/subscription-users-blogs.entity';
 
 @Module({
-  imports: [forwardRef(() => PostsModule), UsersModule, TypeOrmModule.forFeature([BlogEntity, BlogImagesEntity])],
+  imports: [
+    forwardRef(() => PostsModule),
+    UsersModule,
+    TypeOrmModule.forFeature([BlogEntity, BlogImagesEntity, SubscriptionUsersBlogsEntity]),
+  ],
   controllers: [BlogsController],
-  providers: [MainBlogsRepository, GetBlogByIdAction, QueryBlogsRepository, GetAllBlogsAction, GetPostByBlogIdAction],
+  providers: [
+    MainBlogsRepository,
+    GetBlogByIdAction,
+    QueryBlogsRepository,
+    GetAllBlogsAction,
+    GetPostByBlogIdAction,
+    SubscriptionBlogAction,
+    UnsubscriptionBlogAction,
+  ],
   exports: [QueryBlogsRepository, MainBlogsRepository, GetAllBlogsAction],
 })
 export class BlogsModule {}

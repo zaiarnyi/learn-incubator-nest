@@ -11,12 +11,22 @@ export class QueryPostRepository {
     @InjectRepository(PostImagesEntity) private readonly postImageRepository: Repository<PostImagesEntity>,
   ) {}
 
-  async getPost(limit: number, offset: number, sortBy: string, direction: string): Promise<[PostEntity[], number]> {
+  async getPost(
+    limit: number,
+    offset: number,
+    sortBy: string,
+    direction: string,
+    subscription: number[],
+  ): Promise<[PostEntity[], number]> {
     const sort = sortBy === 'blogName' ? 'name' : sortBy;
     const query = this.repository
       .createQueryBuilder('p')
       .leftJoinAndSelect('p.blog', 'blog')
       .where('p."isBanned" = false');
+
+    if (subscription && subscription.length) {
+      query.andWhere('blog.id in (:...ids)', { ids: subscription });
+    }
 
     if (sort === 'name') {
       query.orderBy(`blog.name`, direction.toUpperCase() as 'ASC' | 'DESC');

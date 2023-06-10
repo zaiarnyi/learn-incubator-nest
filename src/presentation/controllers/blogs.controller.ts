@@ -1,4 +1,15 @@
-import { Controller, Get, NotFoundException, Param, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  NotFoundException,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { GetBlogsRequest, GetBlogsRequestWithSearch } from '../requests/blogs/get-blogs.request';
 import { CreateBlogResponse } from '../responses/blogger/create-blog.response';
 import { GetBlogByIdAction } from '../../application/actions/blogs/getBlogById.action';
@@ -9,13 +20,18 @@ import { GetPostByBlogIdResponse } from '../responses/blogger/getPostByBlogId.re
 import { JwtAuthOptionalGuard } from '../../domain/auth/guards/optional-jwt-auth.guard';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { BadRequestResponse } from '../responses/badRequest.response';
+import { SubscriptionBlogAction } from '../../application/actions/blogs/subscription-blog.action';
+import { UnsubscriptionBlogAction } from '../../application/actions/blogs/unsubscription-blog.action';
 
 @Controller('blogs')
 @ApiTags('blogs')
@@ -25,6 +41,8 @@ export class BlogsController {
     private readonly getBlogsService: GetAllBlogsAction,
     private readonly getByIdService: GetBlogByIdAction,
     private readonly getPostByBlogIdService: GetPostByBlogIdAction,
+    private readonly subscriptionBlogAction: SubscriptionBlogAction,
+    private readonly unsubscriptionBlogAction: UnsubscriptionBlogAction,
   ) {}
 
   @Get()
@@ -60,5 +78,37 @@ export class BlogsController {
       throw new NotFoundException();
     }
     return this.getByIdService.execute(Number(id));
+  }
+
+  @Post('/:id/subscription')
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiOperation({ summary: 'Subscribe user to blog. Notifications about new posts will be send to Telegram Bot' })
+  @ApiNotFoundResponse({ description: 'If specificied blog is not exists' })
+  @ApiParam({ name: 'id', allowEmptyValue: false, description: 'blog id' })
+  @ApiResponse({ status: 204 })
+  @HttpCode(204)
+  async subscriptionByBlogId(@Param('id') id: string, @Req() req: any) {
+    if (isNaN(Number(id))) {
+      throw new NotFoundException();
+    }
+    return this.subscriptionBlogAction.execute(Number(id), req.user);
+  }
+
+  @Delete('/:id/subscription')
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @ApiOperation({
+    summary: 'Unsubscribe user from blog. Notifications about new posts will not be send to Telegram Bot',
+  })
+  @ApiNotFoundResponse({ description: 'If specificied blog is not exists' })
+  @ApiParam({ name: 'id', allowEmptyValue: false, description: 'blog id' })
+  @HttpCode(204)
+  @ApiResponse({ status: 204 })
+  async deleteSubscriptionByBlogId(@Param('id') id: string, @Req() req: any) {
+    if (isNaN(Number(id))) {
+      throw new NotFoundException();
+    }
+    return this.unsubscriptionBlogAction.execute(Number(id), req.user);
   }
 }

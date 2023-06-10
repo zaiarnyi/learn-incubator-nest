@@ -1,15 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { BlogEntity } from '../../../../domain/blogs/entities/blog.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { BlogImagesEntity } from '../../../../domain/blogs/entities/blog-images.entity';
 import { BlogImagesTypeEnum } from '../../../../domain/blogs/enums/blog-images-type.enum';
+import { SubscriptionUsersBlogsEntity } from '../../../../domain/blogs/entities/subscription-users-blogs.entity';
+import { SubscriptionStatusEnum } from '../../../../domain/blogs/enums/subscription-status.enum';
 
 @Injectable()
 export class QueryBlogsRepository {
   constructor(
     @InjectRepository(BlogEntity) private readonly repository: Repository<BlogEntity>,
     @InjectRepository(BlogImagesEntity) private readonly blogImagesEntityRepository: Repository<BlogImagesEntity>,
+    @InjectRepository(SubscriptionUsersBlogsEntity)
+    private readonly subscriptionRepository: Repository<SubscriptionUsersBlogsEntity>,
   ) {}
 
   async getBlogs(
@@ -66,5 +70,27 @@ export class QueryBlogsRepository {
 
   async getBlogImages(id: number, type: BlogImagesTypeEnum): Promise<BlogImagesEntity[]> {
     return this.blogImagesEntityRepository.find({ where: { blog: { id }, type }, relations: ['blog'] });
+  }
+
+  async getActiveSubscription(blogId: number, userId: number): Promise<SubscriptionUsersBlogsEntity> {
+    return this.subscriptionRepository.findOne({
+      where: { user: { id: userId }, blog: { id: blogId }, status: Not(SubscriptionStatusEnum.SUBSCRIPTION) },
+      relations: ['user', 'blog'],
+    });
+  }
+
+  async getActiveSubscriptionsByUser(userId: number): Promise<SubscriptionUsersBlogsEntity[]> {
+    return this.subscriptionRepository.find({
+      where: { user: { id: userId }, status: Not(SubscriptionStatusEnum.SUBSCRIPTION) },
+      relations: ['user', 'blog'],
+    });
+  }
+
+  async getCountSubscriptionForBlog(blogId: number): Promise<number> {
+    return this.subscriptionRepository.count({ where: { blog: { id: blogId } }, relations: ['blog'] });
+  }
+
+  async statusSubscriptionForUser(userId: number): Promise<SubscriptionUsersBlogsEntity> {
+    return this.subscriptionRepository.findOne({ where: { user: { id: userId } }, relations: ['user'] });
   }
 }

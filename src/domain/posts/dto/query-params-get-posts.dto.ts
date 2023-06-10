@@ -1,6 +1,7 @@
 import { Type } from 'class-transformer';
 import { IsEnum, IsInt, IsOptional, IsString, Max } from 'class-validator';
 import { PostSortByEnum, PostSortDirection } from '../enums/sort.enum';
+import { SubscriptionStatusPostEnum } from '../enums/subscription-status-post.enum';
 
 export class QueryParamsGetPostsDto {
   @Type(() => Number)
@@ -23,4 +24,8 @@ export class QueryParamsGetPostsDto {
   @IsOptional()
   @IsEnum(PostSortDirection)
   sortDirection: PostSortDirection = PostSortDirection.DESC;
+
+  @IsOptional()
+  @IsEnum(SubscriptionStatusPostEnum)
+  subscriptionStatus: SubscriptionStatusPostEnum = SubscriptionStatusPostEnum.ALL;
 }

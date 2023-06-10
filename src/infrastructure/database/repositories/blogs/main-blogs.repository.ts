@@ -6,12 +6,15 @@ import { Repository } from 'typeorm';
 import { UserEntity } from '../../../../domain/users/entities/user.entity';
 import { BlogImagesEntity } from '../../../../domain/blogs/entities/blog-images.entity';
 import { BlogImagesTypeEnum } from '../../../../domain/blogs/enums/blog-images-type.enum';
+import { SubscriptionUsersBlogsEntity } from '../../../../domain/blogs/entities/subscription-users-blogs.entity';
 
 @Injectable()
 export class MainBlogsRepository {
   constructor(
     @InjectRepository(BlogEntity) private readonly repository: Repository<BlogEntity>,
     @InjectRepository(BlogImagesEntity) private readonly blogImagesEntityRepository: Repository<BlogImagesEntity>,
+    @InjectRepository(SubscriptionUsersBlogsEntity)
+    private readonly subscriptionRepository: Repository<SubscriptionUsersBlogsEntity>,
   ) {}
   async createBlog(blog: BlogEntity): Promise<BlogEntity> {
     return this.repository.save(blog);
@@ -48,5 +51,9 @@ export class MainBlogsRepository {
 
   async saveImageForBlog(blog: BlogImagesEntity): Promise<BlogImagesEntity> {
     return this.blogImagesEntityRepository.save(blog);
+  }
+
+  async saveSubscriptions(subscription: SubscriptionUsersBlogsEntity): Promise<SubscriptionUsersBlogsEntity> {
+    return this.subscriptionRepository.save(subscription);
   }
 }

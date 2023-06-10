@@ -7,6 +7,8 @@ import { GetLikesInfoForPostService } from '../../services/posts/get-likes-info-
 import { UserEntity } from '../../../domain/users/entities/user.entity';
 import { CreateImageResponse } from '../../../presentation/requests/blogger/create-images.response';
 import { ConfigService } from '@nestjs/config';
+import { SubscriptionStatusPostEnum } from '../../../domain/posts/enums/subscription-status-post.enum';
+import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 
 @Injectable()
 export class GetPostsAction {
@@ -14,12 +16,23 @@ export class GetPostsAction {
   constructor(
     private readonly queryRepository: QueryPostRepository,
     private readonly likesInfoService: GetLikesInfoForPostService,
-    private readonly queryPostsRepository: QueryPostRepository,
+    private readonly blogsRepository: QueryBlogsRepository,
     private readonly configService: ConfigService,
   ) {}
 
+  private async prepareSubscriptionBlogs(
+    subscriptionType: SubscriptionStatusPostEnum,
+    userId: number,
+  ): Promise<number[]> {
+    if (subscriptionType == SubscriptionStatusPostEnum.ALL || !userId) return null;
+
+    const subscriptionBlogs = await this.blogsRepository.getActiveSubscriptionsByUser(userId);
+
+    return subscriptionBlogs.map((item) => item.blog.id);
+  }
+
   private async prepareImages(postId: number): Promise<CreateImageResponse> {
-    const images = await this.queryPostsRepository.getPostImages(postId);
+    const images = await this.queryRepository.getPostImages(postId);
     return plainToClass(CreateImageResponse, {
       main: images.map((item) => ({ ...item, url: this.configService.get('AWS_LINK') + item.path })),
     });
@@ -28,9 +41,10 @@ export class GetPostsAction {
   public async execute(query: QueryParamsGetPostsDto, user?: UserEntity) {
     const { pageSize, pageNumber, sortDirection, sortBy } = query;
     const skip = (pageNumber - 1) * pageSize;
+    const subscriptionBlogs = await this.prepareSubscriptionBlogs(query.subscriptionStatus, user?.id);
 
     const [postsRaw, totalCount] = await this.queryRepository
-      .getPost(pageSize, skip, sortBy, sortDirection)
+      .getPost(pageSize, skip, sortBy, sortDirection, subscriptionBlogs)
       .catch((e) => {
         this.logger.error(`There was an error in receiving the post data.  ${JSON.stringify(e)}`);
         return [];
