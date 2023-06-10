@@ -49,6 +49,7 @@ import { SaveBlogMainImageAction } from '../../application/actions/blogger/save-
 import { SavePostMainImageAction } from '../../application/actions/blogger/save-post-main-image.action';
 import { FileInformationDto } from '../../domain/blogger/dto/file-information.dto';
 import { CreateImageResponse, CreateImagesResponse } from '../requests/blogger/create-images.response';
+import { ApiTags } from '@nestjs/swagger';
 
 const filePipe = (validatorFiles: FileValidator = null) =>
   new ParseFilePipe({
@@ -69,6 +70,7 @@ const filePipe = (validatorFiles: FileValidator = null) =>
 
 @UseGuards(JwtAuthGuard)
 @Controller('blogger')
+@ApiTags('blogger')
 export class BloggerController {
   constructor(
     private readonly getBlogsService: GetAllBlogsAction,

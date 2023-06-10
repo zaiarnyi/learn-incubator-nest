@@ -99,7 +99,11 @@ export class AuthController {
   // @Throttle(5, 10)
   @UseGuards(LocalAuthGuard)
   @Post('login')
-  @ApiBody({ type: LoginResponse })
+  @ApiBody({ type: LoginRequest })
+  @ApiOkResponse({
+    type: LoginResponse,
+    headers: { refreshToken: { required: true, description: 'The token is saved in the cookie automatically' } },
+  })
   @ApiOperation({ summary: `Sign in to your account. Rate limit: 5 req per 10 sec` })
   async login(@Req() req: any, @Res({ passthrough: true }) response: Response, @Body() body: LoginRequest) {
     const devicePrepare = new DeviceDto();
@@ -117,8 +121,13 @@ export class AuthController {
 
   @Post('refresh-token')
   @ApiOperation({ summary: `Refresh the token` })
-  @ApiBody({ type: LoginResponse })
+  @ApiOkResponse({
+    type: LoginResponse,
+    headers: { refreshToken: { required: true, description: 'The token is saved in the cookie automatically' } },
+  })
   @ApiCookieAuth()
+  @HttpCode(200)
+  @ApiOkResponse({})
   async createRefreshToken(@Cookies('refreshToken') token: string, @Res({ passthrough: true }) response: Response) {
     if (!token?.length) {
       throw new UnauthorizedException();
@@ -167,6 +176,7 @@ export class AuthController {
   @Post('registration')
   @ApiOperation({ summary: ` New user registration. Rate limit: 5 req per 10 sec` })
   @ApiBody({ type: RegistrationRequest })
+  @HttpCode(204)
   async registration(@Body() body: RegistrationRequest, @Res() res: Response) {
     const detectUser = await this.queryUserRepository.getUserByEmailOrLogin(body.login, body.email);
     if (detectUser) {

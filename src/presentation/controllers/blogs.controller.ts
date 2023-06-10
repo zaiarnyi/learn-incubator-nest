@@ -7,8 +7,19 @@ import { GetAllBlogsResponse } from '../responses/blogger/get-all-blogs.response
 import { GetPostByBlogIdAction } from '../../application/actions/blogs/getPostByBlogId.action';
 import { GetPostByBlogIdResponse } from '../responses/blogger/getPostByBlogId.response';
 import { JwtAuthOptionalGuard } from '../../domain/auth/guards/optional-jwt-auth.guard';
+import {
+  ApiBadRequestResponse,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiParam,
+  ApiTags,
+} from '@nestjs/swagger';
+import { BadRequestResponse } from '../responses/badRequest.response';
 
 @Controller('blogs')
+@ApiTags('blogs')
+@ApiBadRequestResponse({ type: BadRequestResponse })
 export class BlogsController {
   constructor(
     private readonly getBlogsService: GetAllBlogsAction,
@@ -17,11 +28,16 @@ export class BlogsController {
   ) {}
 
   @Get()
+  @ApiOperation({ summary: 'Returns blogs with paging' })
+  @ApiOkResponse({ type: GetAllBlogsResponse })
   async getAllBlogs(@Query() query: GetBlogsRequestWithSearch): Promise<GetAllBlogsResponse> {
     return this.getBlogsService.execute(query);
   }
 
   @UseGuards(JwtAuthOptionalGuard)
+  @ApiOkResponse({ type: GetPostByBlogIdResponse })
+  @ApiNotFoundResponse({ description: 'If specificied blog is not exists' })
+  @ApiOperation({ summary: 'Returns all posts for specified blog', description: 'Tokens optional' })
   @Get('/:id/posts')
   async getPostByBlogId(
     @Param('id') id: string,
@@ -35,6 +51,10 @@ export class BlogsController {
   }
 
   @Get('/:id')
+  @ApiOperation({ summary: 'Returns blog by id' })
+  @ApiNotFoundResponse({ description: 'If specificied blog is not exists' })
+  @ApiParam({ name: 'id', allowEmptyValue: false, description: 'blog id' })
+  @ApiOkResponse({ type: CreateBlogResponse })
   async getBlogById(@Param('id') id: string): Promise<CreateBlogResponse> {
     if (isNaN(Number(id))) {
       throw new NotFoundException();

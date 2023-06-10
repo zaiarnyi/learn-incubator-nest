@@ -19,9 +19,11 @@ import { BindBlogToUserAction } from '../../../../application/actions/sa/blogs/b
 import { UpdateBannedByBlogRequest } from '../../../requests/sa/blogs/update-banned-by-blog.request';
 import { UpdateStatusBannedByBlogAction } from '../../../../application/actions/sa/blogs/update-status-banned-by-blog.action';
 import { UpdateParamBannedByBlogRequest } from '../../../requests/sa/blogs/update-param-banned-by-blog.request';
+import { ApiTags } from '@nestjs/swagger';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/blogs')
+@ApiTags('sa/blogs')
 export class SaBlogsControllers {
   constructor(
     @Inject(GetBlogsActions) private readonly getBlogsAction: GetBlogsActions,

@@ -16,9 +16,11 @@ import { DeleteDevicesAction } from '../../application/actions/security/delete-d
 import { DeleteCurrentDeviceAction } from '../../application/actions/security/delete-current-device.action';
 import { JwtService } from '@nestjs/jwt';
 import { SkipThrottle } from '@nestjs/throttler';
+import { ApiTags } from '@nestjs/swagger';
 
 @SkipThrottle()
 @Controller('security')
+@ApiTags('security')
 export class SecurityController {
   constructor(
     @Inject(GetDevicesAction) private readonly getDevicesAction: GetDevicesAction,

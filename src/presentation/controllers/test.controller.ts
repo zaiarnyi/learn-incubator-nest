@@ -2,6 +2,7 @@ import { Controller, Delete, Get, HttpCode, Inject, Logger } from '@nestjs/commo
 import { UserMainRepository } from '../../infrastructure/database/repositories/users/main.repository';
 import * as fs from 'fs';
 import * as process from 'process';
+import { ApiOperation } from '@nestjs/swagger';
 
 const readFile = () => {
   return new Promise((resolve) => {
@@ -29,6 +30,7 @@ export class TestController {
   }
 
   @Delete('pair')
+  @ApiOperation({ summary: `Method for deleting games and users`, deprecated: true })
   @HttpCode(204)
   async deletePairAndUser() {
     await this.userRepository.deletePairAndUser().catch((e) => {
@@ -37,6 +39,7 @@ export class TestController {
   }
 
   @Get('/rules')
+  @ApiOperation({ summary: `Method for work`, deprecated: true })
   async getAdguardRules() {
     const arr = await readFile();
     if (typeof arr === 'string') {

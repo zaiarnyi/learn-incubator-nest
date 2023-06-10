@@ -24,8 +24,10 @@ import { DeleteQuizActions } from '../../../../application/actions/sa/quiz/delet
 import { ChangeStatusQuizAction } from '../../../../application/actions/sa/quiz/change-status-quiz.action';
 import { CreateQuizResponse } from '../../../responses/sa/quiz/create-quiz.response';
 import { BasicAuthGuard } from '../../../../domain/auth/guards/basic-auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('sa/quiz/questions')
+@ApiTags('sa/quiz/questions')
 @UseGuards(BasicAuthGuard)
 export class SaQuizController {
   constructor(

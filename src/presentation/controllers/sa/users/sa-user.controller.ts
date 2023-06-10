@@ -24,9 +24,11 @@ import { UserBannedRequest } from '../../../requests/sa/users/user-banned.reques
 import { UserBannedAction } from '../../../../application/actions/sa/users/user-banned.action';
 import { GetUsersResponse } from '../../../responses/sa/users/get-users.response';
 import { CreateUserRequest } from '../../../requests/sa/users/create-user.request';
+import { ApiOkResponse, ApiProperty, ApiTags } from '@nestjs/swagger';
 
 @UseGuards(BasicAuthGuard)
 @Controller('sa/users')
+@ApiTags('sa/users')
 export class SaUserController {
   constructor(
     @Inject(GetAllUsersAction) private readonly getUsersService: GetAllUsersAction,
@@ -35,6 +37,7 @@ export class SaUserController {
     @Inject(UserBannedAction) private readonly banUserService: UserBannedAction,
   ) {}
   @Get()
+  @ApiOkResponse({ type: GetUsersResponse })
   async getUsers(@Query() query: GetUsersRequest): Promise<GetUsersResponse> {
     return this.getUsersService.execute(query);
   }

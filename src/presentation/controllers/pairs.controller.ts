@@ -26,8 +26,10 @@ import { GetMyStatisticsAction } from '../../application/actions/pairs/get-my-st
 import { GetUsersTopRequest } from '../requests/pairs/get-users-top.request';
 import { GetUsersTopAction } from '../../application/actions/pairs/get-users-top.action';
 import { GetUsersTopResponse } from '../responses/pairs/get-users-top.response';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('pair-game-quiz')
+@ApiTags('pair-game-quiz')
 export class PairsController {
   constructor(
     @Inject(ConnectionPairAction) private readonly connectionAction: ConnectionPairAction,

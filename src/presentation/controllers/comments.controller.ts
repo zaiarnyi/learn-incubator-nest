@@ -20,8 +20,10 @@ import { DeleteCommentByIdAction } from '../../application/actions/comments/dele
 import { ChangeLikeStatusCommentByIdRequest } from '../requests/comments/change-like-status-comment-by-id.request';
 import { ChangeLikeStatusByCommentIdAction } from '../../application/actions/comments/change-like-status-by-commentId.action';
 import { JwtAuthOptionalGuard } from '../../domain/auth/guards/optional-jwt-auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('comments')
+@ApiTags('comments')
 export class CommentsController {
   constructor(
     @Inject(GetCommentByIdAction) private readonly commentByIdService: GetCommentByIdAction,
