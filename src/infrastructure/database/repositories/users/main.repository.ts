@@ -34,10 +34,10 @@ export class UserMainRepository {
   async deleteAllData() {
     await Promise.all([
       this.dataSource.query(
-        `TRUNCATE TABLE users, activate_emails_code,pair_results, user_security, users_banned,invalid_tokens, comments, blog_images, post_images, blogs, posts, comment_likes, post_likes,pairs_questions_quiz, quiz, pairs, pair_answers  CASCADE;`,
+        `TRUNCATE TABLE users, blog_subscriptions, activate_emails_code,pair_results, user_security, users_banned,invalid_tokens, comments, blog_images, post_images, blogs, posts, comment_likes, post_likes,pairs_questions_quiz, quiz, pairs, pair_answers  CASCADE;`,
       ),
       this.dataSource.query(
-        `TRUNCATE TABLE users, activate_emails_code,pair_results, user_security, users_banned, invalid_tokens, comments, blog_images, post_images, blogs, posts, comment_likes, post_likes,pairs_questions_quiz, quiz, pairs, pair_answers RESTART IDENTITY;`,
+        `TRUNCATE TABLE users, blog_subscriptions, activate_emails_code,pair_results, user_security, users_banned, invalid_tokens, comments, blog_images, post_images, blogs, posts, comment_likes, post_likes,pairs_questions_quiz, quiz, pairs, pair_answers RESTART IDENTITY;`,
       ),
     ]);
   }
