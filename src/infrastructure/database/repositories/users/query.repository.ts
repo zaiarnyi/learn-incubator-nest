@@ -52,4 +52,8 @@ export class UserQueryRepository {
   async getUserById(id: number): Promise<UserEntity> {
     return this.userRepository.findOne({ where: { id } });
   }
+
+  async getUserByUuid(uuid: string): Promise<UserEntity> {
+    return this.userRepository.findOneBy({ uuid });
+  }
 }

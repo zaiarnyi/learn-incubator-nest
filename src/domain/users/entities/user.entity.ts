@@ -1,5 +1,13 @@
 import { UserRoles } from '../../auth/enums/roles.enum';
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  Generated,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('users')
 export class UserEntity {
@@ -26,6 +34,13 @@ export class UserEntity {
 
   @Column({ default: false, type: 'boolean' })
   isBanned: boolean;
+
+  @Column()
+  @Generated('uuid')
+  uuid: string;
+
+  @Column({ nullable: true })
+  telegramId: number;
 
   @CreateDateColumn()
   createdAt: Date;

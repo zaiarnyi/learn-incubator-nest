@@ -104,6 +104,7 @@ export class AuthController {
     type: LoginResponse,
     headers: { refreshToken: { required: true, description: 'The token is saved in the cookie automatically' } },
   })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiOperation({ summary: `Sign in to your account. Rate limit: 5 req per 10 sec` })
   async login(@Req() req: any, @Res({ passthrough: true }) response: Response, @Body() body: LoginRequest) {
     const devicePrepare = new DeviceDto();
@@ -128,6 +129,7 @@ export class AuthController {
   @ApiCookieAuth()
   @HttpCode(200)
   @ApiOkResponse({})
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   async createRefreshToken(@Cookies('refreshToken') token: string, @Res({ passthrough: true }) response: Response) {
     if (!token?.length) {
       throw new UnauthorizedException();
@@ -208,6 +210,7 @@ export class AuthController {
 
   @Post('logout')
   @ApiCookieAuth()
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiOperation({ summary: `Signing out of an account` })
   async logout(@Res() response: Response, @Cookies('refreshToken') token?: string) {
     if (!token?.length) {
@@ -237,6 +240,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Get('me')
   @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @ApiOperation({ summary: `Getting information about the user` })
   @ApiOkResponse({ type: MeResponse })
   async me(@Req() req): Promise<MeResponse> {

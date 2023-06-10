@@ -9,18 +9,17 @@ import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
 import { UserQueryRepository } from '../../../infrastructure/database/repositories/users/query.repository';
 import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 import { UserEntity } from '../../../domain/users/entities/user.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { CreatedPostEvent } from '../../../domain/posts/events/created-post.event';
+import { BlogEntity } from '../../../domain/blogs/entities/blog.entity';
 
 export class CreatePostAction {
   logger = new Logger(CreatePostAction.name);
 
   constructor(
-    @Inject(QueryBlogsRepository)
     private readonly queryBlogRepository: QueryBlogsRepository,
-
-    @Inject(MainPostRepository)
+    private eventEmitter: EventEmitter2,
     private readonly mainRepository: MainPostRepository,
-    @Inject(MainLikeStatusPostRepository) private readonly statusMainRepository: MainLikeStatusPostRepository,
-    @Inject(UserQueryRepository) private readonly userQueryRepository: UserQueryRepository,
   ) {}
 
   private getLikesInfo() {
@@ -56,6 +55,8 @@ export class CreatePostAction {
     newPost.user = user ?? blog.user;
 
     const createdPost = await this.mainRepository.createPost(newPost);
+    this.eventEmitter.emit(CreatedPostEvent.name, new CreatedPostEvent(blog));
+
     return {
       ...plainToClass(GetPost, {
         ...createdPost,

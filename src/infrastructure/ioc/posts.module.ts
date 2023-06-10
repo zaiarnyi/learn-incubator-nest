@@ -24,6 +24,9 @@ import { PostEntity } from '../../domain/posts/entities/post.entity';
 import { CommentsEntity } from '../../domain/comments/entities/comment.entity';
 import { PostLikesEntity } from '../../domain/posts/like-status/entity/like-status-posts.entity';
 import { PostImagesEntity } from '../../domain/posts/entities/post-images.entity';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { CreatedPostListener } from '../../domain/posts/listeners/created-post.listener';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -32,6 +35,8 @@ import { PostImagesEntity } from '../../domain/posts/entities/post-images.entity
     CommentsModule,
     BlogsModule,
     TypeOrmModule.forFeature([PostEntity, CommentsEntity, PostLikesEntity, PostImagesEntity]),
+    EventEmitterModule.forRoot(),
+    HttpModule,
   ],
   controllers: [PostsController],
   providers: [
@@ -50,6 +55,7 @@ import { PostImagesEntity } from '../../domain/posts/entities/post-images.entity
     GetLikesInfoForPostService,
     CreateCommentForPostAction,
     ValidateBlogByIdValidator,
+    CreatedPostListener,
   ],
   exports: [
     CreatePostAction,

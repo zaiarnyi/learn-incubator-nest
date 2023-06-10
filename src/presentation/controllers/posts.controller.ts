@@ -13,7 +13,6 @@ import {
 } from '@nestjs/common';
 import { GetPostsRequest } from '../requests/posts/get-posts.request';
 import { GetPost, GetPostsResponse } from '../responses/posts/get-all-posts.response';
-import { CreatePostAction } from '../../application/actions/posts/create-post.action';
 import { GetPostByIdAction } from '../../application/actions/posts/get-post-by-id.action';
 import { GetPostsAction } from '../../application/actions/posts/get-posts.action';
 import { GetCommentsByPostIdAction } from '../../application/actions/posts/get-comments-by-postId.action';
@@ -44,7 +43,6 @@ import { BadRequestResponse } from '../responses/badRequest.response';
 export class PostsController {
   constructor(
     private readonly getPostsService: GetPostsAction,
-    private readonly createService: CreatePostAction,
     private readonly getPostByIdService: GetPostByIdAction,
     private readonly commentsByPostIdService: GetCommentsByPostIdAction,
     private readonly changeLikeStatusByPostIdService: ChangeLikeStatusPostAction,

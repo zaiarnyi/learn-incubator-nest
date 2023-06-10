@@ -51,4 +51,8 @@ export class UserMainRepository {
       ),
     ]);
   }
+
+  async setTelegramIdUsers(uuid: string, id: number) {
+    return this.userRepository.update({ uuid }, { telegramId: id });
+  }
 }

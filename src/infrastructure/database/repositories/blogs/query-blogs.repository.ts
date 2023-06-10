@@ -93,4 +93,11 @@ export class QueryBlogsRepository {
   async statusSubscriptionForUser(userId: number): Promise<SubscriptionUsersBlogsEntity> {
     return this.subscriptionRepository.findOne({ where: { user: { id: userId } }, relations: ['user'] });
   }
+
+  async subscriptionForBlog(blogId: number): Promise<SubscriptionUsersBlogsEntity[]> {
+    return this.subscriptionRepository.find({
+      where: { blog: { id: blogId }, status: SubscriptionStatusEnum.SUBSCRIPTION },
+      relations: ['blog', 'user'],
+    });
+  }
 }
