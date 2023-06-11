@@ -55,7 +55,7 @@ export class GetBlogByIdAction {
       ...findBlog,
       id: findBlog.id.toString(),
       images: await this.prepareImages(id),
-      currentUserSubscriptionStatus: mySubscription.status ?? SubscriptionStatusEnum.NONE,
+      currentUserSubscriptionStatus: mySubscription?.status ?? SubscriptionStatusEnum.NONE,
       subscribersCount: countSubscription,
     });
   }
