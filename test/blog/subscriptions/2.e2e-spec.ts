@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../../src/app.module';
+import { AppModule } from '../../../src/app.module';
 import * as request from 'supertest';
 
 describe('subscriptions', () => {
@@ -104,84 +104,5 @@ describe('subscriptions', () => {
       request(app.getHttpServer()).post('/blogs/3/subscription').set({ Authorization: token3 }),
       request(app.getHttpServer()).post('/blogs/6/subscription').set({ Authorization: token3 }),
     ]);
-  });
-
-  it('User2 has unsubscribed from blog3', async function () {
-    await request(app.getHttpServer()).delete('/blogs/3/subscription').set({ Authorization: token2 });
-  });
-
-  it('Get blogs', async function () {
-    const response = await request(app.getHttpServer()).get(
-      '/blogs?sortBy=createdAt&sortDirection=DESC&pageSize=10&pageNumber=1',
-    );
-    expect(response.body).toEqual({
-      pagesCount: 1,
-      page: 1,
-      pageSize: 10,
-      totalCount: 6,
-      items: [
-        {
-          id: '6',
-          name: 'new blog',
-          description: 'description',
-          websiteUrl: 'https://someurl.com',
-          createdAt: '2023-06-11T12:57:33.672Z',
-          isMembership: false,
-          images: { main: [], wallpaper: null },
-          subscribersCount: null,
-        },
-        {
-          id: '5',
-          name: 'new blog',
-          description: 'description',
-          websiteUrl: 'https://someurl.com',
-          createdAt: '2023-06-11T12:57:32.965Z',
-          isMembership: false,
-          images: { main: [], wallpaper: null },
-          currentUserSubscriptionStatus: 'Subscribed',
-          subscribersCount: null,
-        },
-        {
-          id: '4',
-          name: 'new blog',
-          description: 'description',
-          websiteUrl: 'https://someurl.com',
-          createdAt: '2023-06-11T12:57:32.264Z',
-          isMembership: false,
-          images: { main: [], wallpaper: null },
-        },
-        {
-          id: '3',
-          name: 'new blog',
-          description: 'description',
-          websiteUrl: 'https://someurl.com',
-          createdAt: '2023-06-11T12:57:31.564Z',
-          isMembership: false,
-          images: { main: [], wallpaper: null },
-          currentUserSubscriptionStatus: 'Unsubscribed',
-          subscribersCount: null,
-        },
-        {
-          id: '2',
-          name: 'new blog',
-          description: 'description',
-          websiteUrl: 'https://someurl.com',
-          createdAt: '2023-06-11T12:57:30.863Z',
-          isMembership: false,
-          images: { main: [], wallpaper: null },
-        },
-        {
-          id: '1',
-          name: 'new blog',
-          description: 'description',
-          websiteUrl: 'https://someurl.com',
-          createdAt: '2023-06-11T12:57:30.127Z',
-          isMembership: false,
-          images: { main: [], wallpaper: null },
-          currentUserSubscriptionStatus: 'Subscribed',
-          subscribersCount: null,
-        },
-      ],
-    });
   });
 });

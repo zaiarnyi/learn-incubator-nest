@@ -32,7 +32,7 @@ export class CreatePostAction {
     const blog = await this.queryBlogRepository.getBlogsByBloggerWithUser(blogId).catch((e) => {
       this.logger.error(`Error when getting a post by blog id ${blogId}. ${JSON.stringify(e)}`);
     });
-
+    console.log(blog, userId);
     if (!blog) {
       throw new NotFoundException();
     }
