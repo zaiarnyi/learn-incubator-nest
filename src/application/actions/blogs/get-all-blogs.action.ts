@@ -147,8 +147,8 @@ export class GetAllBlogsAction {
 
     return {
       pagesCount,
-      page: query.pageNumber,
-      pageSize: query.pageSize,
+      page: +query.pageNumber,
+      pageSize: +query.pageSize,
       totalCount,
       items: await Promise.all(promises),
     };
