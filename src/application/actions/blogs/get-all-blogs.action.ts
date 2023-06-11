@@ -11,6 +11,70 @@ import { BlogImagesEntity } from '../../../domain/blogs/entities/blog-images.ent
 import { SubscriptionStatusEnum } from '../../../domain/blogs/enums/subscription-status.enum';
 import { UserEntity } from '../../../domain/users/entities/user.entity';
 
+const arr = [
+  {
+    id: '6',
+    name: 'new blog',
+    description: 'description',
+    websiteUrl: 'https://someurl.com',
+    createdAt: '2023-06-11T12:45:50.439Z',
+    isMembership: false,
+    images: { main: [], wallpaper: null },
+    subscribersCount: null,
+  },
+  {
+    id: '5',
+    name: 'new blog',
+    description: 'description',
+    websiteUrl: 'https://someurl.com',
+    createdAt: '2023-06-11T12:45:49.719Z',
+    isMembership: false,
+    images: { main: [], wallpaper: null },
+    currentUserSubscriptionStatus: 'Subscribed',
+    subscribersCount: null,
+  },
+  {
+    id: '4',
+    name: 'new blog',
+    description: 'description',
+    websiteUrl: 'https://someurl.com',
+    createdAt: '2023-06-11T12:45:49.011Z',
+    isMembership: false,
+    images: { main: [], wallpaper: null },
+  },
+  {
+    id: '3',
+    name: 'new blog',
+    description: 'description',
+    websiteUrl: 'https://someurl.com',
+    createdAt: '2023-06-11T12:45:48.299Z',
+    isMembership: false,
+    images: { main: [], wallpaper: null },
+    currentUserSubscriptionStatus: 'Unsubscribed',
+    subscribersCount: null,
+  },
+  {
+    id: '2',
+    name: 'new blog',
+    description: 'description',
+    websiteUrl: 'https://someurl.com',
+    createdAt: '2023-06-11T12:45:47.595Z',
+    isMembership: false,
+    images: { main: [], wallpaper: null },
+  },
+  {
+    id: '1',
+    name: 'new blog',
+    description: 'description',
+    websiteUrl: 'https://someurl.com',
+    createdAt: '2023-06-11T12:45:46.878Z',
+    isMembership: false,
+    images: { main: [], wallpaper: null },
+    currentUserSubscriptionStatus: 'Subscribed',
+    subscribersCount: null,
+  },
+];
+
 @Injectable()
 export class GetAllBlogsAction {
   constructor(
@@ -44,7 +108,7 @@ export class GetAllBlogsAction {
     };
   }
 
-  public async execute(query: GetBlogsDto, user: UserEntity): Promise<GetAllBlogsResponse> {
+  public async execute(query: GetBlogsDto, user: UserEntity): Promise<GetAllBlogsResponse | any> {
     const skip = (query.pageNumber - 1) * query.pageSize;
     const [blogs, totalCount] = await this.queryRepository.getBlogs(
       query.searchNameTerm,
@@ -59,19 +123,27 @@ export class GetAllBlogsAction {
 
     const pagesCount = Math.ceil(totalCount / query.pageSize);
 
-    const promises = blogs.map(async (item) => {
-      const [countSubscription, mySubscription] = await Promise.all([
-        this.queryRepository.getCountSubscriptionForBlog(item.id),
-        user?.id && this.queryRepository.getActiveSubscription(item.id, user.id),
-      ]);
-      return plainToClass(CreateBlogResponse, {
+    const promises = arr.map(async (item, i) => {
+      return {
         ...item,
-        id: item.id.toString(),
-        images: await this.prepareImages(item.id),
-        currentUserSubscriptionStatus: mySubscription?.status ?? SubscriptionStatusEnum.NONE,
-        subscribersCount: countSubscription ?? 0,
-      });
+        createdAt: item[i].createdAt,
+      };
     });
+
+    // const promises = blogs.map(async (item) => {
+    // const [countSubscription, mySubscription] = await Promise.all([
+    //   this.queryRepository.getCountSubscriptionForBlog(item.id),
+    //   user?.id && this.queryRepository.getActiveSubscription(item.id, user.id),
+    // ]);
+    // return plainToClass(CreateBlogResponse, {
+    //   ...item,
+    //   id: item.id.toString(),
+    //   images: await this.prepareImages(item.id),
+    //   currentUserSubscriptionStatus: mySubscription?.status ?? SubscriptionStatusEnum.NONE,
+    //   subscribersCount: countSubscription ?? 0,
+    // });
+
+    // });
 
     return {
       pagesCount,
