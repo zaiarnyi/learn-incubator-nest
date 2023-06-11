@@ -9,6 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { CreateImageItem, CreateImagesResponse } from '../../../presentation/requests/blogger/create-images.response';
 import { BlogImagesEntity } from '../../../domain/blogs/entities/blog-images.entity';
 import { SubscriptionStatusEnum } from '../../../domain/blogs/enums/subscription-status.enum';
+import { UserEntity } from '../../../domain/users/entities/user.entity';
 
 @Injectable()
 export class GetAllBlogsAction {
@@ -43,7 +44,7 @@ export class GetAllBlogsAction {
     };
   }
 
-  public async execute(query: GetBlogsDto, userId?: number): Promise<GetAllBlogsResponse> {
+  public async execute(query: GetBlogsDto, user: UserEntity): Promise<GetAllBlogsResponse> {
     const skip = (query.pageNumber - 1) * query.pageSize;
     const [blogs, totalCount] = await this.queryRepository.getBlogs(
       query.searchNameTerm,
@@ -51,7 +52,7 @@ export class GetAllBlogsAction {
       query.pageSize,
       query.sortBy,
       query.sortDirection,
-      userId,
+      user?.id,
       null,
       false,
     );
@@ -61,7 +62,7 @@ export class GetAllBlogsAction {
     const promises = blogs.map(async (item) => {
       const [countSubscription, mySubscription] = await Promise.all([
         this.queryRepository.getCountSubscriptionForBlog(item.id),
-        userId && this.queryRepository.statusSubscriptionForUser(userId),
+        user?.id && this.queryRepository.getActiveSubscription(item.id, user.id),
       ]);
       return plainToClass(CreateBlogResponse, {
         ...item,
