@@ -50,6 +50,7 @@ export class BlogsController {
   @UseGuards(JwtAuthOptionalGuard)
   @ApiOperation({ summary: 'Returns blogs with paging' })
   @ApiOkResponse({ type: GetAllBlogsResponse })
+  @HttpCode(201)
   async getAllBlogs(@Query() query: GetBlogsRequestWithSearch, @Req() req: any): Promise<GetAllBlogsResponse> {
     return this.getBlogsService.execute(query, req?.user);
   }
