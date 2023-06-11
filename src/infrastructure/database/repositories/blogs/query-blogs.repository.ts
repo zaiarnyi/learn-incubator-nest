@@ -74,7 +74,7 @@ export class QueryBlogsRepository {
 
   async getActiveSubscription(blogId: number, userId: number): Promise<SubscriptionUsersBlogsEntity> {
     return this.subscriptionRepository.findOne({
-      where: { user: { id: userId }, blog: { id: blogId }, status: Not(SubscriptionStatusEnum.SUBSCRIPTION) },
+      where: { user: { id: userId }, blog: { id: blogId } },
       relations: ['user', 'blog'],
     });
   }
