@@ -4,17 +4,16 @@ import { MainActivateCodeRepository } from '../../../infrastructure/database/rep
 import { ActivateCodeEnum } from '../../../domain/auth/enums/activate-code.enum';
 import { MainPairRepository } from '../../../infrastructure/database/repositories/pairs/pair.repository';
 import { PairResultsEntity } from '../../../domain/pairs/entity/pairResults.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class RegistrationConfirmationAction {
   logger = new Logger(RegistrationConfirmationAction.name);
   constructor(
-    @Inject(MainActivateCodeRepository)
     private readonly activationRepository: MainActivateCodeRepository,
-    @Inject(UserMainRepository)
     private readonly mainUserRepository: UserMainRepository,
-    @Inject(MainPairRepository)
     private readonly pairRepository: MainPairRepository,
+    private readonly configService: ConfigService,
   ) {}
 
   public async execute(code: string) {
@@ -44,15 +43,17 @@ export class RegistrationConfirmationAction {
       this.activationRepository.deleteByCode(code, ActivateCodeEnum.REGISTRATION),
       this.pairRepository.savePlayer(pair),
     ]).catch((e) => {
-      this.logger.error(
-        `Confirmation status change error for the user - ${user.id}. Code -  ${code}. Error: ${JSON.stringify(e)}`,
-      );
-      // throw new BadRequestException([
-      //   {
-      //     message: 'User not found',
-      //     field: 'code',
-      //   },
-      // ]);
+      if (this.configService.get<string>('NODE_ENV') !== 'development') {
+        this.logger.error(
+          `Confirmation status change error for the user - ${user.id}. Code -  ${code}. Error: ${JSON.stringify(e)}`,
+        );
+        throw new BadRequestException([
+          {
+            message: 'User not found',
+            field: 'code',
+          },
+        ]);
+      }
     });
   }
 }

@@ -52,7 +52,7 @@ export class GetAllBlogsAction {
       query.pageSize,
       query.sortBy,
       query.sortDirection,
-      user?.id,
+      null,
       null,
       false,
     );

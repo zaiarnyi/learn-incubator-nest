@@ -30,7 +30,6 @@ export class SecurityController {
   ) {}
   @Get('devices')
   async getDevicesByUser(@Cookies('refreshToken') token: string): Promise<GetDevicesResponse[]> {
-    console.log(token, 'getDevicesByUser');
     if (!token) {
       throw new UnauthorizedException();
     }
