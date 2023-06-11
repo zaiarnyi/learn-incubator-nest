@@ -5,6 +5,7 @@ import { UserMainRepository } from '../../../infrastructure/database/repositorie
 export class TelegramWebhookAction {
   constructor(private readonly userRepository: UserMainRepository) {}
   public async execute(body: Record<string, any>) {
+    console.log(body, 'body');
     try {
       if (!body.message.text.includes('/start')) return null;
 

@@ -15,6 +15,7 @@ export class CreatedPostListener {
   }
   @OnEvent(CreatedPostEvent.name, { async: true })
   async handleOrderCreatedEvent(event: CreatedPostEvent) {
+    console.log(event, 'event');
     const message = `New post published for blog "${event.blog.name}`;
 
     const subscriptions = await this.queryBlogRepository.subscriptionForBlog(event.blog.id);

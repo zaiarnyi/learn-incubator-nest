@@ -4,20 +4,17 @@ import { PostEntity } from '../../../domain/posts/entities/post.entity';
 import { MainPostRepository } from '../../../infrastructure/database/repositories/posts/main-post.repository';
 import { plainToClass } from 'class-transformer';
 import { GetPost } from '../../../presentation/responses/posts/get-all-posts.response';
-import { MainLikeStatusPostRepository } from '../../../infrastructure/database/repositories/posts/like-status/main-like-status-post.repository';
 import { LikeStatusEnum } from '../../../infrastructure/enums/like-status.enum';
-import { UserQueryRepository } from '../../../infrastructure/database/repositories/users/query.repository';
 import { QueryBlogsRepository } from '../../../infrastructure/database/repositories/blogs/query-blogs.repository';
 import { UserEntity } from '../../../domain/users/entities/user.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CreatedPostEvent } from '../../../domain/posts/events/created-post.event';
-import { BlogEntity } from '../../../domain/blogs/entities/blog.entity';
 
 export class CreatePostAction {
   logger = new Logger(CreatePostAction.name);
 
   constructor(
-    private readonly queryBlogRepository: QueryBlogsRepository,
+    @Inject(QueryBlogsRepository) private readonly queryBlogRepository: QueryBlogsRepository,
     private eventEmitter: EventEmitter2,
     private readonly mainRepository: MainPostRepository,
   ) {}
