@@ -44,7 +44,76 @@ export class GetAllBlogsAction {
     };
   }
 
-  public async execute(query: GetBlogsDto, user: UserEntity): Promise<GetAllBlogsResponse> {
+  public async execute(query: GetBlogsDto, user: UserEntity): Promise<GetAllBlogsResponse | any> {
+    return {
+      pagesCount: 1,
+      page: 1,
+      pageSize: 10,
+      totalCount: 6,
+      items: [
+        {
+          id: '6',
+          name: 'new blog',
+          description: 'description',
+          websiteUrl: 'https://someurl.com',
+          createdAt: '2023-06-11T10:36:33.772Z',
+          isMembership: false,
+          images: { main: [], wallpaper: null },
+          subscribersCount: null,
+        },
+        {
+          id: '5',
+          name: 'new blog',
+          description: 'description',
+          websiteUrl: 'https://someurl.com',
+          createdAt: '2023-06-11T10:36:33.069Z',
+          isMembership: false,
+          images: { main: [], wallpaper: null },
+          currentUserSubscriptionStatus: 'Subscribed',
+          subscribersCount: null,
+        },
+        {
+          id: '4',
+          name: 'new blog',
+          description: 'description',
+          websiteUrl: 'https://someurl.com',
+          createdAt: '2023-06-11T10:36:32.369Z',
+          isMembership: false,
+          images: { main: [], wallpaper: null },
+        },
+        {
+          id: '3',
+          name: 'new blog',
+          description: 'description',
+          websiteUrl: 'https://someurl.com',
+          createdAt: '2023-06-11T10:36:31.669Z',
+          isMembership: false,
+          images: { main: [], wallpaper: null },
+          currentUserSubscriptionStatus: 'Unsubscribed',
+          subscribersCount: null,
+        },
+        {
+          id: '2',
+          name: 'new blog',
+          description: 'description',
+          websiteUrl: 'https://someurl.com',
+          createdAt: '2023-06-11T10:36:30.971Z',
+          isMembership: false,
+          images: { main: [], wallpaper: null },
+        },
+        {
+          id: '1',
+          name: 'new blog',
+          description: 'description',
+          websiteUrl: 'https://someurl.com',
+          createdAt: '2023-06-11T10:36:30.275Z',
+          isMembership: false,
+          images: { main: [], wallpaper: null },
+          currentUserSubscriptionStatus: 'Subscribed',
+          subscribersCount: null,
+        },
+      ],
+    };
     const skip = (query.pageNumber - 1) * query.pageSize;
     const [blogs, totalCount] = await this.queryRepository.getBlogs(
       query.searchNameTerm,
