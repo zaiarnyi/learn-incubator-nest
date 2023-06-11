@@ -56,4 +56,8 @@ export class MainBlogsRepository {
   async saveSubscriptions(subscription: SubscriptionUsersBlogsEntity): Promise<SubscriptionUsersBlogsEntity> {
     return this.subscriptionRepository.save(subscription);
   }
+
+  async updateSubscription(payload: SubscriptionUsersBlogsEntity) {
+    await this.subscriptionRepository.update({ id: payload.id }, payload);
+  }
 }

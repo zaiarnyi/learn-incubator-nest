@@ -13,19 +13,24 @@ export class SubscriptionBlogAction {
     private readonly mainBlogRepository: MainBlogsRepository,
   ) {}
 
-  private async checkSubscription(id: number, userId): Promise<BlogEntity> {
-    const [blog, activeSubscription] = await Promise.all([
-      this.queryBlogRepository.getBlogById(id),
-      this.queryBlogRepository.getActiveSubscription(id, userId),
-    ]);
+  private async checkSubscription(id: number): Promise<BlogEntity> {
+    const blog = await this.queryBlogRepository.getBlogById(id);
 
-    if (!blog || activeSubscription) {
+    if (!blog) {
       throw new NotFoundException();
     }
     return blog;
   }
   public async execute(blogId: number, user: UserEntity): Promise<void> {
-    const blog = await this.checkSubscription(blogId, user.id);
+    const blog = await this.checkSubscription(blogId);
+
+    const findSubscription = await this.queryBlogRepository.getActiveSubscription(blogId, user.id);
+
+    if (findSubscription) {
+      findSubscription.status = SubscriptionStatusEnum.SUBSCRIPTION;
+      await this.mainBlogRepository.updateSubscription(findSubscription);
+      return;
+    }
 
     const subscription = new SubscriptionUsersBlogsEntity();
     subscription.blog = blog;
