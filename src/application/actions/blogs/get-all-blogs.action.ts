@@ -19,7 +19,6 @@ export class GetAllBlogsAction {
   ) {}
 
   private prepareWallpaper(wallpaper: BlogImagesEntity[]): CreateImageItem {
-    console.log(wallpaper, 'wallpaper');
     if (!wallpaper.length) return null;
 
     return {
@@ -29,7 +28,6 @@ export class GetAllBlogsAction {
   }
 
   private async prepareImages(blogId: number): Promise<CreateImagesResponse> {
-    console.log(blogId, 'blogId===============');
     const [wallpaper, main] = await Promise.all([
       this.queryRepository.getBlogImages(blogId, BlogImagesTypeEnum.WALLPAPER),
       this.queryRepository.getBlogImages(blogId, BlogImagesTypeEnum.MAIN),

@@ -6,6 +6,8 @@ import { BlogImagesTypeEnum } from '../../../domain/blogs/enums/blog-images-type
 import { ConfigService } from '@nestjs/config';
 import { BlogImagesEntity } from '../../../domain/blogs/entities/blog-images.entity';
 import { CreateImagesResponse } from '../../../presentation/requests/blogger/create-images.response';
+import { UserEntity } from '../../../domain/users/entities/user.entity';
+import { SubscriptionStatusEnum } from '../../../domain/blogs/enums/subscription-status.enum';
 
 @Injectable()
 export class GetBlogByIdAction {
@@ -36,7 +38,7 @@ export class GetBlogByIdAction {
     };
   }
 
-  async execute(id: number): Promise<CreateBlogResponse> {
+  async execute(id: number, user: UserEntity): Promise<CreateBlogResponse> {
     const findBlog = await this.queryRepository.getBlogById(id).catch(() => {
       this.logger.error(`I can't find the blog. ID: ${id}`);
       throw new NotFoundException();
@@ -45,10 +47,16 @@ export class GetBlogByIdAction {
     if (!findBlog || findBlog.isBanned) {
       throw new NotFoundException();
     }
+    const [countSubscription, mySubscription] = await Promise.all([
+      this.queryRepository.getCountSubscriptionForBlog(id),
+      user?.id && this.queryRepository.statusSubscriptionForUser(user.id),
+    ]);
     return plainToClass(CreateBlogResponse, {
       ...findBlog,
       id: findBlog.id.toString(),
       images: await this.prepareImages(id),
+      currentUserSubscriptionStatus: mySubscription.status ?? SubscriptionStatusEnum.NONE,
+      subscribersCount: countSubscription,
     });
   }
 }

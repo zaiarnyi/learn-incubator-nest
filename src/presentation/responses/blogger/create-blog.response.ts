@@ -48,9 +48,9 @@ export class CreateBlogResponse {
     nullable: false,
     required: true,
   })
-  currentUserSubscriptionStatus: SubscriptionStatusEnum;
+  currentUserSubscriptionStatus: SubscriptionStatusEnum = SubscriptionStatusEnum.NONE;
 
   @Expose()
   @ApiProperty({ type: Number, example: 42, default: 0 })
-  subscribersCount: 0;
+  subscribersCount = 0;
 }

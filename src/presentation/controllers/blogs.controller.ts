@@ -47,10 +47,11 @@ export class BlogsController {
   ) {}
 
   @Get()
+  @UseGuards(JwtAuthOptionalGuard)
   @ApiOperation({ summary: 'Returns blogs with paging' })
   @ApiOkResponse({ type: GetAllBlogsResponse })
-  async getAllBlogs(@Query() query: GetBlogsRequestWithSearch): Promise<GetAllBlogsResponse> {
-    return this.getBlogsService.execute(query);
+  async getAllBlogs(@Query() query: GetBlogsRequestWithSearch, @Req() req: any): Promise<GetAllBlogsResponse> {
+    return this.getBlogsService.execute(query, req?.user);
   }
 
   @UseGuards(JwtAuthOptionalGuard)
@@ -70,15 +71,16 @@ export class BlogsController {
   }
 
   @Get('/:id')
+  @UseGuards(JwtAuthOptionalGuard)
   @ApiOperation({ summary: 'Returns blog by id' })
   @ApiNotFoundResponse({ description: 'If specificied blog is not exists' })
   @ApiParam({ name: 'id', allowEmptyValue: false, description: 'blog id' })
   @ApiOkResponse({ type: CreateBlogResponse })
-  async getBlogById(@Param('id') id: string): Promise<CreateBlogResponse> {
+  async getBlogById(@Param('id') id: string, @Req() req: any): Promise<CreateBlogResponse> {
     if (isNaN(Number(id))) {
       throw new NotFoundException();
     }
-    return this.getByIdService.execute(Number(id));
+    return this.getByIdService.execute(Number(id), req?.user);
   }
 
   @Post('/:id/subscription')
