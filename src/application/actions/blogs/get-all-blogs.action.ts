@@ -126,7 +126,7 @@ export class GetAllBlogsAction {
     const promises = arr.map(async (item, i) => {
       return {
         ...item,
-        createdAt: item[i].createdAt,
+        createdAt: blogs[i].createdAt,
       };
     });
 
