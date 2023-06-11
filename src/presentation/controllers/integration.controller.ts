@@ -5,8 +5,8 @@ import { TelegramWebhookAction } from '../../application/actions/integrations/te
 import { JwtAuthGuard } from '../../domain/auth/guards/jwt-auth.guard';
 import { AuthBotLinkResponse } from '../responses/integrations/auth-bot-link.response';
 
-@Controller('integration')
-@ApiTags('integration')
+@Controller('integrations')
+@ApiTags('integrations')
 export class IntegrationController {
   constructor(
     private readonly authBotAction: AuthBotLinkAction,

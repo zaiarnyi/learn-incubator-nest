@@ -49,9 +49,9 @@ export class GetBlogByIdAction {
     }
     const [countSubscription, mySubscription] = await Promise.all([
       this.queryRepository.getCountSubscriptionForBlog(id),
-      user?.id && this.queryRepository.getActiveSubscription(user.id, id),
+      user?.id && this.queryRepository.getActiveSubscription(findBlog.id, user.id),
     ]);
-    console.log(mySubscription, 'mySubscription');
+
     return plainToClass(CreateBlogResponse, {
       ...findBlog,
       id: findBlog.id.toString(),

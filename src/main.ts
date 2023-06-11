@@ -76,7 +76,7 @@ async function bootstrap() {
       .addTag('sa/users', 'All methods for super admin/users')
       .addTag('sa/quiz/questions', 'All methods for super admin/quiz/questions')
       .addTag('sa/blogs', 'All methods for super admin/blogs')
-      .addTag('integration', 'All methods for integration')
+      .addTag('integrations', 'All methods for integrations')
       .addBearerAuth({ type: 'http' })
       .addCookieAuth('refreshToken')
       .addBasicAuth({ type: 'http' })

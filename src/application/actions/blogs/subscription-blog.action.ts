@@ -37,6 +37,7 @@ export class SubscriptionBlogAction {
     subscription.user = user;
     subscription.status = SubscriptionStatusEnum.SUBSCRIPTION;
 
-    await this.mainBlogRepository.saveSubscriptions(subscription);
+    const res = await this.mainBlogRepository.saveSubscriptions(subscription);
+    console.log(res);
   }
 }
