@@ -87,7 +87,18 @@ export class QueryBlogsRepository {
   }
 
   async getCountSubscriptionForBlog(blogId: number): Promise<number> {
-    return this.subscriptionRepository.count({ where: { blog: { id: blogId } }, relations: ['blog'] });
+    const subscriptions = await this.subscriptionRepository.find({
+      where: { blog: { id: blogId }, status: SubscriptionStatusEnum.SUBSCRIPTION },
+      relations: ['blog'],
+    });
+    const unique = {};
+    return subscriptions.reduce((acc, item) => {
+      if (!(item.id in unique)) {
+        unique[item.id] = 1;
+        acc += 1;
+      }
+      return acc;
+    }, 0);
   }
 
   async statusSubscriptionForUser(userId: number): Promise<SubscriptionUsersBlogsEntity> {
