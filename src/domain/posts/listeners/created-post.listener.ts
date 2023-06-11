@@ -14,7 +14,8 @@ export class CreatedPostListener {
     console.log(telegramId, message);
     const link = `https://api.telegram.org/bot6203822227:AAFW725L9J4S55TfW0_kxc3RSKeyJawY3ow/sendMessage`;
 
-    await firstValueFrom(this.httpService.post(link, { chat_id: telegramId, text: message }));
+    const response = await firstValueFrom(this.httpService.post(link, { chat_id: telegramId, text: message }));
+    this.logger.log(`The message was sent to telegram with the status: ${response.status}`);
   }
   @OnEvent(CreatedPostEvent.name, { async: true })
   async handleOrderCreatedEvent(event: CreatedPostEvent) {
