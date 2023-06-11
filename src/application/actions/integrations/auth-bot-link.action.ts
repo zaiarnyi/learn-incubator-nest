@@ -5,6 +5,6 @@ import { AuthBotLinkResponse } from '../../../presentation/responses/integration
 @Injectable()
 export class AuthBotLinkAction {
   public execute(user: UserEntity): AuthBotLinkResponse {
-    return { link: 'https://t.me/@incubator_study_blBBot' + `?start=${user.uuid}` };
+    return { link: 'https://t.me/incubator_study_blBBot' + `?start=${user.uuid}` };
   }
 }
