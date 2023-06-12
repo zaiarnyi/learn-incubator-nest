@@ -29,15 +29,6 @@ export class TestController {
     });
   }
 
-  @Delete('pair')
-  @ApiOperation({ summary: `Method for deleting games and users`, deprecated: true })
-  @HttpCode(204)
-  async deletePairAndUser() {
-    await this.userRepository.deletePairAndUser().catch((e) => {
-      this.logger.error(`Error when deleting users test data. ${JSON.stringify(e, null, 2)}`);
-    });
-  }
-
   @Get('/rules')
   @ApiOperation({ summary: `Method for work`, deprecated: true })
   async getAdguardRules() {

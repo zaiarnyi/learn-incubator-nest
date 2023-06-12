@@ -12,8 +12,13 @@ export class TelegramWebhookAction {
 
       const uuid = body.message.text.split(' ')[1].replace(/code=/, '');
       console.log(uuid, 'uuid');
-      const update = await this.userRepository.setTelegramIdUsers(uuid, body.message.from.id);
+      const update = await this.userRepository.setTelegramIdUsers(
+        uuid,
+        body?.message?.from?.id ?? body?.message?.chat?.id,
+      );
       console.log(update, 'update');
-    } catch (e) {}
+    } catch (e) {
+      this.logger.error(`Error telegram webhook. Message: ${e.message}`);
+    }
   }
 }

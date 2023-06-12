@@ -41,18 +41,8 @@ export class UserMainRepository {
       ),
     ]);
   }
-  async deletePairAndUser() {
-    await Promise.all([
-      this.dataSource.query(
-        `TRUNCATE TABLE users, invalid_tokens,users_banned, user_security, pairs_questions_quiz, activate_emails_code, blog_images, post_images, blogs,posts, comments, comment_likes, post_likes, pair_results,pairs, pair_answers CASCADE;`,
-      ),
-      this.dataSource.query(
-        `TRUNCATE TABLE users, invalid_tokens, pair_results, users_banned, user_security, pairs_questions_quiz, activate_emails_code, blog_images, post_images, blogs,posts, comments, comment_likes, post_likes, pairs, pair_answers RESTART IDENTITY;`,
-      ),
-    ]);
-  }
 
   async setTelegramIdUsers(uuid: string, id: number) {
-    return this.userRepository.update({ uuid }, { telegramId: id });
+    return this.userRepository.update({ uuid }, { telegramId: Number(id) });
   }
 }
