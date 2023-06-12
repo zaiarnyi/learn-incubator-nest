@@ -7,6 +7,7 @@ import { CreateBlogResponse } from '../../../presentation/responses/blogger/crea
 import { UserMainRepository } from '../../../infrastructure/database/repositories/users/main.repository';
 import { UserQueryRepository } from '../../../infrastructure/database/repositories/users/query.repository';
 import { UserEntity } from '../../../domain/users/entities/user.entity';
+import { SubscriptionStatusEnum } from '../../../domain/blogs/enums/subscription-status.enum';
 
 export class CreateBlogAction {
   constructor(
@@ -32,6 +33,8 @@ export class CreateBlogAction {
         main: [],
         wallpaper: null,
       },
+      currentUserSubscriptionStatus: SubscriptionStatusEnum.NONE,
+      subscribersCount: 0,
     });
   }
 }
