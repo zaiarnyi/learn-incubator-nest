@@ -39,7 +39,7 @@ export class UserEntity {
   @Generated('uuid')
   uuid: string;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'bigint' })
   telegramId: number;
 
   @CreateDateColumn()
