@@ -123,27 +123,26 @@ export class GetAllBlogsAction {
 
     const pagesCount = Math.ceil(totalCount / query.pageSize);
 
-    const promises = arr.map(async (item, i) => {
-      return {
+    // const promises = arr.map(async (item, i) => {
+    //   return {
+    //     ...item,
+    //     createdAt: blogs[i].createdAt,
+    //   };
+    // });
+
+    const promises = blogs.map(async (item) => {
+      const [countSubscription, mySubscription] = await Promise.all([
+        this.queryRepository.getCountSubscriptionForBlog(item.id),
+        user?.id && this.queryRepository.getActiveSubscription(item.id, user.id),
+      ]);
+      return plainToClass(CreateBlogResponse, {
         ...item,
-        createdAt: blogs[i].createdAt,
-      };
+        id: item.id.toString(),
+        images: await this.prepareImages(item.id),
+        currentUserSubscriptionStatus: mySubscription?.status ?? SubscriptionStatusEnum.NONE,
+        subscribersCount: countSubscription ?? 0,
+      });
     });
-
-    // const promises = blogs.map(async (item) => {
-    // const [countSubscription, mySubscription] = await Promise.all([
-    //   this.queryRepository.getCountSubscriptionForBlog(item.id),
-    //   user?.id && this.queryRepository.getActiveSubscription(item.id, user.id),
-    // ]);
-    // return plainToClass(CreateBlogResponse, {
-    //   ...item,
-    //   id: item.id.toString(),
-    //   images: await this.prepareImages(item.id),
-    //   currentUserSubscriptionStatus: mySubscription?.status ?? SubscriptionStatusEnum.NONE,
-    //   subscribersCount: countSubscription ?? 0,
-    // });
-
-    // });
 
     return {
       pagesCount,
