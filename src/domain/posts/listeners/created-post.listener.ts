@@ -22,7 +22,7 @@ export class CreatedPostListener {
     const message = `New post published for blog "${event.blog.name}`;
 
     const subscriptions = await this.queryBlogRepository.subscriptionForBlog(event.blog.id);
-
+    console.log(subscriptions, 'subscriptions');
     for (const subscription of subscriptions) {
       if (!subscription.user.telegramId) continue;
       await this.sendMessage(subscription.user.telegramId, message).catch((e) => {

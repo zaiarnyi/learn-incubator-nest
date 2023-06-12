@@ -9,7 +9,7 @@ export class TelegramWebhookAction {
     try {
       if (!body.message.text.includes('/start')) return null;
 
-      const uuid = body.message.text.split(' ')[1];
+      const uuid = body.message.text.split(' ')[1].replace(/code=/, '');
 
       await this.userRepository.setTelegramIdUsers(uuid, body.message.from.id);
     } catch (e) {}
