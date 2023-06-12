@@ -11,70 +11,6 @@ import { BlogImagesEntity } from '../../../domain/blogs/entities/blog-images.ent
 import { SubscriptionStatusEnum } from '../../../domain/blogs/enums/subscription-status.enum';
 import { UserEntity } from '../../../domain/users/entities/user.entity';
 
-const arr = [
-  {
-    id: '6',
-    name: 'new blog',
-    description: 'description',
-    websiteUrl: 'https://someurl.com',
-    createdAt: '2023-06-11T12:45:50.439Z',
-    isMembership: false,
-    images: { main: [], wallpaper: null },
-    subscribersCount: null,
-  },
-  {
-    id: '5',
-    name: 'new blog',
-    description: 'description',
-    websiteUrl: 'https://someurl.com',
-    createdAt: '2023-06-11T12:45:49.719Z',
-    isMembership: false,
-    images: { main: [], wallpaper: null },
-    currentUserSubscriptionStatus: 'Subscribed',
-    subscribersCount: null,
-  },
-  {
-    id: '4',
-    name: 'new blog',
-    description: 'description',
-    websiteUrl: 'https://someurl.com',
-    createdAt: '2023-06-11T12:45:49.011Z',
-    isMembership: false,
-    images: { main: [], wallpaper: null },
-  },
-  {
-    id: '3',
-    name: 'new blog',
-    description: 'description',
-    websiteUrl: 'https://someurl.com',
-    createdAt: '2023-06-11T12:45:48.299Z',
-    isMembership: false,
-    images: { main: [], wallpaper: null },
-    currentUserSubscriptionStatus: 'Unsubscribed',
-    subscribersCount: null,
-  },
-  {
-    id: '2',
-    name: 'new blog',
-    description: 'description',
-    websiteUrl: 'https://someurl.com',
-    createdAt: '2023-06-11T12:45:47.595Z',
-    isMembership: false,
-    images: { main: [], wallpaper: null },
-  },
-  {
-    id: '1',
-    name: 'new blog',
-    description: 'description',
-    websiteUrl: 'https://someurl.com',
-    createdAt: '2023-06-11T12:45:46.878Z',
-    isMembership: false,
-    images: { main: [], wallpaper: null },
-    currentUserSubscriptionStatus: 'Subscribed',
-    subscribersCount: null,
-  },
-];
-
 @Injectable()
 export class GetAllBlogsAction {
   constructor(
@@ -122,13 +58,6 @@ export class GetAllBlogsAction {
     );
 
     const pagesCount = Math.ceil(totalCount / query.pageSize);
-
-    // const promises = arr.map(async (item, i) => {
-    //   return {
-    //     ...item,
-    //     createdAt: blogs[i].createdAt,
-    //   };
-    // });
 
     const promises = blogs.map(async (item) => {
       const [countSubscription, mySubscription] = await Promise.all([
